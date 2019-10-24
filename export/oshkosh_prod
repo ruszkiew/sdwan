@@ -1,6 +1,0 @@
-export SDWAN_IP=3.210.110.97
-export SDWAN_PORT=8443
-export SDWAN_USERNAME=admin
-export SDWAN_PASSWORD=redgreen6
-export SDWAN_CFGDIR=./cfg/oshkosh_prod/
-export SDWAN_PROXY=127.0.0.1:12345

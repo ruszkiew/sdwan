@@ -1,6 +1,0 @@
-export SDWAN_IP=52.32.191.53
-export SDWAN_PORT=8443
-export SDWAN_USERNAME=admin
-export SDWAN_PASSWORD=RWSV1ptel@##
-export SDWAN_CFGDIR=./cfg/redwing/
-export SDWAN_PROXY=127.0.0.1:12345

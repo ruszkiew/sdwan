@@ -1,6 +1,0 @@
-export SDWAN_IP=18.206.6.48
-export SDWAN_PORT=8443
-export SDWAN_USERNAME=cdwadmin
-export SDWAN_PASSWORD=Berbee123!
-export SDWAN_CFGDIR=./cfg/echo/
-export SDWAN_PROXY=127.0.0.1:12345
