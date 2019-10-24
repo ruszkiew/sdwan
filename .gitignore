@@ -1,0 +1,6 @@
+*.pyc
+*.swp
+.vscode/
+cfg/
+export/
+
