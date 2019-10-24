@@ -1,0 +1,1096 @@
+ system
+ idle-timeout            5
+ host-name               tsc-vedge1
+ gps-location latitude 43.983796
+ gps-location longitude -88.538462
+ device-groups           AMER Data_Center Hub Primary vEdge2000
+ system-ip               100.64.2.1
+ site-id                 100016402
+ admin-tech-on-failure
+ no route-consistency-check
+ sp-organization-name    "SDWAN-Production - 273749"
+ organization-name       "SDWAN-Production - 273749"
+ vbond vbond-1080107.viptela.net
+ aaa
+  auth-order       tacacs local
+  auth-fallback
+  admin-auth-order
+  usergroup basic
+   task system read write
+   task interface read write
+  !
+  usergroup netadmin
+  !
+  usergroup operator
+   task system read
+   task interface read
+   task policy read
+   task routing read
+   task security read
+  !
+  user admin
+   password $6$O+meuw==$YIL0njciO6.H/Z5Qe0hxrYCkwGZef0j4SpEBILuLY7fIMa1YqFWgKMPwV9PZ3D2LqIfYRekvYEsQlC4OM/BNR0
+  !
+ !
+ logging
+  disk
+   enable
+  !
+  server 10.2.143.60
+   vpn              100
+   source-interface loopback100
+  exit
+  server 10.102.0.46
+   vpn              100
+   source-interface loopback100
+  exit
+ !
+ ntp
+  keys
+   authentication 1 md5 $8$5n3YV8Q0ut4AiXuhNf1ZbMbNmhppmLlHFSAmcqsbmfs=
+   trusted 1
+  !
+  server 10.2.142.21
+   key              1
+   source-interface loopback100
+   vpn              100
+   version          4
+  exit
+  server 10.2.143.21
+   key              1
+   source-interface loopback100
+   vpn              100
+   version          4
+  exit
+  server ntp.oshkoshglobal.com
+   key              1
+   source-interface loopback100
+   vpn              100
+   version          4
+   prefer
+  exit
+ !
+ tacacs
+  server 10.2.142.105
+   vpn              100
+   source-interface loopback100
+   key              "t/!QGbeky9h4x*;#^Jj7"
+  exit
+  server 10.2.142.106
+   vpn              100
+   source-interface loopback100
+   key              "t/!QGbeky9h4x*;#^Jj7"
+  exit
+  server 10.2.143.105
+   vpn              100
+   source-interface loopback100
+   key              "t/!QGbeky9h4x*;#^Jj7"
+  exit
+  server 10.2.143.106
+   vpn              100
+   source-interface loopback100
+   key              "t/!QGbeky9h4x*;#^Jj7"
+  exit
+ !
+!
+bfd color mpls
+!
+bfd color metro-ethernet
+!
+bfd color lte
+ hello-interval 10000
+!
+bfd color gold
+!
+bfd color silver
+!
+bfd app-route poll-interval 120000
+omp
+ no shutdown
+ send-path-limit  16
+ ecmp-limit       16
+ graceful-restart
+!
+security
+ ipsec
+  replay-window       4096
+  authentication-type sha1-hmac ah-sha1-hmac
+ !
+!
+snmp
+ no shutdown
+ contact  oskgns@oshkoshcorp.com
+ location tsc
+ view isoALL
+  oid 1.3.6.1
+ !
+ group ENTRO auth-priv
+  view isoALL
+ !
+ user GNS
+  auth          sha
+  auth-password $8$mfBFFL6iHKxhcRfvbFbJHRB0/yOsT+NwWplEQ+8Vf44=
+  priv          aes-cfb-128
+  priv-password $8$LKGHFA9cxVakrg0JEyaHVwJrmXLD+q8b1eKcQdIJQCs=
+  group         ENTRO
+ !
+ user ITSM
+  auth          sha
+  auth-password $8$ID0Ax9dl5kJdFzpb3cfYjog6zinzOB55PSm0SkSmh5k=
+  priv          aes-cfb-128
+  priv-password $8$QO/hUk8Vof3rnjGw0XV2TZwHRNV97B08daqDFT2jP5E=
+  group         ENTRO
+ !
+ trap target vpn 100 10.2.143.60 162
+  group-name       TRAPALL
+  user             GNS
+  source-interface loopback100
+ !
+ trap group TRAPALL
+  all
+   level critical major minor
+  exit
+ exit
+!
+banner
+ motd "n         #####  ###### ##   ## ##   #  #####  ###### ##   ##n        ##   ## ##     ##   ## ##  #  ##   ## ##     ##   ##n        ##   ## ###### ####### ####   ##   ## ###### #######n        ##   ##     ## ##   ## ##  #  ##   ##     ## ##   ##n         #####  ###### ##   ## ##   #  #####  ###### ##   ##nn ********************************************************************n *           Access is restricted to authorized users only.         *n ********************************************************************nn WARNING: This system is for the use of authorized clients only.n Individuals using the computer network system without authorization,n or in excess of their authorization, are subject to having all theirn activity on this computer network system monitored and recorded byn system personnel. To protect the computer network system fromn unauthorized use and to ensure the computer network systems isn functioning properly, system administrators monitor this system.n Anyone using this computer network system expressly consents to suchn monitoring and is advised that if such monitoring reveals possiblen conduct of criminal activity, system personnel may provide then evidence of such activity to law enforcement officers.nn Access is restricted to authorized users only. Unauthorized accessn is a violation of state and federal, civil and criminal laws.nn"
+!
+vpn 0
+ name vpn0-transport
+ dns 8.8.8.8 primary
+ dns 10.2.158.60 secondary
+ ecmp-hash-key layer4
+ interface 10ge0/0
+  description LAN_TRUNK
+  mtu         1504
+  no shutdown
+  access-list qos-local-traffic-class-2 in
+ !
+ interface 10ge0/1
+  description          VPLS
+  ip address 10.254.100.250/29
+  tunnel-interface
+   encapsulation ipsec preference 200
+   color metro-ethernet restrict
+   no allow-service bgp
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   no allow-service netconf
+   no allow-service ntp
+   no allow-service ospf
+   no allow-service stun
+   allow-service https
+  !
+  clear-dont-fragment
+  tcp-mss-adjust       1350
+  no shutdown
+  qos-map              qos-queue-map-1
+  bandwidth-upstream   2000
+  bandwidth-downstream 2000
+ !
+ interface ge2/1
+  description          INTERNET_1
+  ip address 4.14.166.180/28
+  tunnel-interface
+   encapsulation ipsec preference 200
+   color silver
+   no allow-service bgp
+   no allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   no allow-service netconf
+   no allow-service ntp
+   no allow-service ospf
+   no allow-service stun
+   no allow-service https
+  !
+  clear-dont-fragment
+  tcp-mss-adjust       1350
+  no shutdown
+  qos-map              qos-queue-map-1
+  access-list acl-vpn0-inet-in in
+  bandwidth-upstream   1000
+  bandwidth-downstream 1000
+ !
+ interface ge2/2
+  description          INTERNET_2
+  ip address 98.100.236.29/29
+  tunnel-interface
+   encapsulation ipsec preference 200
+   color gold
+   no allow-service bgp
+   no allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   no allow-service netconf
+   no allow-service ntp
+   no allow-service ospf
+   no allow-service stun
+   no allow-service https
+  !
+  clear-dont-fragment
+  tcp-mss-adjust       1350
+  no shutdown
+  qos-map              qos-queue-map-1
+  access-list acl-vpn0-inet-in in
+  bandwidth-upstream   1000
+  bandwidth-downstream 1000
+ !
+ interface ge2/3
+  description          MPLS
+  ip address 10.254.102.250/29
+  tunnel-interface
+   encapsulation ipsec preference 200
+   color mpls restrict
+   no allow-service bgp
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   no allow-service netconf
+   no allow-service ntp
+   no allow-service ospf
+   no allow-service stun
+   allow-service https
+  !
+  clear-dont-fragment
+  tcp-mss-adjust       1350
+  no shutdown
+  qos-map              qos-queue-map-1
+  rewrite-rule qos-mpls-dscp-rewrite-1
+  bandwidth-upstream   1000
+  bandwidth-downstream 1000
+ !
+ ip route 0.0.0.0/0 4.14.166.177
+ ip route 0.0.0.0/0 10.254.100.249
+ ip route 0.0.0.0/0 10.254.102.249
+ ip route 0.0.0.0/0 98.100.236.25
+!
+vpn 100
+ name vpn100-enterprise
+ dns 10.2.158.60 primary
+ dns 10.2.158.61 secondary
+ ecmp-hash-key layer4
+ router
+  ospf
+   router-id 10.99.71.253
+   timers spf 200 1000 10000
+   redistribute omp route-policy vpn100-ospf-omp-hub-r1
+   route-policy vpn100-ospf-hub-in in
+   area 0
+    interface 10ge0/0.100
+     network point-to-point
+     authentication type message-digest
+     authentication authentication-key 1
+     authentication message-digest message-digest-key 1 md5 $8$2YalqMOVsv//n8Hs2ns7xeExcfhQ+YJ2Oo/IHvn3WsI=
+    exit
+    interface loopback100
+    exit
+    range 10.2.1.184/29
+    range 10.99.71.253/32
+   exit
+  !
+  pim
+   interface 10ge0/0.100
+   exit
+  exit
+ !
+ interface 10ge0/0.100
+  description LAN_ENTERPRISE
+  ip address 10.2.1.186/29
+  no shutdown
+ !
+ interface loopback100
+  description LOOPBACK
+  ip address 10.99.71.253/32
+  no shutdown
+ !
+ omp
+  advertise ospf external
+  advertise connected
+ !
+!
+vpn 512
+ name vpn0-management
+ interface mgmt0
+  description MANAGEMENT
+  ip address 10.2.143.200/24
+  no shutdown
+ !
+ ip route 0.0.0.0/0 10.2.143.1
+!
+vpn 900
+ name vpn900-vendor
+ ecmp-hash-key layer4
+ router
+  ospf
+   router-id 192.168.254.250
+   timers spf 200 1000 10000
+   redistribute omp route-policy vpn900-ospf-omp-hub-r1
+   route-policy vpn900-ospf-hub-in in
+   area 0
+    interface ge1/1
+     network point-to-point
+     authentication type message-digest
+     authentication authentication-key 1
+     authentication message-digest message-digest-key 1 md5 $8$Vpo6asUtVY5rr2ze6NIL9hJd4+h5c6it9X0L3RaMVwE=
+    exit
+    range 192.168.254.250/29
+   exit
+  !
+ !
+ interface ge1/1
+  description VENDOR
+  ip address 192.168.254.250/29
+  no shutdown
+  access-list qos-local-traffic-class-2 in
+ !
+ omp
+  advertise ospf external
+  advertise connected
+  advertise static
+ !
+!
+policy
+ app-visibility
+ flow-visibility
+ lists
+  data-prefix-list SCCM_Servers
+   ip-prefix 10.2.158.77/32
+   ip-prefix 10.2.158.207/32
+  !
+  prefix-list prefix-any
+   ip-prefix 0.0.0.0/0 le 32
+  !
+ !
+ route-policy vpn100-ospf-hub-in
+  sequence 1
+   match
+    ospf-tag 20
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match
+    address prefix-any
+   !
+   action accept
+   !
+  !
+  default-action reject
+ !
+ route-policy vpn100-ospf-omp-hub-r1
+  sequence 1
+   match
+    address prefix-any
+   !
+   action accept
+    set
+     metric      10
+     metric-type type1
+     ospf-tag    20
+    !
+   !
+  !
+  default-action reject
+ !
+ route-policy vpn100-ospf-omp-hub-r2
+  sequence 1
+   match
+    address prefix-any
+   !
+   action accept
+    set
+     metric      100
+     metric-type type1
+     ospf-tag    20
+    !
+   !
+  !
+  default-action reject
+ !
+ route-policy vpn900-ospf-hub-in
+  sequence 1
+   match
+    ospf-tag 20
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match
+    address prefix-any
+   !
+   action accept
+   !
+  !
+  default-action reject
+ !
+ route-policy vpn900-ospf-omp-hub-r1
+  sequence 1
+   match
+    address prefix-any
+   !
+   action accept
+    set
+     metric      10
+     metric-type type1
+     ospf-tag    20
+    !
+   !
+  !
+  default-action reject
+ !
+ route-policy vpn900-ospf-omp-hub-r2
+  sequence 1
+   match
+    address prefix-any
+   !
+   action accept
+    set
+     metric      100
+     metric-type type1
+     ospf-tag    20
+    !
+   !
+  !
+  default-action reject
+ !
+ class-map
+  class Queue0 queue 0
+  class Queue1 queue 1
+  class Queue2 queue 2
+  class qos-queue2-af2 queue 2
+  class Queue3 queue 3
+  class qos-queue3-af3 queue 3
+  class Queue4 queue 4
+  class Queue7 queue 7
+ !
+ rewrite-rule qos-mpls-dscp-rewrite-1
+  class qos-queue2-af2 high dscp 0
+  class qos-queue3-af3 high dscp 26 layer-2-cos 3
+ !
+ access-list acl-vpn0-inet-in
+  sequence 1
+   match
+    source-ip   8.8.8.8/32
+    source-port 53
+   !
+   action accept
+   !
+  !
+  sequence 11
+   match
+    source-port 53
+   !
+   action drop
+   !
+  !
+  default-action accept
+ !
+ access-list qos-local-traffic-class-2
+  sequence 1
+   match
+    source-port      16383-65535
+    destination-port 16383-65535
+    dscp             46
+    protocol         17
+   !
+   action accept
+    set
+     dscp 46
+    !
+   !
+  !
+  sequence 11
+   match
+    source-port      49152-57500
+    destination-port 49152-57500
+    dscp             46
+    protocol         17
+   !
+   action accept
+    set
+     dscp 46
+    !
+   !
+  !
+  sequence 21
+   match
+    source-port      50000-50019
+    destination-port 50000-50019
+    dscp             46
+    protocol         17
+   !
+   action accept
+    set
+     dscp 46
+    !
+   !
+  !
+  sequence 31
+   match
+    source-port      50020-50039
+    destination-port 50020-50039 57501-65535
+    dscp             34
+    protocol         17
+   !
+   action accept
+    set
+     dscp 34
+    !
+   !
+  !
+  sequence 41
+   match
+    source-port      57501-65535
+    destination-port 50020-50039
+    dscp             34
+    protocol         17
+   !
+   action accept
+    set
+     dscp 34
+    !
+   !
+  !
+  sequence 51
+   match
+    source-port      3230-3253
+    destination-port 1024-65535
+    dscp             34
+    protocol         17
+   !
+   action accept
+    set
+     dscp 34
+    !
+   !
+  !
+  sequence 61
+   match
+    source-port      1024-65535
+    destination-port 3230-3253
+    dscp             34
+    protocol         17
+   !
+   action accept
+    set
+     dscp 34
+    !
+   !
+  !
+  sequence 71
+   match
+    source-port      16383-65535
+    destination-port 16383-65535
+    dscp             32
+    protocol         17
+   !
+   action accept
+    set
+     dscp 34
+    !
+   !
+  !
+  sequence 81
+   match
+    source-port      16383-65535
+    destination-port 16383-65535
+    dscp             34
+    protocol         17
+   !
+   action accept
+    set
+     dscp 34
+    !
+   !
+  !
+  sequence 91
+   match
+    source-port      50040 50059
+    destination-port 40803-49151 50020-50059 57501-65535
+    dscp             26
+    protocol         17
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 101
+   match
+    source-port      40803-49151 50020-50039 57501-65535
+    destination-port 50040-50059
+    dscp             26
+    protocol         17
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 111
+   match
+    source-port      50040-50059
+    destination-port 40803-49151 50040-50059
+    dscp             26
+    protocol         6
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 121
+   match
+    source-port      40803-49151
+    destination-port 50040-50059
+    dscp             26
+    protocol         6
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 131
+   match
+    source-port      5060-5069
+    destination-port 1024-65535
+    dscp             24
+    protocol         6
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 141
+   match
+    source-port      1024-65535
+    destination-port 5060-5069
+    dscp             24
+    protocol         6
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 151
+   match
+    source-port      5060-5069
+    destination-port 1024-65535
+    dscp             24
+    protocol         17
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 161
+   match
+    source-port      1024-65535
+    destination-port 5060-5069
+    dscp             24
+    protocol         17
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 171
+   match
+    source-port      2000-2002
+    destination-port 1024-65535
+    protocol         6
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 181
+   match
+    source-port      1024-65535
+    destination-port 2000-2002
+    protocol         6
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 191
+   match
+    source-port      1024-65535
+    destination-port 11000-11999 1720
+    protocol         6
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 201
+   match
+    source-port      11000-11999 1720
+    destination-port 1024-65535
+    protocol         6
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 211
+   match
+    source-port      1024-65535
+    destination-port 11000-11999 1718 1719
+    protocol         17
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 221
+   match
+    source-port      11000-11999 1718 1719
+    destination-port 1024-65535
+    protocol         17
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 231
+   match
+    source-port      1024-65535
+    destination-port 5060 5061
+    protocol         6
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 241
+   match
+    source-port      5060 5061
+    destination-port 1024-65535
+    protocol         6
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 251
+   match
+    source-port      1024-65535
+    destination-port 5060
+    protocol         17
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 261
+   match
+    source-port      5060
+    destination-port 1024-65535
+    protocol         6
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 271
+   match
+    source-port      2748
+    destination-port 1024-65535
+    protocol         6
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 281
+   match
+    source-port      1024-65535
+    destination-port 2748
+    protocol         6
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 291
+   match
+    source-port      5070-6070
+    destination-port 1024-65535
+    protocol         6
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 301
+   match
+    source-port      1024-65535
+    destination-port 5070-6070
+    protocol         6
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 311
+   match
+    source-port      2426 2427
+    destination-port 1024-65535
+    protocol         17
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 321
+   match
+    source-port      1024-65535
+    destination-port 2426 2427
+    protocol         17
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 331
+   match
+    source-port      2428
+    destination-port 1024-65535
+    protocol         6
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 341
+   match
+    source-port      1024-65535
+    destination-port 2428
+    protocol         6
+   !
+   action accept
+    set
+     dscp 24
+    !
+   !
+  !
+  sequence 351
+   match
+    source-port      161 162 1645 1812 53 67-69
+    destination-port 1024-65535
+    protocol         17
+   !
+   action accept
+    set
+     dscp 16
+    !
+   !
+  !
+  sequence 361
+   match
+    source-port      1024-65535
+    destination-port 161 162 1645 1812 53 67-69
+    protocol         17
+   !
+   action accept
+    set
+     dscp 16
+    !
+   !
+  !
+  sequence 371
+   match
+    source-port      22-23 49
+    destination-port 1024-65535
+    protocol         6
+   !
+   action accept
+    set
+     dscp 16
+    !
+   !
+  !
+  sequence 381
+   match
+    source-port      1024-65535
+    destination-port 22-23 49
+    protocol         6
+   !
+   action accept
+    set
+     dscp 16
+    !
+   !
+  !
+  sequence 391
+   match
+    source-port      34322-34325 34331 34333 34335 34337 34339 34341 34343 34345 34750 34760 36545-36546
+    destination-port 1024-65535
+    protocol         17
+   !
+   action accept
+    set
+     dscp 10
+    !
+   !
+  !
+  sequence 401
+   match
+    source-port      1024-65535
+    destination-port 34322-34325 34331 34333 34335 34337 34339 34341 34343 34345 34750 34760 36545-36546
+    protocol         17
+   !
+   action accept
+    set
+     dscp 10
+    !
+   !
+  !
+  sequence 411
+   match
+    source-port      19000 19500 20000 20500 2051 25000 25500 26000 26500 27000 29000
+    destination-port 1024-65535
+    protocol         6
+   !
+   action accept
+    set
+     dscp 10
+    !
+   !
+  !
+  sequence 421
+   match
+    source-port      1024-65535
+    destination-port 19000 19500 20000 20500 2051 25000 25500 26000 26500 27000 29000
+    protocol         6
+   !
+   action accept
+    set
+     dscp 10
+    !
+   !
+  !
+  sequence 431
+   match
+    source-data-prefix-list SCCM_Servers
+    protocol                6
+   !
+   action accept
+    set
+     dscp 10
+    !
+   !
+  !
+  sequence 441
+   match
+    destination-data-prefix-list SCCM_Servers
+    protocol                     6
+   !
+   action accept
+    set
+     dscp 10
+    !
+   !
+  !
+  default-action accept
+ !
+ qos-scheduler qos-queue-map-1_0
+  class             Queue0
+  bandwidth-percent 24
+  buffer-percent    19
+  scheduling        llq
+ !
+ qos-scheduler qos-queue-map-1_1
+  class             Queue1
+  bandwidth-percent 1
+  buffer-percent    1
+ !
+ qos-scheduler qos-queue-map-1_2
+  class             Queue2
+  bandwidth-percent 5
+  buffer-percent    5
+  drops             red-drop
+ !
+ qos-scheduler qos-queue-map-1_3
+  class             Queue3
+  bandwidth-percent 15
+  buffer-percent    15
+  drops             red-drop
+ !
+ qos-scheduler qos-queue-map-1_4
+  class             Queue4
+  bandwidth-percent 20
+  buffer-percent    20
+ !
+ qos-scheduler qos-queue-map-1_7
+  class             Queue7
+  bandwidth-percent 35
+  buffer-percent    40
+  drops             red-drop
+ !
+ qos-map qos-queue-map-1
+  qos-scheduler qos-queue-map-1_0
+  qos-scheduler qos-queue-map-1_1
+  qos-scheduler qos-queue-map-1_2
+  qos-scheduler qos-queue-map-1_3
+  qos-scheduler qos-queue-map-1_4
+  qos-scheduler qos-queue-map-1_7
+ !
+!

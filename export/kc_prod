@@ -1,0 +1,5 @@
+export SDWAN_IP=52.202.41.29
+export SDWAN_PORT=8443
+export SDWAN_USERNAME=admin
+export SDWAN_PASSWORD=ynYS3GgfLGvChyKb
+export SDWAN_CFGDIR=./cfg/kc_prod/

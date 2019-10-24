@@ -1,0 +1,90 @@
+ system
+ host-name             vManage
+ system-ip             1.1.1.1
+ site-id               1
+ admin-tech-on-failure
+ sp-organization-name  "SDWAN - 212938"
+ organization-name     "SDWAN - 212938"
+ vbond vbond-537915.viptela.net
+ aaa
+  auth-order local radius tacacs
+  usergroup basic
+   task system read write
+   task interface read write
+  !
+  usergroup netadmin
+  !
+  usergroup operator
+   task system read
+   task interface read
+   task policy read
+   task routing read
+   task security read
+  !
+  user admin
+   password $6$u3jhmUlHRY16I1lI$OpkApAwXhGNo2xdKR.j2x7LF7OkRa9P02aSgACGMvmhidKHvxQ2poG6HTulDYp6BXfsm3clE6dz/wvOKLxA8e1
+  !
+  user barsha
+   password    $6$VPLfy7dOr5h5Zyzo$Trh7W6REZS8Nbe6Pv7lpRrX2PgoFMRDzKEpKKrh4e/ZecO/Zs/d6FKEbN9KIn42Qlv9dhtd9/.MSSy00YgH26.
+   description "Barsha Shrestha"
+   group       netadmin
+  !
+  user dandemer
+   password    $6$NN.sZ/PKy4wGWgsu$xXiolc7.4S7ud2h/W9nxZ3BVJqWQ7479p00PwnYPOg7PXdly4/PNB1fnqXXc4E70Uw6MNmq/IZuHuufGRdvJG1
+   description "Dan Demers (Cisco)"
+   group       netadmin
+  !
+  user edrusz
+   password    $6$Ftp//W4RCU7ng.Eo$eS7GV9T4W/ULKp5.piCM2wvSxAPNtKekU2Q1XXqqiCjjy.Y2ChyFwH752Rzxeo5GkvCKQU0HUw16sDazWvfHb.
+   description "Ed Ruszkiewicz"
+   group       netadmin
+  !
+  user josraym
+   password    $6$nXETikA13CyTkWmA$MVSEn2thwq1DxCGgt/OM1prQwbp99GjD09axE4w4dtZwOaFhNO3/TzKxYNEAkyFleklk0h4QLuKR1suiBjVba1
+   description "Josh Raymond"
+   group       netadmin
+  !
+  user robert
+   password    $6$muoT7gZWebbEoG2u$FBN00IjxejIJKxEzNIheEt7MB/wmL.SUX98GQLxQyMwNERWDhAAKpdeAvI/iVNytNTgKzFgEdl3gXiz.m60U31
+   description "Robert Myhre"
+   group       netadmin
+  !
+  user robertm
+   password    $6$RKbpGZuC2DitgzU7$dQMKWhMD79KkEFyFHK.6kSkbsSamg8aDhDRSR24ZfbejAr5KA1uW0KGmGmQs8UZTofWEXLFYn6P8jHOhRtjqm0
+   description "Robert Maday"
+   group       netadmin
+  !
+  user viptelatac
+   password    $6$1Q5HElHUF3anJa3y$ZiuEBd1918WloGZ1DYowc3F69VK4qEnJx19gtU94Qwqr2.ohwrZErIhKLYNhyP5Nj.48DN6RMZksC9Tj6ezff1
+   description viptelatac
+   group       operator
+  !
+ !
+ logging
+  disk
+   enable
+  !
+ !
+!
+vpn 0
+ interface eth1
+  ip dhcp-client
+  tunnel-interface
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   allow-service netconf
+   no allow-service ntp
+   no allow-service stun
+   allow-service https
+  !
+  no shutdown
+ !
+!
+vpn 512
+ interface eth0
+  ip dhcp-client
+  no shutdown
+ !
+!

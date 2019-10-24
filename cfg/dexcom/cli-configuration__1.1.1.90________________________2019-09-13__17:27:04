@@ -1,0 +1,71 @@
+ system
+ host-name             vManage-Dexcom-01
+ system-ip             1.1.1.90
+ site-id               1
+ admin-tech-on-failure
+ sp-organization-name  "Dexcom1 - 19835"
+ organization-name     "Dexcom1 - 19835"
+ vbond vbond-dexcom.viptela.net
+ aaa
+  auth-order local radius tacacs
+  usergroup basic
+   task system read write
+   task interface read write
+  !
+  usergroup netadmin
+  !
+  usergroup operator
+   task system read
+   task interface read
+   task policy read
+   task routing read
+   task security read
+  !
+  user admin
+   password $6$03JSGraZZRZ39o0w$pZDTGczxWEusyOHWfp26IbWYGpx1OYH7DQ4TRysmRiM.Gg8Cneva6BtqXnX/sPT2tgfa2C0Np4ZXqYSiGaSmw.
+  !
+  user dexcdwtest
+   password    $6$PE4NyzDCjwtYgXiR$QRhcEBqSRzG1Gz1TBANsZ2fsglZDwN9ylmTTU2/69PCboKZO85C5wVUdQxRdRbgc9p.rXYBAw3cupjJRoGNXx0
+   description "CDW Read Only"
+   group       operator
+  !
+  user dexnetflow
+   password    $6$VnPkfUKJJHCcfGJ1$uc2z2gvXf31PoPK1YOonyL05WFN.2gTe2vYMf7oMzQooyI9uEPTFYqrLMdy.3UQkbzl/aJNWr8WI.GAEvs/RS0
+   description "Scrutinizer Service Account"
+   group       operator
+  !
+  user viptelatac
+   password    $6$4nAtLiPXO4r7fUgT$LOhFXfvpT.pA1WglzwYPT3xM8HiVyPbja4gSVTVGdg697UrUT/a1zOV2JZ3I.c60BcHY19z0hNzLJ//tXvwzW1
+   description viptelatac
+   group       operator
+  !
+ !
+ logging
+  disk
+   enable
+  !
+ !
+!
+vpn 0
+ interface eth1
+  ip dhcp-client
+  tunnel-interface
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   no allow-service netconf
+   no allow-service ntp
+   no allow-service stun
+   allow-service https
+  !
+  no shutdown
+ !
+!
+vpn 512
+ interface eth0
+  ip dhcp-client
+  no shutdown
+ !
+ ip route 10.0.0.0/8 10.0.4.163
+!

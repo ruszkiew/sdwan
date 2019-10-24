@@ -1,0 +1,1 @@
+{"listId":"c22f8d79-cfd4-403c-9975-c6e82f5c8dfb","name":"pref-enterprise-summary","type":"prefix","description":"Desc Not Required","entries":[{"ipPrefix":"10.0.0.0/8"},{"ipPrefix":"172.16.0.0/12"},{"ipPrefix":"192.168.0.0/16"}],"lastUpdated":1564082799874,"owner":"admin","readOnly":false,"version":"0","referenceCount":0,"isActivatedByVsmart":false}

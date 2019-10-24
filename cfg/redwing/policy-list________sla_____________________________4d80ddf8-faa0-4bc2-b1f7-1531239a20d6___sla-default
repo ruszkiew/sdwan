@@ -1,0 +1,1 @@
+{"listId":"4d80ddf8-faa0-4bc2-b1f7-1531239a20d6","name":"sla-default","type":"sla","description":"Desc Not Required","entries":[{"latency":"500","loss":"5","jitter":null}],"lastUpdated":1563902301045,"owner":"admin","readOnly":false,"version":"0","referenceCount":1,"activatedId":["bf784e46-970a-4abb-a542-244424d3833f"],"isActivatedByVsmart":true}

@@ -1,0 +1,1 @@
+{"listId":"2e41da3b-3847-4627-bb37-0a786e9a508f","name":"Transactional-Data","type":"sla","description":"ACI Transactional Data SLA","entries":[{"jitter":"100","latency":"50","loss":"5"}],"lastUpdated":1566313115760,"owner":"system","readOnly":false,"version":"1.0","infoTag":"aci","referenceCount":0,"references":[],"isActivatedByVsmart":false}

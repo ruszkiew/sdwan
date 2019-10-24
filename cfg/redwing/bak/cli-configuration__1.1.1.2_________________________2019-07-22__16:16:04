@@ -1,0 +1,68 @@
+ system
+ host-name             vSmart-West
+ gps-location latitude 43.804133
+ gps-location longitude -120.554201
+ system-ip             1.1.1.2
+ site-id               2
+ admin-tech-on-failure
+ organization-name     "SDWAN - 212938"
+ clock timezone America/Los_Angeles
+ upgrade-confirm       5
+ vbond vbond-537915.viptela.net
+ aaa
+  auth-order local radius tacacs
+  usergroup basic
+   task system read write
+   task interface read write
+  !
+  usergroup netadmin
+  !
+  usergroup operator
+   task system read
+   task interface read
+   task policy read
+   task routing read
+   task security read
+  !
+  user admin
+   password $6$ZSa1yl/RYmnRIiXw$F7.lE6cHwglxBDWlbFoJEEOifm3bDuTYaGIfi61BgYgJmlswFIOrsyh5fdLs0TH998EmeUU77JECV6fXSU3uk0
+  !
+ !
+ logging
+  disk
+   enable
+  !
+ !
+ ntp
+  server pool.ntp.org
+   version 4
+  exit
+ !
+!
+omp
+ no shutdown
+ graceful-restart
+!
+vpn 0
+ dns 8.8.4.4 secondary
+ dns 8.8.8.8 primary
+ interface eth1
+  ip dhcp-client
+  tunnel-interface
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   allow-service netconf
+   allow-service ntp
+   no allow-service stun
+  !
+  no shutdown
+ !
+!
+vpn 512
+ interface eth0
+  ip dhcp-client
+  no shutdown
+ !
+!

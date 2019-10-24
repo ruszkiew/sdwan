@@ -1,0 +1,1 @@
+{"listId":"ec399c24-a249-48e6-aeb0-67befcec5b92","name":"prefix-default","type":"prefix","description":"Desc Not Required","entries":[{"ipPrefix":"0.0.0.0/0"}],"lastUpdated":1560349955811,"owner":"admin","readOnly":false,"version":"0","referenceCount":3,"activatedId":["f8922d42-a353-46da-b0f0-1801efa2e4c9"],"isActivatedByVsmart":false}

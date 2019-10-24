@@ -1,0 +1,1 @@
+{"listId":"41ae96de-d4f4-4282-b31f-e2b47725813f","name":"sla-lbe","type":"sla","description":"Desc Not Required","entries":[{"latency":"1000","loss":"50","jitter":null}],"lastUpdated":1563902274086,"owner":"admin","readOnly":false,"version":"0","referenceCount":1,"activatedId":["bf784e46-970a-4abb-a542-244424d3833f"],"isActivatedByVsmart":true}

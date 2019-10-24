@@ -1,0 +1,58 @@
+ system
+ host-name               vBond-Dexcom-East-01
+ system-ip               2.2.2.1
+ site-id                 2
+ admin-tech-on-failure
+ no route-consistency-check
+ organization-name       "Dexcom1 - 19835"
+ upgrade-confirm         15
+ vbond 10.0.2.219 local
+ aaa
+  auth-order local radius tacacs
+  usergroup basic
+   task system read write
+   task interface read write
+  !
+  usergroup netadmin
+  !
+  usergroup operator
+   task system read
+   task interface read
+   task policy read
+   task routing read
+   task security read
+  !
+  user admin
+   password $6$6tGELEIL4xESSlGt$ywxFwQI2cdbFEl/XnOmAVcdx69GoukFKvft2/fU9ODjDToXb0WXZ64e50OnCNI.ZSbvB3vnEPfS35bIPa1HKX0
+  !
+ !
+ logging
+  disk
+   enable
+  !
+ !
+!
+omp
+ no shutdown
+ graceful-restart
+ advertise connected
+ advertise static
+!
+security
+ ipsec
+  authentication-type ah-sha1-hmac sha1-hmac
+ !
+!
+vpn 0
+ interface ge0/0
+  ip dhcp-client
+  no shutdown
+ !
+!
+vpn 512
+ interface eth0
+  ip dhcp-client
+  no shutdown
+ !
+ ip route 10.0.0.0/8 10.0.1.43
+!

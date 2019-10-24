@@ -1,0 +1,152 @@
+ system
+ host-name             aws-vmanage
+ gps-location latitude 39.04375
+ gps-location longitude -77.48744
+ device-groups         vCloud
+ system-ip             100.127.1.1
+ site-id               10012711
+ admin-tech-on-failure
+ sp-organization-name  "SDWAN-Production - 273749"
+ organization-name     "SDWAN-Production - 273749"
+ no port-hop
+ vbond vbond-1080107.viptela.net
+ aaa
+  auth-order    tacacs local
+  auth-fallback
+  usergroup basic
+   task system read write
+   task interface read write
+  !
+  usergroup netadmin
+  !
+  usergroup operator
+   task system read
+   task interface read
+   task policy read
+   task routing read
+   task security read
+  !
+  user admin
+   password $6$3YceJ83ZMym1VIXA$VVTKf1E3t5jDbqrdhY.fn5HKztpiQE0tyeS0gh4PVH0y.5jM83gV646JOFA4zdIdqzlK5Wvg0EG1nV1I7GHrU0
+  !
+  user ruszkiew
+   password $6$ZIS6GmpyhXvDLKaz$Q9D07abCS7j7wPt/kzS7lcDn/Lb.q4QQ4ulxT6dF5V9hjRDuLe/V40zoxelR6D.BD3mQEjg8WPKxwO2uKFbrP/
+   group    netadmin
+  !
+  user viptelatac
+   password    $6$bZoRpx4DGZwXHFGJ$iuBL/PAsao1qAlV/gs93WTRl94LaZlxeBt/satXq6EAe93So91u7ULWGsNoEdK0NZD.0vhLT34qK6U7NCNNUj/
+   description viptelatac
+   group       operator
+  !
+ !
+ logging
+  disk
+   enable
+  !
+  server 10.2.143.60
+   vpn              512
+   source-interface eth0
+  exit
+  server 10.102.0.46
+   vpn              512
+   source-interface eth0
+  exit
+ !
+ ntp
+  keys
+   authentication 1 md5 $8$wMkJWFVOFg8NqchCmOvviZ4Zh4dgziy5GOboCG+j5Dc=
+   trusted 1
+  !
+  server 10.2.142.21
+   key              1
+   source-interface eth0
+   vpn              512
+   version          4
+  exit
+  server 10.2.143.21
+   key              1
+   source-interface eth0
+   vpn              512
+   version          4
+  exit
+  server ntp.oshkoshglobal.com
+   key              1
+   source-interface eth0
+   vpn              512
+   version          4
+  exit
+ !
+ tacacs
+  server 10.2.142.105
+   vpn              512
+   source-interface eth0
+   key              "t/!QGbeky9h4x*;#^Jj7"
+  exit
+  server 10.2.142.106
+   vpn              512
+   source-interface eth0
+   key              "t/!QGbeky9h4x*;#^Jj7"
+  exit
+  server 10.2.143.105
+   vpn              512
+   source-interface eth0
+   key              "t/!QGbeky9h4x*;#^Jj7"
+  exit
+  server 10.2.143.106
+   vpn              512
+   source-interface eth0
+   key              "t/!QGbeky9h4x*;#^Jj7"
+  exit
+ !
+!
+security
+ control
+  protocol tls
+ !
+!
+snmp
+ no shutdown
+ location us-east-1
+ view isoALL
+  oid 1.3.6.1
+ !
+ community go90navy
+  view          isoALL
+  authorization read-only
+ !
+!
+vpn 0
+ name vpn0-transport
+ interface eth1
+  description INTERNET
+  ip dhcp-client
+  tunnel-interface
+   hello-interval  30000
+   hello-tolerance 300
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   allow-service sshd
+   allow-service netconf
+   no allow-service ntp
+   no allow-service stun
+   allow-service https
+  !
+  no shutdown
+ !
+!
+vpn 512
+ name vpn512-management
+ dns 10.2.158.60 primary
+ dns 10.2.158.61 secondary
+ interface eth0
+  description MANAGEMENT
+  ip dhcp-client
+  no shutdown
+  arp
+   ip 10.67.1.2 mac 12:08:87:72:19:0e
+  !
+ !
+ ip route 10.0.0.0/8 10.67.1.2
+ ip route 172.16.0.0/12 10.67.1.2
+!

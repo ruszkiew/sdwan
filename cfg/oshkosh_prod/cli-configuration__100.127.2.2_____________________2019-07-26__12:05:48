@@ -1,0 +1,145 @@
+ system
+ host-name               aws-vbond-west
+ gps-location latitude 45.850011
+ gps-location longitude -119.630461
+ device-groups           vCloud
+ system-ip               100.127.2.2
+ site-id                 10012722
+ admin-tech-on-failure
+ no route-consistency-check
+ sp-organization-name    "SDWAN-Production - 273749"
+ organization-name       "SDWAN-Production - 273749"
+ no port-hop
+ upgrade-confirm         15
+ vbond 10.67.2.22 local
+ aaa
+  auth-order    tacacs local
+  auth-fallback
+  usergroup basic
+   task system read write
+   task interface read write
+  !
+  usergroup netadmin
+  !
+  usergroup operator
+   task system read
+   task interface read
+   task policy read
+   task routing read
+   task security read
+  !
+  usergroup tenantadmin
+  !
+  user admin
+   password $6$ajKbhXJNWeApAn/D$0JWiMetr/qBKCSO95MpEW75234.hENO8Pdv4XW1HoL7qjKNEOTgbKT51vNvp6Ar1I4tzB.Ic4k1T2A8Bn8sg0.
+  !
+ !
+ logging
+  disk
+   enable
+  !
+  server 10.2.143.60
+   vpn              512
+   source-interface eth0
+  exit
+  server 10.102.0.46
+   vpn              512
+   source-interface eth0
+  exit
+ !
+ ntp
+  keys
+   authentication 1 md5 $8$k7r4pgh9NgjDGwOGz6wlBsGHNDoIZ9drv3xTa3GC8GY=
+   trusted 1
+  !
+  server 10.2.142.21
+   key              1
+   source-interface eth0
+   vpn              512
+   version          4
+  exit
+  server 10.2.143.21
+   key              1
+   source-interface eth0
+   vpn              512
+   version          4
+  exit
+  server ntp.oshkoshglobal.com
+   key              1
+   source-interface eth0
+   vpn              512
+   version          4
+  exit
+ !
+ tacacs
+  server 10.2.142.105
+   vpn              512
+   source-interface eth0
+   key              "t/!QGbeky9h4x*;#^Jj7"
+  exit
+  server 10.2.142.106
+   vpn              512
+   source-interface eth0
+   key              "t/!QGbeky9h4x*;#^Jj7"
+  exit
+  server 10.2.143.105
+   vpn              512
+   source-interface eth0
+   key              "t/!QGbeky9h4x*;#^Jj7"
+  exit
+  server 10.2.143.106
+   vpn              512
+   source-interface eth0
+   key              "t/!QGbeky9h4x*;#^Jj7"
+  exit
+ !
+!
+omp
+ no shutdown
+ graceful-restart
+ advertise connected
+ advertise static
+!
+security
+ ipsec
+  authentication-type ah-sha1-hmac sha1-hmac
+ !
+!
+snmp
+ no shutdown
+ location us-west-1
+ view isoALL
+  oid 1.3.6.1
+ !
+ community go90navy
+  view          isoALL
+  authorization read-only
+ !
+!
+banner
+ motd "n         #####  ###### ##   ## ##   #  #####  ###### ##   ##n        ##   ## ##     ##   ## ##  #  ##   ## ##     ##   ##n        ##   ## ###### ####### ####   ##   ## ###### #######n        ##   ##     ## ##   ## ##  #  ##   ##     ## ##   ##n         #####  ###### ##   ## ##   #  #####  ###### ##   ##nn ********************************************************************n *           Access is restricted to authorized users only.         *n ********************************************************************nn WARNING: This system is for the use of authorized clients only.n Individuals using the computer network system without authorization,n or in excess of their authorization, are subject to having all theirn activity on this computer network system monitored and recorded byn system personnel. To protect the computer network system fromn unauthorized use and to ensure the computer network systems isn functioning properly, system administrators monitor this system.n Anyone using this computer network system expressly consents to suchn monitoring and is advised that if such monitoring reveals possiblen conduct of criminal activity, system personnel may provide then evidence of such activity to law enforcement officers.nn Access is restricted to authorized users only. Unauthorized accessn is a violation of state and federal, civil and criminal laws.nn"
+!
+vpn 0
+ name vpn0-transport
+ interface ge0/0
+  description INTERNET
+  ip dhcp-client
+  ipv6 dhcp-client
+  no shutdown
+ !
+!
+vpn 512
+ name vpn512-management
+ dns 10.2.158.60 primary
+ dns 10.2.158.61 secondary
+ interface eth0
+  description MANAGEMENT
+  ip dhcp-client
+  no shutdown
+  arp
+   ip 10.67.2.2 mac 02:03:4c:23:8a:0a
+  !
+ !
+ ip route 10.0.0.0/8 10.67.2.2
+ ip route 172.16.0.0/12 10.67.2.2
+!

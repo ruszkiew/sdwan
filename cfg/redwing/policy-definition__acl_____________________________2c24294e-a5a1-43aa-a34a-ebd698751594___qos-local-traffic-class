@@ -1,0 +1,1 @@
+{"definitionId":"2c24294e-a5a1-43aa-a34a-ebd698751594","name":"qos-local-traffic-class","type":"acl","description":"QOS - Local 5-Tuple Marking Definition - Applied but everything Permitted Today","sequences":[],"defaultAction":{"type":"accept"},"lastUpdated":1564081718419,"owner":"admin","referenceCount":2,"isActivatedByVsmart":false}

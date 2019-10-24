@@ -1,0 +1,2 @@
+"csv-deviceId","csv-deviceIP","csv-host-name","host_name","system_ip","siteid","sp-org-name","tenant-org-name","vbond-dns-name","admin_password","mgmt_next_hop_ip_addr",
+"c0f02637-813c-447a-98aa-eaa3d51098e4","100.127.3.1","SDWAN-LAB-vSmart-East","SDWAN-LAB-vSmart-East","100.127.3.1","12731","SDWAN-Lab - 243562","SDWAN-Lab - 243562","vbond-877772.viptela.net","kcrouter","172.17.166.139",

@@ -1,0 +1,253 @@
+ system
+ idle-timeout            5
+ host-name               aws-vedge-west
+ gps-location latitude 45.850011
+ gps-location longitude -119.630461
+ device-groups           vCloud
+ system-ip               100.127.0.2
+ site-id                 10012702
+ admin-tech-on-failure
+ no route-consistency-check
+ sp-organization-name    "SDWAN-Production - 273749"
+ organization-name       "SDWAN-Production - 273749"
+ vbond vbond-1080107.viptela.net
+ aaa
+  auth-order       tacacs local
+  auth-fallback
+  admin-auth-order
+  usergroup basic
+   task system read write
+   task interface read write
+  !
+  usergroup netadmin
+  !
+  usergroup operator
+   task system read
+   task interface read
+   task policy read
+   task routing read
+   task security read
+  !
+  user admin
+   password $6$O+meuw==$YIL0njciO6.H/Z5Qe0hxrYCkwGZef0j4SpEBILuLY7fIMa1YqFWgKMPwV9PZ3D2LqIfYRekvYEsQlC4OM/BNR0
+  !
+ !
+ logging
+  disk
+   enable
+  !
+  server 10.2.143.60
+   vpn              100
+   source-interface loopback100
+  exit
+  server 10.102.0.46
+   vpn              100
+   source-interface loopback100
+  exit
+ !
+ ntp
+  keys
+   authentication 1 md5 $8$WlmLgQ60UMn7H2exIOtWqeVd3WRzc7a/UYk6FXCU1/o=
+   trusted 1
+  !
+  server 10.2.142.21
+   key              1
+   source-interface loopback100
+   vpn              100
+   version          4
+  exit
+  server 10.2.143.21
+   key              1
+   source-interface loopback100
+   vpn              100
+   version          4
+  exit
+  server ntp.oshkoshglobal.com
+   key              1
+   source-interface loopback100
+   vpn              100
+   version          4
+   prefer
+  exit
+ !
+ tacacs
+  server 10.2.142.105
+   vpn              100
+   source-interface loopback100
+   key              "t/!QGbeky9h4x*;#^Jj7"
+  exit
+  server 10.2.142.106
+   vpn              100
+   source-interface loopback100
+   key              "t/!QGbeky9h4x*;#^Jj7"
+  exit
+  server 10.2.143.105
+   vpn              100
+   source-interface loopback100
+   key              "t/!QGbeky9h4x*;#^Jj7"
+  exit
+  server 10.2.143.106
+   vpn              100
+   source-interface loopback100
+   key              "t/!QGbeky9h4x*;#^Jj7"
+  exit
+ !
+!
+bfd color mpls
+!
+bfd color metro-ethernet
+!
+bfd color lte
+ hello-interval 10000
+!
+bfd color gold
+!
+bfd color silver
+!
+bfd app-route poll-interval 120000
+omp
+ no shutdown
+ send-path-limit  16
+ ecmp-limit       16
+ graceful-restart
+!
+security
+ ipsec
+  replay-window       4096
+  authentication-type sha1-hmac ah-sha1-hmac
+ !
+!
+snmp
+ no shutdown
+ contact  oskgns@oshkoshcorp.com
+ location us-west-1
+ view isoALL
+  oid 1.3.6.1
+ !
+ group ENTRO auth-priv
+  view isoALL
+ !
+ user GNS
+  auth          sha
+  auth-password $8$jwi+uOXuISIoZxhp5mKc8eheHP8RELVVIjO69YlNkkg=
+  priv          aes-cfb-128
+  priv-password $8$usMy8FlcCn9iscLcT5ZlfRLvxKlhuQsnxVrnjbi2Pd8=
+  group         ENTRO
+ !
+ user ITSM
+  auth          sha
+  auth-password $8$ghrEkYIYJg3nlx1YG44wcPtXITL7BDzLhVM8iSfRaWM=
+  priv          aes-cfb-128
+  priv-password $8$wnzM/h7gB/WQ7c8D7JV5ZZOvsZ/iCbgGhsR137ta41Y=
+  group         ENTRO
+ !
+ trap target vpn 100 10.2.143.60 162
+  group-name       TRAPALL
+  user             GNS
+  source-interface loopback100
+ !
+ trap group TRAPALL
+  all
+   level critical major minor
+  exit
+ exit
+!
+banner
+ motd "n         #####  ###### ##   ## ##   #  #####  ###### ##   ##n        ##   ## ##     ##   ## ##  #  ##   ## ##     ##   ##n        ##   ## ###### ####### ####   ##   ## ###### #######n        ##   ##     ## ##   ## ##  #  ##   ##     ## ##   ##n         #####  ###### ##   ## ##   #  #####  ###### ##   ##nn ********************************************************************n *           Access is restricted to authorized users only.         *n ********************************************************************nn WARNING: This system is for the use of authorized clients only.n Individuals using the computer network system without authorization,n or in excess of their authorization, are subject to having all theirn activity on this computer network system monitored and recorded byn system personnel. To protect the computer network system fromn unauthorized use and to ensure the computer network systems isn functioning properly, system administrators monitor this system.n Anyone using this computer network system expressly consents to suchn monitoring and is advised that if such monitoring reveals possiblen conduct of criminal activity, system personnel may provide then evidence of such activity to law enforcement officers.nn Access is restricted to authorized users only. Unauthorized accessn is a violation of state and federal, civil and criminal laws.nn"
+!
+vpn 0
+ name vpn0-transport
+ ecmp-hash-key layer4
+ interface ge0/0
+  description         INTERNET
+  ip dhcp-client
+  tunnel-interface
+   encapsulation ipsec
+   color gold
+   no allow-service bgp
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   no allow-service netconf
+   no allow-service ntp
+   no allow-service ospf
+   no allow-service stun
+   allow-service https
+  !
+  clear-dont-fragment
+  tcp-mss-adjust      1350
+  no shutdown
+ !
+!
+vpn 100
+ name vpn100-enterprise
+ dns 10.2.158.60 primary
+ dns 10.2.158.61 secondary
+ interface ge0/1
+  description LAN
+  ip address 10.67.2.2/28
+  no shutdown
+  access-list acl-local-aws-mgmt-1 in
+ !
+ interface loopback100
+  description LOOPBACK
+  ip address 10.67.2.255/32
+  no shutdown
+ !
+ omp
+  advertise connected
+ !
+!
+vpn 512
+ name vpn512-management
+ interface eth0
+  description MANAGEMENT
+  ip dhcp-client
+  no shutdown
+ !
+!
+policy
+ access-list acl-local-aws-mgmt-1
+  sequence 1
+   match
+    protocol 1
+   !
+   action accept
+   !
+  !
+  sequence 11
+   match
+    destination-port 123 161 162 49 514 53
+    protocol         17
+   !
+   action accept
+   !
+  !
+  sequence 21
+   match
+    source-port 123 161 162 49 514 53
+    protocol    17
+   !
+   action accept
+   !
+  !
+  sequence 31
+   match
+    destination-port 22 49
+    protocol         6
+   !
+   action accept
+   !
+  !
+  sequence 41
+   match
+    source-port 22 49
+    protocol    6
+   !
+   action accept
+   !
+  !
+  default-action drop
+ !
+!

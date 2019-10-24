@@ -1,0 +1,303 @@
+ system
+ host-name               RDI-Viptela-01
+ gps-location latitude 39.254158
+ gps-location longitude -84.386947
+ system-ip               10.63.254.65
+ site-id                 63
+ admin-tech-on-failure
+ no route-consistency-check
+ sp-organization-name    "Dexcom1 - 19835"
+ organization-name       "Dexcom1 - 19835"
+ no port-hop
+ vbond vbond-dexcom.viptela.net
+ aaa
+  auth-order local tacacs
+  usergroup basic
+   task system read write
+   task interface read write
+  !
+  usergroup netadmin
+  !
+  usergroup operator
+   task system read
+   task interface read
+   task policy read
+   task routing read
+   task security read
+  !
+  user admin
+   password $6$pFupRg==$lBII.XqrMarCF9eygkW1J2m5DdsB1oGZIVBjDa.MhX8JOiIK/3/vaKP3qVhhqY/gJ9slmJusAf7urunhdwCv70
+  !
+ !
+ logging
+  disk
+   enable
+  !
+  server 10.3.20.37
+   vpn              1
+   source-interface loopback0
+  exit
+  server 10.3.42.80
+   vpn              1
+   source-interface loopback0
+   priority         warn
+  exit
+ !
+ ntp
+  server 10.2.40.6
+   source-interface loopback0
+   vpn              1
+   version          4
+  exit
+  server 10.3.40.16
+   source-interface loopback0
+   vpn              1
+   version          4
+  exit
+ !
+ tacacs
+  server 10.254.3.71
+   vpn              1
+   source-interface loopback0
+   secret-key       $8$5V9rcBytFNG30eKvzYdAJr6I3vPLPzXYpGO1ltDoDz+l13qBJXRa0rM87X0v1SIL
+  exit
+  server 10.254.3.75
+   vpn              1
+   source-interface loopback0
+   secret-key       $8$XpMrGR4tybpTjMekiE3QEeT/BD2Efp9zjOtDO8N16lM=
+  exit
+ !
+!
+bfd color biz-internet
+ hello-interval 350
+ no pmtu-discovery
+ multiplier     20
+!
+bfd color private1
+ hello-interval 350
+ no pmtu-discovery
+ multiplier     20
+!
+bfd app-route poll-interval 60000
+omp
+ no shutdown
+ send-path-limit  8
+ ecmp-limit       8
+ graceful-restart
+ advertise connected
+ advertise static
+!
+security
+ ipsec
+  replay-window       4096
+  authentication-type sha1-hmac ah-sha1-hmac
+ !
+!
+snmp
+ no shutdown
+ contact  Neteng
+ name     RDI-Viptela-01
+ location RDI_Cincinnati
+ view ALL_SNMP_OIDS
+  oid 1.3.6.1
+ !
+ community ddeexxccoomm
+  view          ALL_SNMP_OIDS
+  authorization read-only
+ !
+ trap target vpn 1 10.1.3.20 162
+  group-name       ALL_TRAPS
+  community-name   ddeexxccoomm
+  source-interface loopback0
+ !
+ trap target vpn 1 10.1.3.21 162
+  group-name       ALL_TRAPS
+  community-name   ddeexxccoomm
+  source-interface loopback0
+ !
+ trap target vpn 1 10.3.40.99 162
+  group-name       ALL_TRAPS
+  community-name   ddeexxccoomm
+  source-interface loopback0
+ !
+ trap target vpn 1 10.3.40.131 162
+  group-name       ALL_TRAPS
+  community-name   ddeexxccoomm
+  source-interface loopback0
+ !
+ trap group ALL_TRAPS
+  all
+   level critical major minor
+  exit
+ exit
+!
+vpn 0
+ name "TRANSPORT VPN"
+ dns 8.8.4.4 secondary
+ dns 8.8.8.8 primary
+ ecmp-hash-key layer4
+ interface ge0/0
+  description         "ZTP interface only shutdown after bringup"
+  ip dhcp-client
+  tunnel-interface
+   encapsulation ipsec
+   no allow-service bgp
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   no allow-service netconf
+   no allow-service ntp
+   no allow-service ospf
+   no allow-service stun
+   allow-service https
+  !
+  clear-dont-fragment
+  tcp-mss-adjust      1328
+  shutdown
+ !
+ interface ge0/1
+  description          MPLS-interface
+  ip address 100.65.0.70/30
+  tunnel-interface
+   encapsulation ipsec preference 100
+   color private1 restrict
+   no allow-service bgp
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   no allow-service netconf
+   no allow-service ntp
+   no allow-service ospf
+   no allow-service stun
+   allow-service https
+  !
+  clear-dont-fragment
+  tcp-mss-adjust       1328
+  no shutdown
+  qos-map              COMMON_QOS
+  bandwidth-upstream   100000
+  bandwidth-downstream 100000
+ !
+ interface ge0/3
+  description          Internet-Interface
+  ip address 66.161.133.179/24
+  nat
+  !
+  tunnel-interface
+   encapsulation ipsec preference 100
+   color biz-internet
+   no allow-service bgp
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   no allow-service netconf
+   no allow-service ntp
+   no allow-service ospf
+   allow-service stun
+   allow-service https
+  !
+  clear-dont-fragment
+  tcp-mss-adjust       1328
+  no shutdown
+  qos-map              COMMON_QOS
+  bandwidth-upstream   100000
+  bandwidth-downstream 10000
+ !
+ ip route 0.0.0.0/0 66.161.133.177
+ ip route 0.0.0.0/0 100.65.0.69
+!
+vpn 1
+ name "SERVICE VPN"
+ ecmp-hash-key layer4
+ router
+  ospf
+   no compatible rfc1583
+   default-information originate metric 100
+   distance external 252
+   timers spf 200 1000 10000
+   redistribute omp route-policy OMP_TO_OSPF_TYPE_E1
+   area 0
+    interface ge0/7
+    exit
+    interface loopback0
+     network point-to-point
+    exit
+   exit
+  !
+ !
+ interface ge0/7
+  description Inside-Interface
+  ip address 10.63.10.65/24
+  no shutdown
+ !
+ interface loopback0
+  ip address 10.63.254.65/32
+  no shutdown
+ !
+!
+vpn 512
+ name "Transport VPN"
+ interface mgmt0
+  ip address 192.168.1.1/24
+  no shutdown
+ !
+!
+policy
+ app-visibility
+ flow-visibility
+ lists
+  prefix-list PL_DEFAULT_ROUTE
+   ip-prefix 0.0.0.0/0
+  !
+ !
+ route-policy OMP_TO_OSPF_TYPE_E1
+  sequence 10
+   action accept
+    set
+     metric      1000
+     metric-type type1
+    !
+   !
+  !
+  default-action reject
+ !
+ class-map
+  class VOICE queue 0
+  class BUSINESS_CRITICAL queue 1
+  class BUSINESS_DATA queue 3
+  class DEFAULT queue 4
+ !
+ qos-scheduler COMMON_QOS_BUSINESS_CRITICAL
+  class             BUSINESS_CRITICAL
+  bandwidth-percent 30
+  buffer-percent    30
+  drops             red-drop
+ !
+ qos-scheduler COMMON_QOS_BUSINESS_DATA
+  class             BUSINESS_DATA
+  bandwidth-percent 30
+  buffer-percent    30
+  drops             red-drop
+ !
+ qos-scheduler COMMON_QOS_DEFAULT
+  class             DEFAULT
+  bandwidth-percent 10
+  buffer-percent    10
+  drops             red-drop
+ !
+ qos-scheduler COMMON_QOS_VOICE
+  class             VOICE
+  bandwidth-percent 30
+  buffer-percent    30
+  scheduling        llq
+ !
+ qos-map COMMON_QOS
+  qos-scheduler COMMON_QOS_BUSINESS_CRITICAL
+  qos-scheduler COMMON_QOS_BUSINESS_DATA
+  qos-scheduler COMMON_QOS_DEFAULT
+  qos-scheduler COMMON_QOS_VOICE
+ !
+!

@@ -1,0 +1,5 @@
+export SDWAN_IP=52.202.198.74
+export SDWAN_PORT=8443
+export SDWAN_USERNAME=admin
+export SDWAN_PASSWORD=kcrouter
+export SDWAN_CFGDIR=./cfg/kc_lab/

@@ -1,0 +1,6 @@
+export SDWAN_IP=54.177.63.169
+export SDWAN_PORT=8443
+export SDWAN_USERNAME=dexcdwtest
+export SDWAN_PASSWORD=8Fv5ymwRE4dN
+export SDWAN_CFGDIR=./cfg/dexcom/
+export SDWAN_PROXY=127.0.0.1:12345

@@ -1,0 +1,70 @@
+ system
+ host-name               vedge
+ system-ip               10.128.252.68
+ site-id                 128
+ control-session-pps     4000
+ admin-tech-on-failure
+ no route-consistency-check
+ organization-name       "Dexcom1 - 19835"
+ vbond vbond-dexcom.viptela.net
+ aaa
+  auth-order local radius tacacs
+  usergroup basic
+   task system read write
+   task interface read write
+  !
+  usergroup netadmin
+  !
+  usergroup operator
+   task system read
+   task interface read
+   task policy read
+   task routing read
+   task security read
+  !
+  user admin
+   password $6$N/zgx368CEW0l.Vc$GMIEHcxn2.Z1QEF2ocKVTpiqnpp5uqtOmzfnA8LllM6h/8YGbhKa.kuVS43d0ZYcNyIunJ6gUqfwoBHBF6EWn1
+  !
+ !
+ logging
+  disk
+   enable
+  !
+ !
+!
+omp
+ no shutdown
+ graceful-restart
+ advertise connected
+ advertise static
+!
+security
+ ipsec
+  authentication-type ah-sha1-hmac sha1-hmac
+ !
+!
+vpn 0
+ interface ge2/0
+  ip dhcp-client
+  tunnel-interface
+   encapsulation ipsec
+   no allow-service bgp
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   no allow-service netconf
+   no allow-service ntp
+   no allow-service ospf
+   no allow-service stun
+   allow-service https
+  !
+  no shutdown
+ !
+!
+vpn 512
+ interface mgmt0
+  ip address 192.168.1.1/24
+  no shutdown
+ !
+!

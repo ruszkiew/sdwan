@@ -1,0 +1,2 @@
+"csv-deviceId","csv-deviceIP","csv-host-name","host_name","system_ip","siteid","sp-org-name","tenant-org-name","vbond-dns-name","admin_password","snmp_device_location","mgmt_next_hop_ip_addr","mgmt_next_hop_mac_addr",
+"4cc0c99b-130f-4fdf-b803-f9c9033d6b0c","100.127.2.1","SDWAN-PROD-vBond-East","SDWAN-PROD-vBond-East","100.127.2.1","12721","SDWAN-Production - 251241","SDWAN-Production - 251241","172.17.166.155","ynYS3GgfLGvChyKb","us-east-1","172.17.166.139","0a:03:ab:b7:a9:42",

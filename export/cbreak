@@ -1,0 +1,5 @@
+export SDWAN_IP=52.44.153.76
+export SDWAN_PORT=8443
+export SDWAN_USERNAME=ruszkiewicz
+export SDWAN_PASSWORD=CBreak!
+export SDWAN_CFGDIR=./cfg/cbreak/

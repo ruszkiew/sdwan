@@ -1,0 +1,1533 @@
+ system
+ host-name             uskvcr21
+ gps-location latitude 35.9064
+ gps-location longitude -84.1421
+ device-groups         NA Office Primary Site cEdge4331
+ system-ip             100.65.29.91
+ overlay-id            1
+ site-id               4011365299
+ port-offset           0
+ control-session-pps   300
+ admin-tech-on-failure
+ sp-organization-name  "SDWAN-Lab - 243562"
+ organization-name     "SDWAN-Lab - 243562"
+ port-hop
+ track-transport
+ track-default-gateway
+ console-baud-rate     115200
+ vbond vbond-877772.viptela.net port 12346
+!
+banner motd TTTTTTTTTTTTTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHTTYYYGGGGXXXXX
+hostname uskvcr21
+username admin privilege 15 secret 9 $9$2VAD2VQM2lMI4.$rl4LCqI1FDexFnNA9ViWvgJiEkzktkqyXVteXA92MM6
+vrf definition 1
+ description vpn1-enterprise
+ rd          1:1
+ address-family ipv4
+  exit-address-family
+ !
+ address-family ipv6
+  exit-address-family
+ !
+!
+vrf definition 499
+ description vpn499-guest
+ rd          1:499
+ address-family ipv4
+  exit-address-family
+ !
+ address-family ipv6
+  exit-address-family
+ !
+!
+vrf definition Mgmt-intf
+ description vpn512-management
+ rd          1:512
+ address-family ipv4
+  exit-address-family
+ !
+ address-family ipv6
+  exit-address-family
+ !
+!
+sampler sdwan_flow_sampler
+ mode random 1 out-of 4
+!
+no ip dhcp use class
+ip name-server 8.8.8.8 165.28.96.20
+ip prefix-list system-ip permit 100.64.0.0/10 le 32
+ip prefix-list vpn0-non-routed permit 192.168.0.0/24 le 30
+ip route 0.0.0.0 0.0.0.0 10.80.3.16 1
+ip route vrf 1 0.0.0.0 0.0.0.0 192.168.0.6 1
+ip route vrf 1 5.5.5.5 255.255.255.255 192.168.0.6 1
+ip route vrf 1 5.5.5.5 255.255.255.255 192.168.0.10 2
+no ip http ctc authentication
+no ip igmp ssm-map query dns
+ip nat inside source list nat-dia-vpn-hop-access-list interface GigabitEthernet0/0/0 overload
+ip nat translation tcp-timeout 3600
+ip nat translation udp-timeout 60
+class-map match-any Queue0
+ match qos-group 0
+!
+class-map match-any Queue1
+ match qos-group 1
+!
+class-map match-any Queue2
+ match qos-group 2
+!
+class-map match-any Queue3
+ match qos-group 3
+!
+class-map match-any Queue4
+ match qos-group 4
+!
+class-map match-any Queue7
+ match qos-group 7
+!
+policy-map shape_GigabitEthernet0/0/0
+ class class-default
+  service-policy vpn0-qos-queue-map-19990
+  shape average 20000000
+ !
+!
+policy-map vpn0-qos-queue-map-15072
+ class Queue0
+  priority percent 30
+ !
+ class Queue1
+  bandwidth percent 4
+ !
+ class class-default
+  bandwidth percent 11
+ !
+ class Queue3
+  random-detect
+  bandwidth percent 14
+ !
+ class Queue4
+  bandwidth percent 14
+ !
+ class Queue7
+  random-detect
+  bandwidth percent 27
+ !
+!
+policy-map vpn0-qos-queue-map-18331
+ class Queue0
+  priority percent 20
+ !
+ class Queue1
+  bandwidth percent 8
+ !
+ class class-default
+  bandwidth percent 8
+ !
+ class Queue3
+  random-detect
+  bandwidth percent 24
+ !
+ class Queue4
+  bandwidth percent 16
+ !
+ class Queue7
+  random-detect
+  bandwidth percent 24
+ !
+!
+policy-map vpn0-qos-queue-map-19258
+ class Queue0
+  priority percent 16
+ !
+ class Queue1
+  bandwidth percent 5
+ !
+ class class-default
+  bandwidth percent 5
+ !
+ class Queue3
+  random-detect
+  bandwidth percent 12
+ !
+ class Queue4
+  bandwidth percent 50
+ !
+ class Queue7
+  random-detect
+  bandwidth percent 12
+ !
+!
+policy-map vpn0-qos-queue-map-19990
+ class Queue0
+  priority percent 15
+ !
+ class Queue1
+  bandwidth percent 5
+ !
+ class class-default
+  bandwidth percent 5
+ !
+ class Queue3
+  random-detect
+  bandwidth percent 25
+ !
+ class Queue4
+  bandwidth percent 20
+ !
+ class Queue7
+  random-detect
+  bandwidth percent 30
+ !
+!
+policy-map vpn0-qos-queue-map-24279
+ class Queue0
+  priority percent 5
+ !
+ class Queue1
+  bandwidth percent 10
+ !
+ class class-default
+  bandwidth percent 10
+ !
+ class Queue3
+  random-detect
+  bandwidth percent 37
+ !
+ class Queue7
+  random-detect
+  bandwidth percent 38
+ !
+!
+policy-map vpn0-qos-queue-map-24281
+ class Queue0
+  priority percent 9
+ !
+ class Queue1
+  bandwidth percent 5
+ !
+ class class-default
+  bandwidth percent 5
+ !
+ class Queue3
+  random-detect
+  bandwidth percent 30
+ !
+ class Queue4
+  bandwidth percent 1
+ !
+ class Queue7
+  random-detect
+  bandwidth percent 50
+ !
+!
+interface GigabitEthernet0
+ shutdown
+ arp timeout 1200
+ vrf forwarding Mgmt-intf
+ ip address dhcp client-id GigabitEthernet0
+ ip redirects
+ ip dhcp client default-router distance 1
+ ip mtu    1500
+ mtu      1500
+ negotiation auto
+exit
+interface GigabitEthernet0/0/0
+ description [CKT] IP=00-00-00-0-00-0 
+ no shutdown
+ arp timeout 1200
+ ip address dhcp client-id GigabitEthernet0/0/0
+ ip redirects
+ ip tcp adjust-mss 1350
+ ip dhcp client default-router distance 1
+ ip mtu    1500
+ ip nat outside
+ mtu         1500
+ speed 100
+ negotiation auto
+ service-policy output shape_GigabitEthernet0/0/0
+exit
+interface GigabitEthernet0/0/1
+ description TLOC TRUNK
+ no shutdown
+ arp timeout 1200
+ no ip address
+ ip redirects
+ ip mtu    1504
+ mtu         1504
+ negotiation auto
+exit
+interface GigabitEthernet0/0/1.1
+ description INTERNET TLOC X
+ no shutdown
+ encapsulation dot1Q 1
+ ip address 192.168.0.1 255.255.255.252
+ ip mtu 1500
+exit
+interface GigabitEthernet0/0/1.2
+ description TLOC MPLS
+ no shutdown
+ encapsulation dot1Q 2
+ ip address 10.80.3.17 255.255.255.254
+ ip tcp adjust-mss 1350
+ ip mtu 1500
+exit
+interface GigabitEthernet0/0/2
+ description LAN TRUNK
+ no shutdown
+ arp timeout 1200
+ no ip address
+ ip redirects
+ ip mtu    1504
+ mtu         1504
+ negotiation auto
+exit
+interface GigabitEthernet0/0/2.2
+ description WIRELESS
+ shutdown
+ encapsulation dot1Q 2
+ vrf forwarding 1
+ ip address 169.254.0.1 255.255.255.0
+ ip helper-address 165.28.11.146
+ ip helper-address 165.28.12.92
+ ip helper-address 165.28.32.235
+ ip helper-address 165.28.96.96
+ ip mtu 1500
+ ip nbar protocol-discovery
+ vrrp 2 address-family ipv4
+  vrrpv2
+  address 169.254.0.254
+  priority 200
+  timers advertise 100
+  track omp shutdown
+ exit
+exit
+interface GigabitEthernet0/0/2.3
+ description WIRED
+ shutdown
+ encapsulation dot1Q 3
+ vrf forwarding 1
+ ip address 169.254.3.1 255.255.255.0
+ ip helper-address 165.28.11.146
+ ip helper-address 165.28.12.92
+ ip helper-address 165.28.32.235
+ ip helper-address 165.28.96.96
+ ip mtu 1500
+ ip nbar protocol-discovery
+ vrrp 3 address-family ipv4
+  vrrpv2
+  address 169.254.3.254
+  priority 200
+  timers advertise 100
+  track omp shutdown
+ exit
+exit
+interface GigabitEthernet0/0/2.499
+ description GUEST
+ no shutdown
+ encapsulation dot1Q 499
+ vrf forwarding 499
+ ip address 10.216.14.253 255.255.255.0
+ ip helper-address 172.17.124.53
+ ip mtu 1500
+ ip nbar protocol-discovery
+ vrrp 255 address-family ipv4
+  vrrpv2
+  address 10.216.14.254
+  priority 200
+  timers advertise 100
+  track omp shutdown
+ exit
+exit
+interface GigabitEthernet0/0/2.899
+ description ROUTER_WAAS
+ no shutdown
+ encapsulation dot1Q 899
+ vrf forwarding 1
+ ip address 10.132.7.60 255.255.255.224
+ ip mtu 1500
+ ip nbar protocol-discovery
+ vrrp 254 address-family ipv4
+  vrrpv2
+  address 10.132.7.62
+  priority 200
+  timers advertise 100
+  track omp shutdown
+ exit
+exit
+interface Loopback1
+ description LOOPBACK
+ no shutdown
+ arp timeout 1200
+ vrf forwarding 1
+ ip address 172.16.0.218 255.255.255.255
+ ip mtu 1500
+exit
+interface Tunnel0
+ no shutdown
+ ip unnumbered GigabitEthernet0/0/0
+ no ip redirects
+ ipv6 unnumbered GigabitEthernet0/0/0
+ no ipv6 redirects
+ tunnel source GigabitEthernet0/0/0
+ tunnel mode sdwan
+exit
+interface Tunnel2001
+ no shutdown
+ ip unnumbered GigabitEthernet0/0/1.2
+ no ip redirects
+ ipv6 unnumbered GigabitEthernet0/0/1.2
+ no ipv6 redirects
+ tunnel source GigabitEthernet0/0/1.2
+ tunnel mode sdwan
+exit
+interface Tunnel100001
+ no shutdown
+ vrf forwarding 1
+ ip address 192.168.0.5 255.255.255.252
+ tunnel source      GigabitEthernet0/0/0
+ tunnel destination 165.225.0.42
+ tunnel mode ipsec ipv4
+ tunnel path-mtu-discovery
+ tunnel protection ipsec profile if-ipsec1-ipsec-profile
+exit
+route-map vpn0-bgp-deny-all deny 1
+!
+route-map vpn0-bgp-redist-connect deny 1
+ match ip address prefix-list vpn0-non-routed
+!
+route-map vpn0-bgp-redist-connect deny 11
+ match ip address prefix-list system-ip
+!
+route-map vpn0-bgp-redist-connect permit 65535
+!
+route-map vpn1-eigrp-redist-omp-100 permit 1
+!
+route-map vpn1-eigrp-redist-omp-200 permit 1
+!
+clock timezone UTC 0 0
+logging persistent size 104857600 filesize 10485760
+logging buffered 512000
+logging host 165.28.96.81 vrf 1
+logging host 165.28.137.112 vrf 1
+no logging rate-limit
+logging source-interface Loopback1 vrf 1
+logging trap notifications
+logging persistent
+aaa group server tacacs+ tacacs-1
+ server-private 165.28.32.223 timeout 5 key C746843r069239t
+ server-private 165.28.96.223 timeout 5 key C746843r069239t
+ ip tacacs source-interface Loopback1
+ ip vrf forwarding 1
+!
+aaa authentication login default local group tacacs-1
+aaa authorization exec default local group tacacs-1
+no crypto ikev2 diagnose error
+crypto ikev2 keyring if-ipsec1-ikev2-keyring
+ peer if-ipsec1-ikev2-keyring-peer
+  address 165.225.0.42
+  pre-shared-key Test123
+ !
+!
+crypto ikev2 policy policy1-global
+ proposal p1-global
+!
+crypto ikev2 profile if-ipsec1-ikev2-profile
+ authentication local pre-share
+ authentication remote pre-share
+ dpd 10 3 on-demand
+ identity local email zzkvcr21@kcc.com
+ keyring local if-ipsec1-ikev2-keyring
+ lifetime 86400
+ match identity remote address 165.225.0.42
+!
+crypto ikev2 proposal p1-global
+ encryption aes-cbc-128 aes-cbc-256
+ group 14 15 16 2
+ integrity sha1 sha256 sha384 sha512
+!
+crypto ipsec transform-set if-ipsec1-ikev2-transform esp-null esp-sha-hmac
+ mode tunnel
+!
+crypto ipsec profile if-ipsec1-ipsec-profile
+ set ikev2-profile if-ipsec1-ikev2-profile
+ set pfs group2
+ set transform-set if-ipsec1-ikev2-transform
+ set security-association lifetime kilobytes disable
+ set security-association lifetime seconds 3600
+ set security-association replay window-size 512
+!
+no crypto isakmp diagnose error
+router eigrp eigrp-name
+ address-family ipv4 vrf 1 autonomous-system 200
+  af-interface GigabitEthernet0/0/2.899
+   hello-interval 5
+   hold-time      15
+   split-horizon
+   exit-af-interface
+  !
+  network 10.0.0.0 0.255.255.255
+  network 172.16.0.0 0.15.255.255
+  topology base
+   redistribute omp route-map vpn1-eigrp-redist-omp-100
+   redistribute static
+   exit-af-topology
+  !
+  exit-address-family
+ !
+!
+snmp-server community lwtsrp89 view isoALL RO
+snmp-server enable traps
+snmp-server location uskv
+snmp-server trap timeout 30
+snmp-server view isoALL 1.3.6.1 included
+line con 0
+ exec-timeout 5
+ login authentication default
+ speed    115200
+ stopbits 1
+!
+ntp authentication-key 2014 md5 NceyBUuPVtCq
+ntp server vrf 1 172.16.0.101 key 2014 version 4
+ntp server vrf 1 172.17.0.101 key 2014 version 4
+ntp trusted-key 2014
+sdwan
+ interface GigabitEthernet0/0/0
+  tunnel-interface
+   encapsulation ipsec preference 200 weight 1
+   no border
+   color biz-internet
+   no last-resort-circuit
+   no low-bandwidth-link
+   control-connections
+   no vbond-as-stun-server
+   vmanage-connection-preference 5
+   port-hop
+   carrier                       default
+   nat-refresh-interval          5
+   hello-interval                1000
+   hello-tolerance               12
+   no allow-service all
+   no allow-service bgp
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   no allow-service sshd
+   no allow-service netconf
+   allow-service ntp
+   no allow-service ospf
+   no allow-service stun
+   no allow-service snmp
+  exit
+ exit
+ interface GigabitEthernet0/0/1.1
+  tloc-extension GigabitEthernet0/0/0
+ exit
+ interface GigabitEthernet0/0/1.2
+  tunnel-interface
+   encapsulation ipsec preference 200 weight 1
+   no border
+   color mpls restrict
+   no last-resort-circuit
+   no low-bandwidth-link
+   control-connections
+   no vbond-as-stun-server
+   vmanage-connection-preference 5
+   port-hop
+   carrier                       default
+   nat-refresh-interval          5
+   hello-interval                1000
+   hello-tolerance               12
+   no allow-service all
+   no allow-service bgp
+   no allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   allow-service sshd
+   allow-service netconf
+   allow-service ntp
+   no allow-service ospf
+   no allow-service stun
+   no allow-service snmp
+  exit
+ exit
+ interface GigabitEthernet0/0/2
+  access-list vpn1-qos-local-traffic-class in
+ exit
+ vmanage-transaction vmanage-transaction-id 2019-09-24T19:32:58.291+00:00
+ omp
+  no shutdown
+  send-path-limit  16
+  ecmp-limit       16
+  graceful-restart
+  no as-dot-notation
+  timers
+   holdtime               60
+   advertisement-interval 1
+   graceful-restart-timer 43200
+   eor-timer              300
+  exit
+  address-family ipv4 vrf 1
+   advertise connected
+   advertise eigrp
+  !
+  address-family ipv4 vrf 499
+   advertise connected
+  !
+ !
+!
+licensing config enable false
+licensing config privacy hostname false
+licensing config privacy version false
+licensing config utility utility-enable false
+netconf-yang cisco-ia blocking cli-blocking-enabled
+bfd color mpls
+ hello-interval 1000
+ no pmtu-discovery
+ multiplier     7
+!
+bfd color biz-internet
+ hello-interval 1000
+ no pmtu-discovery
+ multiplier     7
+!
+bfd color lte
+ hello-interval 10000
+ no pmtu-discovery
+ multiplier     7
+!
+bfd app-route multiplier 6
+bfd app-route poll-interval 120000
+omp
+ no as-dot-notation
+!
+security
+ ipsec
+  rekey               86400
+  replay-window       4096
+  authentication-type sha1-hmac ah-sha1-hmac
+ !
+!
+classifiers classifier-entry Queue0
+ classifier-entry-filter-operation match-any-filter
+ filter-entry qos-group false
+  qos-group-cfgs qos-group-cfg 0 0
+  !
+ !
+ filter-entry ip-rtp false
+ !
+ filter-entry ip-rtp true
+ !
+!
+classifiers classifier-entry Queue1
+ classifier-entry-filter-operation match-any-filter
+ filter-entry qos-group false
+  qos-group-cfgs qos-group-cfg 1 1
+  !
+ !
+ filter-entry ip-rtp false
+ !
+ filter-entry ip-rtp true
+ !
+!
+classifiers classifier-entry Queue2
+ classifier-entry-filter-operation match-any-filter
+ filter-entry qos-group false
+  qos-group-cfgs qos-group-cfg 2 2
+  !
+ !
+ filter-entry ip-rtp false
+ !
+ filter-entry ip-rtp true
+ !
+!
+classifiers classifier-entry Queue3
+ classifier-entry-filter-operation match-any-filter
+ filter-entry qos-group false
+  qos-group-cfgs qos-group-cfg 3 3
+  !
+ !
+ filter-entry ip-rtp false
+ !
+ filter-entry ip-rtp true
+ !
+!
+classifiers classifier-entry Queue4
+ classifier-entry-filter-operation match-any-filter
+ filter-entry qos-group false
+  qos-group-cfgs qos-group-cfg 4 4
+  !
+ !
+ filter-entry ip-rtp false
+ !
+ filter-entry ip-rtp true
+ !
+!
+classifiers classifier-entry Queue7
+ classifier-entry-filter-operation match-any-filter
+ filter-entry qos-group false
+  qos-group-cfgs qos-group-cfg 7 7
+  !
+ !
+ filter-entry ip-rtp false
+ !
+ filter-entry ip-rtp true
+ !
+!
+policies policy-entry shape_GigabitEthernet0/0/0
+ classifier-entry class-default
+  classifier-action-entry-cfg max-rate
+   max-rate-cfg absolute-rate 20000000
+   max-rate-cfg absolute-rate-metric none
+   max-rate-cfg absolute-rate-units bps
+  !
+ !
+!
+policies policy-entry vpn0-qos-queue-map-15072
+ classifier-entry Queue0
+  classifier-action-entry-cfg priority
+   priority-cfg rate-burst absolute-rate-metric none
+   priority-cfg rate-burst absolute-rate-units bps
+  !
+ !
+ classifier-entry Queue1
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 4
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry class-default
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 11
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue3
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 14
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue4
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 14
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue7
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 27
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+!
+policies policy-entry vpn0-qos-queue-map-18331
+ classifier-entry Queue0
+  classifier-action-entry-cfg priority
+   priority-cfg rate-burst absolute-rate-metric none
+   priority-cfg rate-burst absolute-rate-units bps
+  !
+ !
+ classifier-entry Queue1
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 8
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry class-default
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 8
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue3
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 24
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue4
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 16
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue7
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 24
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+!
+policies policy-entry vpn0-qos-queue-map-19258
+ classifier-entry Queue0
+  classifier-action-entry-cfg priority
+   priority-cfg rate-burst absolute-rate-metric none
+   priority-cfg rate-burst absolute-rate-units bps
+  !
+ !
+ classifier-entry Queue1
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 5
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry class-default
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 5
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue3
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 12
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue4
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 50
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue7
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 12
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+!
+policies policy-entry vpn0-qos-queue-map-19990
+ classifier-entry Queue0
+  classifier-action-entry-cfg priority
+   priority-cfg rate-burst absolute-rate-metric none
+   priority-cfg rate-burst absolute-rate-units bps
+  !
+ !
+ classifier-entry Queue1
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 5
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry class-default
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 5
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue3
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 25
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue4
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 20
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue7
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 30
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+!
+policies policy-entry vpn0-qos-queue-map-24279
+ classifier-entry Queue0
+  classifier-action-entry-cfg priority
+   priority-cfg rate-burst absolute-rate-metric none
+   priority-cfg rate-burst absolute-rate-units bps
+  !
+ !
+ classifier-entry Queue1
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 10
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry class-default
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 10
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue3
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 37
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue7
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 38
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+!
+policies policy-entry vpn0-qos-queue-map-24281
+ classifier-entry Queue0
+  classifier-action-entry-cfg priority
+   priority-cfg rate-burst absolute-rate-metric none
+   priority-cfg rate-burst absolute-rate-units bps
+  !
+ !
+ classifier-entry Queue1
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 5
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry class-default
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 5
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue3
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 30
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue4
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 1
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+ classifier-entry Queue7
+  classifier-action-entry-cfg min-rate
+   min-rate-cfg absolute-rate-metric none
+   min-rate-cfg absolute-rate-units bps
+   min-rate-cfg rate-percent 50
+   min-rate-cfg bw-excess-share-cfg absolute-rate-metric none
+   min-rate-cfg bw-excess-share-cfg absolute-rate-units perc
+  !
+ !
+!
+nacm cmd-read-default deny
+nacm cmd-exec-default deny
+policy
+ app-visibility
+ flow-visibility
+ no implicit-acl-logging
+ log-frequency        1000
+ class-map
+  class Queue0 queue 0
+  class Queue1 queue 1
+  class Queue2 queue 2
+  class Queue3 queue 3
+  class Queue4 queue 4
+  class Queue7 queue 7
+ !
+ access-list TLOC-qos-local-traf-class-v1-3
+  sequence 1
+   match
+    dscp 46
+   !
+   action accept
+    class Queue0
+   !
+  !
+  sequence 11
+   match
+    dscp 0
+   !
+   action accept
+    class Queue7
+   !
+  !
+  default-action drop
+ !
+ access-list vpn1-qos-local-traffic-class
+  sequence 1
+   match
+    protocol 1
+   !
+   action accept
+   !
+  !
+  sequence 11
+   match
+    destination-port 18000-19999
+    protocol         17
+   !
+   action accept
+    set
+     dscp 46
+    !
+   !
+  !
+  sequence 21
+   match
+    source-port 18000-19999
+    protocol    17
+   !
+   action accept
+    set
+     dscp 46
+    !
+   !
+  !
+  sequence 31
+   match
+    destination-port 30000-38347 3239 49100-49150 50000-50039
+    dscp             46
+    protocol         17
+   !
+   action accept
+    set
+     dscp 46
+    !
+   !
+  !
+  sequence 41
+   match
+    source-port 30000-38347 50000-50039
+    dscp        46
+    protocol    6
+   !
+   action accept
+    set
+     dscp 46
+    !
+   !
+  !
+  sequence 51
+   match
+    destination-port 30000-38347 50000-50039
+    dscp             46
+    protocol         6
+   !
+   action accept
+    set
+     dscp 46
+    !
+   !
+  !
+  sequence 61
+   match
+    source-port 50000-50039
+    dscp        40
+    protocol    6
+   !
+   action accept
+    set
+     dscp 46
+    !
+   !
+  !
+  sequence 71
+   match
+    destination-port 50000-50039
+    dscp             40
+    protocol         6
+   !
+   action accept
+    set
+     dscp 46
+    !
+   !
+  !
+  sequence 81
+   match
+    source-port 50000-50039
+    dscp        40
+    protocol    17
+   !
+   action accept
+    set
+     dscp 46
+    !
+   !
+  !
+  sequence 91
+   match
+    destination-port 50000-50039
+    dscp             40
+    protocol         17
+   !
+   action accept
+    set
+     dscp 46
+    !
+   !
+  !
+  sequence 101
+   match
+    source-port 30000-38347 3239 49100-49150 50000-50039
+    dscp        46
+    protocol    17
+   !
+   action accept
+    set
+     dscp 46
+    !
+   !
+  !
+  sequence 111
+   match
+    source-port 17000-18023 3239 49100-49150 59152-65151
+    dscp        34
+    protocol    17
+   !
+   action accept
+    set
+     dscp 34
+    !
+   !
+  !
+  sequence 121
+   match
+    destination-port 3239 49100-49150
+    dscp             34
+    protocol         17
+   !
+   action accept
+    set
+     dscp 34
+    !
+   !
+  !
+  sequence 131
+   match
+    source-port      17000-17999
+    destination-port 17000-17999
+    dscp             34
+    protocol         17
+   !
+   action accept
+    set
+     dscp 34
+    !
+   !
+  !
+  sequence 141
+   match
+    source-port      40002-42001
+    destination-port 40002-42001
+    dscp             34
+    protocol         17
+   !
+   action accept
+    set
+     dscp 34
+    !
+   !
+  !
+  sequence 151
+   match
+    source-port 18000-18160 59152-59511
+    dscp        34
+    protocol    6
+   !
+   action accept
+    set
+     dscp 34
+    !
+   !
+  !
+  sequence 161
+   match
+    destination-port 1719-1720 22 23 3389 389 53 88
+    protocol         6
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 171
+   match
+    source-port 1719-1720 22 23 3389 389 53 88
+    protocol    6
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 181
+   match
+    source-port 1719 389 5060-5061 53 67-68 88
+    protocol    17
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 191
+   match
+    destination-port 1719 389 5060-5061 53 67-68 88
+    protocol         17
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 201
+   match
+    source-ip 10.140.49.0/24 10.140.71.0/24 165.28.142.0/24 165.28.143.0/24 165.28.145.0/24 165.28.146.0/24 165.28.188.0/24
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 211
+   match
+    destination-ip 10.140.49.0/24 10.140.71.0/24 165.28.142.0/24 165.28.143.0/24 165.28.145.0/24 165.28.146.0/24 165.28.188.0/24
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 221
+   match
+    source-port      1024-65535
+    destination-port 1039 2945 5005 5010-5012 5060-6061
+    protocol         6
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 231
+   match
+    source-port      1039 2945 5005 5010-5012 5060-6061
+    destination-port 1024-65535
+    protocol         6
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 241
+   match
+    source-port 5062-5069
+    dscp        26
+    protocol    17
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 251
+   match
+    destination-port 5062-5069
+    dscp             26
+    protocol         17
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 261
+   match
+    source-port 5062-5069
+    dscp        26
+    protocol    17
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 271
+   match
+    destination-ip   165.28.174.0/24
+    destination-port 4610 4710 4720 4810 4820 4910 4920
+    protocol         6
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 281
+   match
+    source-ip   165.28.174.0/24
+    source-port 4610 4710 4720 4810 4820 4910 4920
+    protocol    6
+   !
+   action accept
+    set
+     dscp 26
+    !
+   !
+  !
+  sequence 291
+   match
+    source-port 123 161 162 1645 1812 22 5246 69
+    protocol    17
+   !
+   action accept
+    set
+     dscp 18
+    !
+   !
+  !
+  sequence 301
+   match
+    source-port 49
+    protocol    6
+   !
+   action accept
+    set
+     dscp 18
+    !
+   !
+  !
+  sequence 311
+   match
+    destination-port 49
+    protocol         6
+   !
+   action accept
+    set
+     dscp 18
+    !
+   !
+  !
+  sequence 321
+   match
+    destination-port 123 161 162 1645 1812 22 5246 69
+    protocol         17
+   !
+   action accept
+    set
+     dscp 18
+    !
+   !
+  !
+  sequence 331
+   match
+    source-port 139 1500-1510 20-21 28081 4001-4002 4011-4014 4021-4024 4031-4035 4041-4042 4051-4052 4061-4062 4071-4072 4081-4082 4091-4092 4242 445 8400-8405 8600-8699 902
+    protocol    6
+   !
+   action accept
+    set
+     dscp 10
+    !
+   !
+  !
+  sequence 341
+   match
+    destination-port 139 1500-1510 20-21 28081 4001-4002 4011-4014 4021-4024 4031-4035 4041-4042 4051-4052 4061-4062 4071-4072 4081-4082 4091-4092 4242 445 8400-8405 8600-8699 902
+    protocol         6
+   !
+   action accept
+    set
+     dscp 10
+    !
+   !
+  !
+  sequence 351
+   match
+    destination-ip   165.28.7.240/32 165.28.37.47/32 165.28.37.250/32
+    destination-port 443
+    protocol         6
+   !
+   action accept
+    set
+     dscp 10
+    !
+   !
+  !
+  sequence 361
+   match
+    source-ip   165.28.7.240/32 165.28.37.47/32 165.28.37.250/32
+    source-port 443
+    protocol    6
+   !
+   action accept
+    set
+     dscp 10
+    !
+   !
+  !
+  sequence 371
+   match
+    source-ip 205.203.93.11/32 205.203.93.87/32
+   !
+   action accept
+    set
+     dscp 10
+    !
+   !
+  !
+  sequence 381
+   match
+    destination-ip 205.203.93.11/32 205.203.93.87/32
+   !
+   action accept
+    set
+     dscp 10
+    !
+   !
+  !
+  sequence 391
+   match
+    source-ip   165.28.24.132/32 172.18.96.23/32 172.21.82.214/32
+    source-port 8080
+    protocol    6
+   !
+   action accept
+    set
+     dscp 10
+    !
+   !
+  !
+  sequence 401
+   match
+    destination-ip   165.28.24.132/32 172.18.96.23/32 172.21.82.214/32
+    destination-port 8080
+    protocol         6
+   !
+   action accept
+    set
+     dscp 10
+    !
+   !
+  !
+  sequence 411
+   match
+    source-ip        10.0.48.10/32
+    destination-port 902
+    protocol         17
+   !
+   action accept
+    set
+     dscp 10
+    !
+   !
+  !
+  sequence 421
+   match
+    source-ip        10.0.48.10/32
+    destination-port 16666 16667 902
+    protocol         6
+   !
+   action accept
+    set
+     dscp 10
+    !
+   !
+  !
+  sequence 431
+   match
+    source-ip 0.0.0.0/0
+   !
+   action accept
+    set
+     dscp 0
+    !
+   !
+  !
+  default-action accept
+ !
+!

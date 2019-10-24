@@ -1,0 +1,68 @@
+ system
+ host-name               rws-vbond-west
+ gps-location latitude 43.804133
+ gps-location longitude -120.554201
+ device-groups           Controller
+ system-ip               100.127.2.2
+ site-id                 10012722
+ admin-tech-on-failure
+ no route-consistency-check
+ sp-organization-name    "SDWAN - 212938"
+ organization-name       "SDWAN - 212938"
+ no port-hop
+ upgrade-confirm         15
+ vbond vbond-537915.viptela.net local
+ aaa
+  auth-order local radius tacacs
+  usergroup basic
+   task system read write
+   task interface read write
+  !
+  usergroup netadmin
+  !
+  usergroup operator
+   task system read
+   task interface read
+   task policy read
+   task routing read
+   task security read
+  !
+  usergroup tenantadmin
+  !
+  user admin
+   password $6$HgNJ56BYqtB0nUzB$vFliRS8lK75q0ljgl2gMfK.wwoXKbqV7lSu6htygkCfSEwLnt2eMPThnu4uPo7fHHF4yOrTXQYj5.PFTRfFPR/
+  !
+ !
+ logging
+  disk
+   enable
+  !
+ !
+!
+omp
+ no shutdown
+ graceful-restart
+ advertise connected
+ advertise static
+!
+security
+ ipsec
+  authentication-type ah-sha1-hmac sha1-hmac
+ !
+!
+banner
+ motd "n****************************************************************************nnWARNING! This network and it\s equipment are for authorized personnel only.nnYou must leave immediately if you are not authorized. All activity on thisnnnetwork is monitored and recorded. Suspicious or criminal activity will bennreported to the appropriate agency. Use of this system constitutes consent.nn****************************************************************************nn"
+!
+vpn 0
+ interface ge0/0
+  ip dhcp-client
+  ipv6 dhcp-client
+  no shutdown
+ !
+!
+vpn 512
+ interface eth0
+  ip dhcp-client
+  no shutdown
+ !
+!

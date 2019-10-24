@@ -1,0 +1,5 @@
+export SDWAN_IP=54.200.84.164
+export SDWAN_PORT=8443
+export SDWAN_USERNAME=admin
+export SDWAN_PASSWORD=admin
+export SDWAN_CFGDIR=./cfg/cdw/
