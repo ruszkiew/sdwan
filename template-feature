@@ -1,0 +1,24 @@
+Usage: sdwan.py template-feature [OPTIONS]
+
+  Display, Download, and Upload Feature Templates.
+
+    List templates to derive templateID for additional action
+
+  Example command:
+
+      ./sdwan.py template_feature
+
+      ./sdwan.py template_feature --attached <templateID>
+
+      ./sdwan.py template_feature --config <templateID>
+
+      ./sdwan.py template_feature --download <templateID> | all
+
+      ./sdwan.py template_feature --upload <file>
+
+Options:
+  --attached TEXT  Template to display
+  --config TEXT    Template to display
+  --download TEXT  Template to download
+  --upload TEXT    File to Upload Template
+  --help           Show this message and exit.

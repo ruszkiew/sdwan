@@ -1,0 +1,13 @@
+Usage: sdwan.py rest [OPTIONS]
+
+  Execute raw REST GET request.
+
+  Returns raw output in JSON format.
+
+  Example command:
+
+      ./sdwan.py rest --object <rest_object>
+
+Options:
+  --object TEXT  URL Object.
+  --help         Show this message and exit.

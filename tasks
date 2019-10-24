@@ -1,0 +1,15 @@
+Usage: sdwan.py tasks [OPTIONS]
+
+  Retrieve and/or Clear vManage Active Tasks
+
+  Returns vManage Process
+
+  Example command:
+
+      ./sdwan.py tasks
+
+      ./sdwan.py tasks --clear processID
+
+Options:
+  --clear TEXT  ProcessID.
+  --help        Show this message and exit.

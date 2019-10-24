@@ -1,0 +1,12 @@
+Usage: sdwan.py env [OPTIONS]
+
+  Print SDWAN Environment Values
+
+  Display the SDWAN Environment Values
+
+  Example command:
+
+      ./sdwan.py env
+
+Options:
+  --help  Show this message and exit.

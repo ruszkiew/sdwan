@@ -1,0 +1,30 @@
+Usage: sdwan.py template-device [OPTIONS]
+
+  Display, Download, and Upload Device Templates.
+
+    List templates to derive templateID for additional actions
+
+  Example command:
+
+      ./sdwan.py template_device
+
+      ./sdwan.py template_device --attached <templateID>
+
+      ./sdwan.py template_device --config <templateID>
+
+      ./sdwan.py template_device --download <templateID> | all
+
+      ./sdwan.py template_device --upload <file>
+
+      ./sdwan.py template_device --tree <templateID>
+
+      ./sdwan.py template_device --variable <templateID>
+
+Options:
+  --attached TEXT  Template to display attached devices
+  --config TEXT    Template to display
+  --download TEXT  Template to download
+  --upload TEXT    File to upload Template
+  --tree TEXT      List templates and variables referenced
+  --variable TEXT  List of variables required
+  --help           Show this message and exit.

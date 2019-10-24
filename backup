@@ -1,0 +1,13 @@
+echo
+echo "Backup Started"
+echo
+./sdwan.py device --download all
+./sdwan.py device --csv all
+./sdwan.py template-device --download all
+./sdwan.py template-feature --download all
+./sdwan.py policy-central --download all
+./sdwan.py policy-local --download all
+./sdwan.py policy-definition --download all
+./sdwan.py policy-list --download all
+echo "Backup Completed"
+echo

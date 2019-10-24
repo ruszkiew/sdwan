@@ -1,0 +1,24 @@
+Usage: sdwan.py policy-list [OPTIONS]
+
+  Display, Download, and Upload Policy Lists.
+
+    List policy lists to derive listID or ltype for additional action
+
+  Example command:
+
+      ./sdwan.py policy-list
+
+      ./sdwan.py policy-list --ltype
+
+      ./sdwan.py policy-list --config <ListID>
+
+      ./sdwan.py policy-list --download <ListID> | all
+
+      ./sdwan.py policy-list --upload <file>
+
+Options:
+  --ltype TEXT     Type of List
+  --config TEXT    Print List contents
+  --download TEXT  List to download
+  --upload TEXT    File to Upload List
+  --help           Show this message and exit.

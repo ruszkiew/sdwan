@@ -1,0 +1,15 @@
+Usage: sdwan.py attach [OPTIONS]
+
+  Attach a Device to a Device Template.
+
+  Attach a Device to a Device Template.   Provide all template parameters
+  and their values as arguments.
+
+  Example command:
+
+    ./sdwan.py attach --template TemplateID --target deviceID
+
+Options:
+  --template TEXT  TemplateID to deploy
+  --target TEXT    Hostname of target network device.
+  --help           Show this message and exit.

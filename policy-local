@@ -1,0 +1,27 @@
+Usage: sdwan.py policy-local [OPTIONS]
+
+  Display, Download, and Upload Local Policy.
+
+    List Policy to derive PolicyID for additional actio
+
+  Example command:
+
+      ./sdwan.py policy-local
+
+      ./sdwan.py policy-local --config PolicyID
+
+      ./sdwan.py policy-local --download PolicyID | all
+
+      ./sdwan.py policy-local --upload <file>
+
+      ./sdwan.py policy-local --definition PolicyID
+
+      ./sdwan.py policy-local --tree PolicyID
+
+Options:
+  --config TEXT      Print Policy Contents
+  --download TEXT    Policy to Download
+  --upload TEXT      File to Upload Policy
+  --definition TEXT  Referenced Definitions
+  --tree TEXT        List definitions and lists referenced
+  --help             Show this message and exit.

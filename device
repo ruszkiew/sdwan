@@ -1,0 +1,24 @@
+Usage: sdwan.py device [OPTIONS]
+
+  Display, Download, and View CLI Config for Devices.
+
+  Returns information about each device that is part of the fabric.
+
+  Example command:
+
+      ./sdwan.py device
+
+      ./sdwan.py device --config deviceID
+
+      ./sdwan.py device --csv deviceID | all
+
+      ./sdwan.py device --download deviceID | all
+
+      ./sdwan.py device --variable deviceID
+
+Options:
+  --config TEXT    Print Device CLI Configuration
+  --csv TEXT       Output Device Variables to CSV
+  --download TEXT  Download Device CLI Configuration
+  --variable TEXT  Display Device Variable and Values
+  --help           Show this message and exit.

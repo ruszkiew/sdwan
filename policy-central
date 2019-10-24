@@ -1,0 +1,27 @@
+Usage: sdwan.py policy-central [OPTIONS]
+
+  Display, Download, and Upload Centralized Policy.
+
+    List Policy to derive PolicyID for additional action
+
+  Example command:
+
+      ./sdwan.py policy-central
+
+      ./sdwan.py policy-central --config PolicyID
+
+      ./sdwan.py policy-central --download PolicyID | all
+
+      ./sdwan.py policy-central --upload <file>
+
+      ./sdwan.py policy-central --definition PolicyID
+
+      ./sdwan.py policy-central --tree PolicyID
+
+Options:
+  --config TEXT      Print Policy contents
+  --download TEXT    Policy to download
+  --upload TEXT      File to Upload Policy
+  --definition TEXT  Referenced Definitions
+  --tree TEXT        List definitions and lists referenced
+  --help             Show this message and exit.
