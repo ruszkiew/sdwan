@@ -1,2 +1,0 @@
-"csv-deviceId","csv-deviceIP","csv-host-name","//snmp/location","/511/ge0/1/interface/ip/address","/511/loopback511/interface/ip/address","//system/host-name","//system/gps-location/latitude","//system/gps-location/longitude","//system/device-groups","//system/system-ip","//system/site-id",
-"893d91ff-7963-7339-b5bf-23fd08ba6369","100.127.0.1","SDWAN-PROD-vEdge-East","us-east-1","172.17.166.139/28","172.17.166.191/32","SDWAN-PROD-vEdge-East","39.04375","-77.48744","vCloud","100.127.0.1","12701",

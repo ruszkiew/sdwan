@@ -1,1 +1,0 @@
-{"policyDefinition":{"assembly":[{"definitionId":"b038f8e2-3094-42a9-a572-6b93a0246c26","type":"data","entries":[{"direction":"service","siteLists":["9f7be0f7-020c-4b1f-ae19-a0977b4a2731"],"vpnLists":["f8ecf71e-c994-4091-a4ca-4f80b23ae1bb"]}]}]},"policyType":"feature","policyName":"Metro-E-Apps","policyDescription":"Metro-E-Apps","isPolicyActivated":false}

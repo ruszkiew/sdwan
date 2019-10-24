@@ -1,1 +1,0 @@
-{"listId":"8b131262-9395-4070-b7f3-dc8ecec1701f","name":"pref-system-ip","type":"prefix","description":"Desc Not Required","entries":[{"ipPrefix":"100.64.0.0/10","le":"32"}],"lastUpdated":1564082816641,"owner":"admin","readOnly":false,"version":"0","referenceCount":1,"isActivatedByVsmart":false}

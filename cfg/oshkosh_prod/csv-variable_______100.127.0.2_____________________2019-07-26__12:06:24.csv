@@ -1,2 +1,0 @@
-"csv-deviceId","csv-deviceIP","csv-host-name","//snmp/location","/100/ge0/1/interface/ip/address","/100/loopback100/interface/ip/address","//system/host-name","//system/gps-location/latitude","//system/gps-location/longitude","//system/device-groups","//system/system-ip","//system/site-id",
-"8d778689-405c-de2f-9159-788414104eeb","100.127.0.2","aws-vedge-west","us-west-1","10.67.2.2/28","10.67.2.255/32","aws-vedge-west","45.850011","-119.630461","vCloud","100.127.0.2","10012702",

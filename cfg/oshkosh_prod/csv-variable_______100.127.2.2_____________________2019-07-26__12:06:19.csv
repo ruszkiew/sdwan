@@ -1,2 +1,0 @@
-"csv-deviceId","csv-deviceIP","csv-host-name","host_name","system_ip","system_latitude","system_longitude","siteid","sp-org-name","tenant-org-name","vbond-dns-name","admin_password","snmp_device_location","mgmt_next_hop_ip_addr","mgmt_next_hop_mac_addr",
-"13b9179d-9d70-4068-917a-a6eb31156f42","100.127.2.2","aws-vbond-west","aws-vbond-west","100.127.2.2","45.850011","-119.630461","10012722","SDWAN-Production - 273749","SDWAN-Production - 273749","10.67.2.22","redgreen6","us-west-1","10.67.2.2","02:03:4c:23:8a:0a",

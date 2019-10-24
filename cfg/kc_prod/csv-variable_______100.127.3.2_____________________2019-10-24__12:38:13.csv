@@ -1,2 +1,0 @@
-"csv-deviceId","csv-deviceIP","csv-host-name","host_name","system_ip","siteid","sp-org-name","tenant-org-name","vbond-dns-name","admin_password","snmp_device_location","mgmt_next_hop_ip_addr","mgmt_next_hop_mac_addr",
-"da866adf-8912-43ea-a1a0-592a3c8415dc","100.127.3.2","SDWAN-PROD-vSmart-West","SDWAN-PROD-vSmart-West","100.127.3.2","12732","SDWAN-Production - 251241","SDWAN-Production - 251241","vbond-937650.viptela.net","ynYS3GgfLGvChyKb","us-west-1","172.17.166.203","06:1d:96:3f:41:92",

@@ -1,1 +1,0 @@
-{"listId":"c37ea426-141b-4aed-9232-66630500660a","name":"Default","type":"sla","description":"ACI Default SLA","entries":[{"jitter":"100","latency":"300","loss":"25"}],"lastUpdated":1566313116745,"owner":"system","readOnly":false,"version":"1.0","infoTag":"aci","referenceCount":0,"references":[],"isActivatedByVsmart":false}

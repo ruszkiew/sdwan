@@ -1,1 +1,0 @@
-{"listId":"5ae87dc9-676e-443f-b6a1-f39c275f7ec5","name":"vpn499-guest","type":"zone","description":"Desc Not Required","entries":[{"vpn":"499"}],"lastUpdated":1567707897008,"owner":"admin","readOnly":false,"version":"0","infoTag":"","referenceCount":1,"references":[{"id":"a66b08c4-cecf-46ff-81e2-b46d4eedfa3e","type":"zoneBasedFW"}],"isActivatedByVsmart":false}

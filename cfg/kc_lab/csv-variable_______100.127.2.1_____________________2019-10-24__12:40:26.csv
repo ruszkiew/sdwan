@@ -1,2 +1,0 @@
-"csv-deviceId","csv-deviceIP","csv-host-name","host_name","system_ip","siteid","sp-org-name","tenant-org-name","vbond-dns-name","admin_password","mgmt_next_hop_ip_addr",
-"9a62dc36-9973-4955-b5f0-48087df006ef","100.127.2.1","SDWAN-LAB-vBond-East","SDWAN-LAB-vBond-East","100.127.2.1","12721","SDWAN-Lab - 243562","SDWAN-Lab - 243562","10.0.5.27","kcrouter","172.17.166.139",

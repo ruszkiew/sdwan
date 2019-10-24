@@ -1,1 +1,0 @@
-{"listId":"30eb514c-f82e-4276-afec-fb4db542c058","name":"sla-uc","type":"sla","description":"Desc Not Required","entries":[{"latency":"250","loss":"2","jitter":"30"}],"lastUpdated":1563902289764,"owner":"admin","readOnly":false,"version":"0","referenceCount":1,"activatedId":["bf784e46-970a-4abb-a542-244424d3833f"],"isActivatedByVsmart":true}

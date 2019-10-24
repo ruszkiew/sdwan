@@ -1,1 +1,0 @@
-{"listId":"cf3bbfcb-4138-4198-a033-587d97f42106","name":"vpn1-enterprise","type":"zone","description":"Desc Not Required","entries":[{"vpn":"1"}],"lastUpdated":1567707838431,"owner":"admin","readOnly":false,"version":"0","infoTag":"","referenceCount":1,"references":[{"id":"a66b08c4-cecf-46ff-81e2-b46d4eedfa3e","type":"zoneBasedFW"}],"isActivatedByVsmart":false}
