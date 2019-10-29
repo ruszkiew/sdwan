@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 4.1 - Last Updated: Ed Ruszkiewicz
+#  Version 4.3 - Last Updated: Ed Ruszkiewicz
 
 
 ###############################################################################
@@ -12,10 +12,8 @@
 
 #  TODO
 
-# Add template attached by device - ./sdwan.py device --attached 100.64.1.1
 # Add template tree by device - ./sdwan.py device --tree 100.64.1.1
 # Change a specific variable by device - ./sdway.py device --set_var 100.64.1.1 "/0/vpn-instance/ip/route/0.0.0.0/0/next-hop/vpn0_inet_next_hop_ip_addr/address":"205.203.91.130"
-# Detach device tempalte by device - ./sdwan.py device --detach 100.64.1.1
 # Attach device template by device - ./sdwan.py device --attach 100.64.1.1 <variable_file>
 # Fix upload reference IDs
 
@@ -337,8 +335,9 @@ def tasks(clear):
 @click.option("--csv", help="Output Device Variables to CSV")
 @click.option("--detach", help="Detach Device from Device Template")
 @click.option("--download", help="Download Device CLI Configuration")
+@click.option("--template", help="Display Device Template")
 @click.option("--variable", help="Display Device Variable and Values")
-def device(config, csv, detach, download, variable):
+def device(config, csv, detach, download, template, variable):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -494,25 +493,32 @@ def device(config, csv, detach, download, variable):
 
     if detach:
 
-        response = json.loads(sdwanp.get_request('device?system-ip=' + detach))
+        response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + detach))
         items = response['data']
 
         for item in items:
             try:
-                deviceId = item['deviceId']
-                if deviceId == detach:
+                deviceIP = item['deviceIP']
+                if deviceIP == detach:
                     hostName = item['host-name']
-                    deviceModel = item['device-model']
+                    deviceModel = item['deviceModel']
                     uuid = item['uuid']
+                    template = item['template']
+                    templateId = item['templateId']
             except KeyError:
-                pass
+                print()
+                print("** Device not Attached to a Template **")
+                print()
+                return
 
         print()
-        print("Detach Device Templater")
+        print("Detach Device Template")
         print()
-        print(" ** hostname - ", hostName)
-        print(" ** system-ip - ", deviceId)
-        print(" ** chassis-id - ", uuid)
+        print(" ** hostname -    ", hostName)
+        print(" ** system-ip -   ", deviceIP)
+        print(" ** chassis-id -  ", uuid)
+        print(" ** template -    ", template)
+        print(" ** template-id - ", templateId)
         print()
         print()
         
@@ -521,7 +527,7 @@ def device(config, csv, detach, download, variable):
             "devices": [
                 {
                     "deviceId": uuid,
-                    "deviceIP": deviceId 
+                    "deviceIP": deviceIP 
                 }
             ]
         }
@@ -565,6 +571,39 @@ def device(config, csv, detach, download, variable):
                              date_string, "w")
             json_file.write(re.sub("'|b'", '', str(response)).replace('\\n', '\n'))
             json_file.close()
+        return
+
+    if template:
+
+        response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + template))
+        items = response['data']
+
+        for item in items:
+            try:
+                deviceIP = item['deviceIP']
+                if deviceIP == template:
+                    hostName = item['host-name']
+                    deviceModel = item['deviceModel']
+                    uuid = item['uuid']
+                    template = item['template']
+                    templateId = item['templateId']
+            except KeyError:
+                print()
+                print("** Device not Attached to a Template **")
+                print()
+                return
+        print()
+        print("Device and Template Details")
+        print()
+        print(" ** hostname -     ", hostName)
+        print(" ** system-ip -    ", deviceIP)
+        print(" ** device-model - ", deviceModel)
+        print(" ** chassis-id -   ", uuid)
+        print(" ** template -     ", template)
+        print(" ** template-id -  ", templateId)
+        print()
+        print()
+        
         return
 
     # no parameter passed in - list all
