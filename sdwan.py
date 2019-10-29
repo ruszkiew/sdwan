@@ -9,6 +9,19 @@
 
 ###############################################################################
 
+
+#  TODO
+
+# Add template attached by device - ./sdwan.py device --attached 100.64.1.1
+# Add template tree by device - ./sdwan.py device --tree 100.64.1.1
+# Change a specific variable by device - ./sdway.py device --set_var 100.64.1.1 "/0/vpn-instance/ip/route/0.0.0.0/0/next-hop/vpn0_inet_next_hop_ip_addr/address":"205.203.91.130"
+# Detach device tempalte by device - ./sdwan.py device --detach 100.64.1.1
+# Attach device template by device - ./sdwan.py device --attach 100.64.1.1 <variable_file>
+# Fix upload reference IDs
+
+
+###############################################################################
+
 # IMPORTS
 
 import requests
@@ -322,9 +335,10 @@ def tasks(clear):
 @click.command()
 @click.option("--config", help="Print Device CLI Configuration")
 @click.option("--csv", help="Output Device Variables to CSV")
+@click.option("--detach", help="Detach Device from Device Template")
 @click.option("--download", help="Download Device CLI Configuration")
 @click.option("--variable", help="Display Device Variable and Values")
-def device(config, csv, download, variable):
+def device(config, csv, detach, download, variable):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -336,6 +350,8 @@ def device(config, csv, download, variable):
             ./sdwan.py device --config deviceID
 
             ./sdwan.py device --csv deviceID | all
+
+            ./sdwan.py device --detach deviceID
 
             ./sdwan.py device --download deviceID | all
 
@@ -438,7 +454,7 @@ def device(config, csv, download, variable):
         return
 
     if variable:
-        # get templateId of attached template to device
+        # get information of device
         response = json.loads(sdwanp.get_request('system/device/vedges'))
         items = response['data']
         for item in items:
@@ -449,11 +465,10 @@ def device(config, csv, download, variable):
                     hostName = item['host-name']
                     deviceModel = item['deviceModel']
                     uuid = item['uuid']
-                    # pprint(item)
             except KeyError:
                 pass
         print()
-        print("Variables for " + deviceModel + ": " + hostName + " -- deviceID: " + deviceId)
+        print("Variables for " + deviceModel + ": " + hostName + " -- deviceID: " + deviceId + "\n")
         print("  Attached to Device Template: " + templateId)
         print()
         # grab variables and values
@@ -475,6 +490,47 @@ def device(config, csv, download, variable):
         except UnicodeEncodeError:
             click.echo(tabulate.tabulate(table, headers,
                                          tablefmt="grid"))
+        return
+
+    if detach:
+
+        response = json.loads(sdwanp.get_request('device?system-ip=' + detach))
+        items = response['data']
+
+        for item in items:
+            try:
+                deviceId = item['deviceId']
+                if deviceId == detach:
+                    hostName = item['host-name']
+                    deviceModel = item['device-model']
+                    uuid = item['uuid']
+            except KeyError:
+                pass
+
+        print()
+        print("Detach Device Templater")
+        print()
+        print(" ** hostname - ", hostName)
+        print(" ** system-ip - ", deviceId)
+        print(" ** chassis-id - ", uuid)
+        print()
+        print()
+        
+        payload = {
+            "deviceType": "vedge",
+            "devices": [
+                {
+                    "deviceId": uuid,
+                    "deviceIP": deviceId 
+                }
+            ]
+        }
+
+        response = sdwanp.post_request('template/config/device/mode/cli',
+                                       payload)
+        print(response)
+        print()
+
         return
 
     if download:
@@ -927,37 +983,6 @@ def attach(template, target):
 
     print("** Need to Code **")
     return
-
-
-###############################################################################
-
-# DETACH TEMPLATE
-
-@click.command()
-@click.option("--uuid", help="UUID of device to detach")
-@click.option("--device", help="Device ID of device to detach")
-def detach(uuid, device):
-    """Detach a Device from a Device Template.
-
-        Example command:
-
-          ./sdwan.py detach --uuid UUID --device DeviceID
-    """
-    click.secho("Attempting to Detach Template.")
-
-    payload = {
-        "deviceType": "vedge",
-        "devices": [
-            {
-                "deviceId": str(uuid),
-                "deviceIP": str(device)
-            }
-        ]
-    }
-
-    response = sdwanp.post_request('template/config/device/mode/cli',
-                                   payload)
-    print(response)
 
 
 ###############################################################################
@@ -1657,7 +1682,7 @@ cli.add_command(tasks)
 cli.add_command(template_device)
 cli.add_command(template_feature)
 cli.add_command(attach)
-cli.add_command(detach)
+
 
 ###############################################################################
 
