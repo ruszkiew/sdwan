@@ -68,5 +68,7 @@ v4.0 - Added vManage tasks listing and clearing capability
 
 v4.1 - Added Token Auth to support vManage 19.2
 
+v4.2 - Added device detach function
+
 
 
