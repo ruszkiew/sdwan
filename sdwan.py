@@ -9,13 +9,23 @@
 
 ###############################################################################
 
+"""
 
-#  TODO
+TODO
 
-# Add template tree by device - ./sdwan.py device --tree 100.64.1.1
-# Change a specific variable by device - ./sdway.py device --set_var 100.64.1.1 "/0/vpn-instance/ip/route/0.0.0.0/0/next-hop/vpn0_inet_next_hop_ip_addr/address":"205.203.91.130"
-# Attach device template by device - ./sdwan.py device --attach 100.64.1.1 <variable_file>
-# Fix upload reference IDs
+Change a specific variable by device - ./sdway.py device --set_var 100.64.1.1 "/0/vpn-instance/ip/route/0.0.0.0/0/next-hop/vpn0_inet_next_hop_ip_addr/address":"205.203.91.130"
+    download current variable list - put into hash
+    grab CLI variable/value to change - update hash
+    attache device to template with new payload
+Attach device template by device - ./sdwan.py device --attach 100.64.1.1 <variable_file>
+    need to figure out best we to grab variables -- .csv ?
+    need to figure out best we for user to identify template to use
+    should it move to the 'device' major command like detach ?
+Fix upload reference IDs
+    braninstorming some auxilary scripts - not part of this script
+    would like to retain object IDs
+
+"""
 
 
 ###############################################################################
