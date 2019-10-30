@@ -355,9 +355,11 @@ def tasks(clear):
 @click.option("--csv", help="Output Device Variables to CSV")
 @click.option("--detach", help="Detach Device from Device Template")
 @click.option("--download", help="Download Device CLI Configuration")
+@click.option("--invalid", help="Make Device Certificate Invalid")
 @click.option("--template", help="Display Device Template")
+@click.option("--valid", help="Make Device Certificate Valid")
 @click.option("--variable", help="Display Device Variable and Values")
-def device(config, csv, detach, download, template, variable):
+def device(config, csv, detach, download, template, invalid, valid, variable):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -373,6 +375,12 @@ def device(config, csv, detach, download, template, variable):
             ./sdwan.py device --detach deviceID
 
             ./sdwan.py device --download deviceID | all
+
+            ./sdwan.py device --invalid deviceID
+
+            ./sdwan.py device --template deviceID
+
+            ./sdwan.py device --valid deviceID
 
             ./sdwan.py device --variable deviceID
 
@@ -605,6 +613,7 @@ def device(config, csv, detach, download, template, variable):
                     hostName = item['host-name']
                     deviceModel = item['deviceModel']
                     uuid = item['uuid']
+                    valid = item['validity']
                     template = item['template']
                     templateId = item['templateId']
             except KeyError:
@@ -618,6 +627,7 @@ def device(config, csv, detach, download, template, variable):
         print(" ** hostname -     ", hostName)
         print(" ** system-ip -    ", deviceIP)
         print(" ** device-model - ", deviceModel)
+        print(" ** certificate  - ", valid)
         print(" ** chassis-id -   ", uuid)
         print(" ** template -     ", template)
         print(" ** template-id -  ", templateId)
@@ -626,25 +636,31 @@ def device(config, csv, detach, download, template, variable):
         
         return
 
+    if valid:    
+        return
+
+    if invalid:    
+        return
+
     # no parameter passed in - list all
     click.secho("Retrieving the devices.")
 
     response = json.loads(sdwanp.get_request('device'))
     items = response['data']
     headers = ["Device Name", "Device Type", "UUID", "System IP",
-               "Device ID", "Site ID", "Version", "Device Model"]
+               "Device ID", "Site ID", "Version", "Device Model", "Cert"]
     table = list()
     for item in items:
         # check for site-id - 17.x vBond does not assign one
         if 'site-id' in item:
             tr = [item['host-name'], item['device-type'], item['uuid'],
                   item['system-ip'], item['deviceId'], item['site-id'],
-                  item['version'], item['device-model']]
+                  item['version'], item['device-model'], item['validity']]
             table.append(tr)
         else:
             tr = [item['host-name'], item['device-type'], item['uuid'],
                   item['system-ip'], item['deviceId'], '',
-                  item['version'], item['device-model']]
+                  item['version'], item['device-model'], item['validity']]
             table.append(tr)
     try:
         click.echo(tabulate.tabulate(table, headers,
