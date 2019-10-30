@@ -56,7 +56,6 @@ Script Usage
 
 ## COMMANDS + ACTIONS
 
- * [detach](detach)
  * [device](device)
  * [env](env)
  * [policy-central](policy-central)
@@ -132,6 +131,8 @@ Objects are linked with references.  The IDs do change after an upload so the st
     ./sdwan.py device
     ./sdwan.py device --variable 100.65.30.11
     ./sdwan.py device --config 100.65.30.11
+    ./sdwan.py device --template 100.65.30.11
+    ./sdwan.py device --detach 100.65.30.11
     ./sdwan.py device --csv 100.65.30.11
     ./sdwan.py device --download 100.65.30.11
     ./sdwan.py device --download all
