@@ -356,10 +356,11 @@ def tasks(clear):
 @click.option("--detach", help="Detach Device from Device Template")
 @click.option("--download", help="Download Device CLI Configuration")
 @click.option("--invalid", help="Make Device Certificate Invalid")
+@click.option("--staging", help="Make Device Certificate Staging")
 @click.option("--template", help="Display Device Template")
 @click.option("--valid", help="Make Device Certificate Valid")
 @click.option("--variable", help="Display Device Variable and Values")
-def device(config, csv, detach, download, template, invalid, valid, variable):
+def device(config, csv, detach, download, staging, template, invalid, valid, variable):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -377,6 +378,8 @@ def device(config, csv, detach, download, template, invalid, valid, variable):
             ./sdwan.py device --download deviceID | all
 
             ./sdwan.py device --invalid deviceID
+
+            ./sdwan.py device --staging deviceID
 
             ./sdwan.py device --template deviceID
 
@@ -613,6 +616,7 @@ def device(config, csv, detach, download, template, invalid, valid, variable):
                     hostName = item['host-name']
                     deviceModel = item['deviceModel']
                     uuid = item['uuid']
+                    serialNumber = item['serialNumber']
                     valid = item['validity']
                     template = item['template']
                     templateId = item['templateId']
@@ -624,22 +628,140 @@ def device(config, csv, detach, download, template, invalid, valid, variable):
         print()
         print("Device and Template Details")
         print()
-        print(" ** hostname -     ", hostName)
-        print(" ** system-ip -    ", deviceIP)
-        print(" ** device-model - ", deviceModel)
-        print(" ** certificate  - ", valid)
-        print(" ** chassis-id -   ", uuid)
-        print(" ** template -     ", template)
-        print(" ** template-id -  ", templateId)
+        print(" ** hostname       ", hostName)
+        print(" ** system-ip      ", deviceIP)
+        print(" ** device-model   ", deviceModel)
+        print(" ** certificate    ", valid)
+        print(" ** chassis-id     ", uuid)
+        print(" ** serial_num     ", serialNumber)
+        print(" ** template       ", template)
+        print(" ** template-id    ", templateId)
         print()
         print()
         
         return
 
     if valid:    
+
+        response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + valid))
+        items = response['data']
+
+        for item in items:
+            try:
+                deviceIP = item['deviceIP']
+                if deviceIP == valid:
+                    hostName = item['host-name']
+                    deviceModel = item['deviceModel']
+                    uuid = item['uuid']
+                    serialNumber = item['serialNumber']
+                    valid = item['validity']
+                    template = item['template']
+                    templateId = item['templateId']
+            except KeyError:
+                print()
+                print("** Device not Retrieved **")
+                print()
+                return
+
+        payload = [{"chasisNumber" : uuid, "serialNumber" : serialNumber, "validity" : "valid"}]
+        response = sdwanp.post_request('certificate/save/vedge/list', payload)
+
+        print()
+        print("Attempting to Validate Device Certificate")
+        print()
+        print(" ** hostname       ", hostName)
+        print(" ** system-ip      ", deviceIP)
+        print(" ** device-model   ", deviceModel)
+        print(" ** chassis-id     ", uuid)
+        print(" ** serial_num     ", serialNumber)
+        print(" ** template       ", template)
+        print(" ** template-id    ", templateId)
+        print()
+        print (response)
+        print()
+
         return
 
-    if invalid:    
+    if invalid:
+
+        response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + invalid))
+        items = response['data']
+
+        for item in items:
+            try:
+                deviceIP = item['deviceIP']
+                if deviceIP == invalid:
+                    hostName = item['host-name']
+                    deviceModel = item['deviceModel']
+                    uuid = item['uuid']
+                    serialNumber = item['serialNumber']
+                    valid = item['validity']
+                    template = item['template']
+                    templateId = item['templateId']
+            except KeyError:
+                print()
+                print("** Device not Retrieved **")
+                print()
+                return
+
+        payload = [{"chasisNumber" : uuid, "serialNumber" : serialNumber, "validity" : "invalid"}]
+        response = sdwanp.post_request('certificate/save/vedge/list', payload)
+
+        print()
+        print("Attempting to Invalidate Device Certificate")
+        print()
+        print(" ** hostname       ", hostName)
+        print(" ** system-ip      ", deviceIP)
+        print(" ** device-model   ", deviceModel)
+        print(" ** chassis-id     ", uuid)
+        print(" ** serial_num     ", serialNumber)
+        print(" ** template       ", template)
+        print(" ** template-id    ", templateId)
+        print()
+        print (response)
+        print()
+
+        return
+
+    if staging:
+
+        response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + staging))
+        items = response['data']
+
+        for item in items:
+            try:
+                deviceIP = item['deviceIP']
+                if deviceIP == staging:
+                    hostName = item['host-name']
+                    deviceModel = item['deviceModel']
+                    uuid = item['uuid']
+                    serialNumber = item['serialNumber']
+                    valid = item['validity']
+                    template = item['template']
+                    templateId = item['templateId']
+            except KeyError:
+                print()
+                print("** Device not Retrieved **")
+                print()
+                return
+
+        payload = [{"chasisNumber" : uuid, "serialNumber" : serialNumber, "validity" : "staging"}]
+        response = sdwanp.post_request('certificate/save/vedge/list', payload)
+
+        print()
+        print("Attempting to put Device Certificate in Staging")
+        print()
+        print(" ** hostname       ", hostName)
+        print(" ** system-ip      ", deviceIP)
+        print(" ** device-model   ", deviceModel)
+        print(" ** chassis-id     ", uuid)
+        print(" ** serial_num     ", serialNumber)
+        print(" ** template       ", template)
+        print(" ** template-id    ", templateId)
+        print()
+        print (response)
+        print()
+
         return
 
     # no parameter passed in - list all

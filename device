@@ -18,6 +18,8 @@ Usage: sdwan.py device [OPTIONS]
 
       ./sdwan.py device --invalid deviceID
 
+      ./sdwan.py device --staging deviceID
+
       ./sdwan.py device --template deviceID
 
       ./sdwan.py device --valid deviceID
@@ -30,6 +32,7 @@ Options:
   --detach TEXT    Detach Device from Device Template
   --download TEXT  Download Device CLI Configuration
   --invalid TEXT   Make Device Certificate Invalid"
+  --staging TEXT   Make Device Certificate Staging"
   --template TEXT  Display Device Template
   --variable TEXT  Display Device Variable and Values
   --valid TEXT     Make Device Certificate Valid"
