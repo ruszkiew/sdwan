@@ -17,16 +17,14 @@ Change a specific variable by device - ./sdway.py device --set_var 100.64.1.1 "/
     download current variable list - put into hash
     grab CLI variable/value to change - update hash
     attache device to template with new payload
-Add device valid action
-Add device invalid action
-Add device staging action
+Add device valid/invalid/staging action
 Push cert to controller
 Add device cert status to device printout
 Attach device template by device - ./sdwan.py device --attach 100.64.1.1 <variable_file>
     need to figure out best we to grab variables -- .csv ?
     need to figure out best we for user to identify template to use
     should it move to the 'device' major command like detach ?
-Fix upload reference IDs
+Fix upload reference ID
     Cisco does not have a solution for this
     braninstorming some auxilary scripts - not part of this script
     would like to retain object IDs
@@ -34,7 +32,8 @@ Add more error corrrection - see Cisco sample config
 
 ISSUE
 
-19.2 apears to not store a templateID in a device template file
+19.2 apears to not store a templateID in a device template filee
+Waiting to see what Sai from Cisco says - may be bug
 
 """
 
