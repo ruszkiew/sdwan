@@ -12,13 +12,19 @@ Usage: sdwan.py device [OPTIONS]
 
       ./sdwan.py device --csv deviceID | all
 
+      ./sdwan.py device --detach deviceID
+
       ./sdwan.py device --download deviceID | all
+
+      ./sdwan.py device --template deviceID
 
       ./sdwan.py device --variable deviceID
 
 Options:
   --config TEXT    Print Device CLI Configuration
   --csv TEXT       Output Device Variables to CSV
+  --detach TEXT    Detach Device from Device Template
   --download TEXT  Download Device CLI Configuration
+  --template TEXT  Display Device Template
   --variable TEXT  Display Device Variable and Values
   --help           Show this message and exit.
