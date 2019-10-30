@@ -42,7 +42,6 @@ Script Usage
 
     Commands:
       attach             Attach a Device to a Device Template.
-      detach             Detach a Device from a Device Template.
       device             Display, Download, and View CLI Config for Devices.
       env                Print SDWAN Environment Values Display the SDWAN...
       policy-central     Display, Download, and Upload Centralized Policy.
