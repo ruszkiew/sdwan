@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 4.3 - Last Updated: Ed Ruszkiewicz
+#  Version 4.4 - Last Updated: Ed Ruszkiewicz
 
 
 ###############################################################################
@@ -17,8 +17,6 @@ Change a specific variable by device - ./sdway.py device --set_var 100.64.1.1 "/
     download current variable list - put into hash
     grab CLI variable/value to change - update hash
     attache device to template with new payload
-Add device valid/invalid/staging action
-Push cert to controller
 Add device cert status to device printout
 Attach device template by device - ./sdwan.py device --attach 100.64.1.1 <variable_file>
     need to figure out best we to grab variables -- .csv ?
@@ -49,6 +47,7 @@ import json
 import click
 import tabulate
 import re
+import time
 from datetime import datetime
 from requests.packages.urllib3.exceptions import InsecureRequestWarning  # NOQA
 from requests.auth import HTTPBasicAuth
@@ -269,6 +268,37 @@ def env():
     print()
     print('*****************')
     print()
+
+    return
+
+###############################################################################
+
+
+# SEND CERTIFICATE
+
+@click.command()
+def certificate():
+    """Send Certificates to Controllers
+
+        Example command:
+
+            ./sdwan.py certificate
+
+    """
+
+    print()
+
+    payload = {}
+    response = sdwanp.post_request("certificate/vedge/list?action=push", payload)
+
+    print("***********************************")
+    print("Sending Certificates to Controllers")
+    print("***********************************")
+    print()
+    print(response)
+    print()
+
+    time.sleep(2)
 
     return
 
@@ -1878,6 +1908,7 @@ cli.add_command(policy_central)
 cli.add_command(policy_local)
 cli.add_command(policy_definition)
 cli.add_command(device)
+cli.add_command(certificate)
 cli.add_command(tasks)
 cli.add_command(template_device)
 cli.add_command(template_feature)

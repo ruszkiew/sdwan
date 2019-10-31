@@ -1,0 +1,10 @@
+Usage: sdwan.py certificate [OPTIONS]
+
+  Send Certificates to Controllers
+
+  Example command:
+
+      ./sdwan.py certificate
+
+Options:
+  --help  Show this message and exit.
