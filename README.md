@@ -35,21 +35,22 @@ Script Usage
 
     Usage: sdwan.py [OPTIONS] COMMAND [ARGS]...
 
-      CLI for managing policies and templates in Cisco SDWAN.
+        CLI for managing policies and templates in Cisco SDWAN.
 
     Options:
       --help  Show this message and exit.
 
     Commands:
       attach             Attach a Device to a Device Template.
+      certificate        Send Certificates to Controllers.
       device             Display, Download, and View CLI Config for Devices.
-      env                Print SDWAN Environment Values Display the SDWAN...
+      env                Print SDWAN Environment Values.
       policy-central     Display, Download, and Upload Centralized Policy.
       policy-definition  Display, Download, and Upload Policy Definitions.
       policy-list        Display, Download, and Upload Policy Lists.
       policy-local       Display, Download, and Upload Local Policy.
       rest               Execute raw REST GET request.
-      tasks              Retrieve and/or Clear vManage Active Tasks Returns...
+      tasks              Retrieve and/or Clear vManage Active Tasks.
       template-device    Display, Download, and Upload Device Templates.
       template-feature   Display, Download, and Upload Feature Templates.
 

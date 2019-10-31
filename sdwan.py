@@ -247,9 +247,9 @@ def id_fix(oldid, newid, drc):
 @click.command()
 # @click.option()
 def env():
-    """Print SDWAN Environment Values
+    """Print SDWAN Environment Values.
 
-        Display the SDWAN Environment Values
+        Display the SDWAN Environment Values.
 
         Example command:
 
@@ -280,7 +280,7 @@ def env():
 
 @click.command()
 def certificate():
-    """Send Certificates to Controllers
+    """Send Certificates to Controllers.
 
         Example command:
 
@@ -337,7 +337,7 @@ def rest(object):
 @click.command()
 @click.option("--clear", help="ProcessID.")
 def tasks(clear):
-    """Retrieve and/or Clear vManage Active Tasks
+    """Retrieve and/or Clear vManage Active Tasks.
 
         Returns vManage Process
 
