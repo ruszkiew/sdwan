@@ -62,13 +62,19 @@ v3.7 - Added PORT Environmental Variable - 8443 does not work universal
 
 v3.8 - Upon upload, verify and update ID to all files in config dir
 
-v3.9 - Fix device template upload
+v3.9 - Fix Device Template upload
 
 v4.0 - Added vManage tasks listing and clearing capability
 
 v4.1 - Added Token Auth to support vManage 19.2
 
-v4.2 - Added device detach function
+v4.2 - Added Device Detach function
+
+v4.3 - Added Device Template identification
+
+v4.4 - Added Certificate status to device listing
+
+v4.5 - Added Certificate mode changes and Certificate Push to Controllers
 
 
 
