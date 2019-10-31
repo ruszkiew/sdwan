@@ -295,12 +295,16 @@ def certificate():
 
     print("***********************************")
     print("Sending Certificates to Controllers")
+    print("    *  May take 2 Minute *         ")
     print("***********************************")
+
+    for i in range(34, 1, -1):
+        time.sleep(3)
+        print("*"*i)
+
     print()
     print(response)
     print()
-
-    time.sleep(2)
 
     return
 
