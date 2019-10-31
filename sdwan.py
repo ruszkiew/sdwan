@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 4.4 - Last Updated: Ed Ruszkiewicz
+#  Version 4.5 - Last Updated: Ed Ruszkiewicz
 
 
 ###############################################################################
@@ -17,15 +17,17 @@ Change a specific variable by device - ./sdway.py device --set_var 100.64.1.1 "/
     download current variable list - put into hash
     grab CLI variable/value to change - update hash
     attache device to template with new payload
-Add device cert status to device printout
+
 Attach device template by device - ./sdwan.py device --attach 100.64.1.1 <variable_file>
     need to figure out best we to grab variables -- .csv ?
     need to figure out best we for user to identify template to use
     should it move to the 'device' major command like detach ?
+
 Fix upload reference ID
     Cisco does not have a solution for this
     braninstorming some auxilary scripts - not part of this script
     would like to retain object IDs
+
 Add more error corrrection - see Cisco sample config
 
 ISSUE
