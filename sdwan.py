@@ -429,9 +429,9 @@ def device(config, csv, detach, download, staging, template, invalid, valid, var
         response = sdwanp.get_request('device/config?deviceId=' +
                                       config)
         print()
-        print('!')
-        print("! Device ID: ", config)
-        print('!')
+        # print('!')
+        # print("! Device ID: ", config)
+        # print('!')
         # remove base64 header/trailer
         print(re.sub("'|b'", '', str(response)).replace('\\n', '\n'))
         return
@@ -886,9 +886,9 @@ def template_device(attached, config, download, upload, tree, variable):
     if config:
         response = sdwanp.get_request('template/device/object/' +
                                       config)
-        print()
-        print("Template ID: ", config)
-        print()
+        # print()
+        # print("Template ID: ", config)
+        # print()
         # remove base64 header/trailer
         print(re.sub("'|b'", '', str(response)))
         print()
@@ -1105,9 +1105,9 @@ def template_feature(attached, config, download, upload):
         # response is of type bytes - convert to string
         response = sdwanp.get_request('template/feature/object/' +
                                       config)
-        print()
-        print("Template ID: ", config)
-        print()
+        # print()
+        # print("Template ID: ", config)
+        # print()
         # remove base64 header/trailer
         print(re.sub("'|b'", '', str(response)))
         print()
@@ -1258,9 +1258,9 @@ def policy_list(ltype, config, download, upload):
                 ltype = item['type']
         response = sdwanp.get_request('template/policy/list/' +
                                       ltype + '/' + config)
-        print()
-        print("Template ID: ", config)
-        print()
+        # print()
+        # print("Template ID: ", config)
+        # print()
         # remove base64 header/trailer
         print(re.sub("'|b'", '', str(response)))
         print()
@@ -1407,9 +1407,9 @@ def policy_central(config, download, upload, definition, tree):
     if config:
         response = sdwanp.get_request('template/policy/vsmart/definition/' +
                                       config)
-        print()
-        print("Policy ID: ", config)
-        print()
+        # print()
+        # print("Policy ID: ", config)
+        # print()
         # remove base64 header/trailer
         print(re.sub("'|b'", '', str(response)))
         print()
@@ -1574,9 +1574,9 @@ def policy_local(config, download, upload, definition, tree):
     if config:
         response = sdwanp.get_request('template/policy/vedge/definition/' +
                                       config)
-        print()
-        print("Policy ID: ", config)
-        print()
+        # print()
+        # print("Policy ID: ", config)
+        # print()
         # remove base64 header/trailer
         print(re.sub("'|b'", '', str(response)))
         print()
@@ -1805,9 +1805,9 @@ def policy_definition(config, download, upload):
     if config:
         response = sdwanp.get_request('template/policy/definition/' +
                                       defs[config].lower() + '/' + config)
-        print()
-        print("Definition ID: ", config)
-        print()
+        # print()
+        # print("Definition ID: ", config)
+        # print()
         # remove base64 header/trailer
         print(re.sub("'|b'", '', str(response)))
         print()
