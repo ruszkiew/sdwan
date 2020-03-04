@@ -295,7 +295,7 @@ def certificate():
 
     print("***********************************")
     print("Sending Certificates to Controllers")
-    print("    *  May take 2 Minute *         ")
+    print("    *  May take 2 Minutes *        ")
     print("***********************************")
 
     for i in range(34, 1, -1):
@@ -1255,7 +1255,7 @@ def policy_list(ltype, config, download, upload):
         items = response['data']
         for item in items:
             if(item['listId'] == config):
-                ltype = item['type']
+                ltype = item['type'].lower()
         response = sdwanp.get_request('template/policy/list/' +
                                       ltype + '/' + config)
         # print()
@@ -1296,10 +1296,10 @@ def policy_list(ltype, config, download, upload):
             for item in items:
                 print("  List ID:", item['listId'], "downloaded..."),
                 response = sdwanp.get_request('template/policy/list/' +
-                                              item['type'] + '/' +
+                                              item['type'].lower() + '/' +
                                               item['listId'])
                 json_file = open(SDWAN_CFGDIR + "policy-list________" +
-                                 item['type'] + "_"*(32 - len(item['type'])) +
+                                 item['type'].lower() + "_"*(32 - len(item['type'])) +
                                  item['listId'] + '___' +
                                  item['name'].replace('/', '-'), "w")
                 json_file.write(re.sub("'|b'", '', str(response)))
@@ -1310,7 +1310,7 @@ def policy_list(ltype, config, download, upload):
             items = response['data']
             for item in items:
                 if(item['listId'] == download):
-                    ltype = item['type']
+                    ltype = item['type'].lower()
             response = sdwanp.get_request('template/policy/list/' +
                                           ltype + '/' + download)
             item = json.loads(response)
