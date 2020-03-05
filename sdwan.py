@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 4.5 - Last Updated: Ed Ruszkiewicz
+#  Version 4.7 - Last Updated: Ed Ruszkiewicz
 
 
 ###############################################################################
@@ -17,18 +17,6 @@ Change a specific variable by device - ./sdway.py device --set_var 100.64.1.1 "/
     download current variable list - put into hash
     grab CLI variable/value to change - update hash
     attache device to template with new payload
-
-Attach device template by device - ./sdwan.py device --attach 100.64.1.1 <variable_file>
-    need to figure out best we to grab variables -- .csv ?
-    need to figure out best we for user to identify template to use
-    should it move to the 'device' major command like detach ?
-
-Fix upload reference ID
-    Cisco does not have a solution for this
-    braninstorming some auxilary scripts - not part of this script
-    would like to retain object IDs
-
-Add more error corrrection - see Cisco sample config
 
 ISSUE
 
@@ -488,15 +476,27 @@ def device(attach, config, csv, detach, download, staging, template, invalid, va
             ]
         }
 
-        for k, v in csv_dict.items():
-            payload['deviceTemplateList'][0]['device'][0][k] = str(v)
+        # run template variable list against csv list to check for missing values
+        # populate the payload
+        for k in payload_var:
+            if k == 'csv-status':
+                payload['deviceTemplateList'][0]['device'][0][k] = 'complete'
+            else:
+                payload['deviceTemplateList'][0]['device'][0][k] = csv_dict[k]
 
         print()
-        pprint(payload)
+        print(" ** hostname -    ", str(csv_dict['//system/host-name']))
+        print(" ** system-ip -   ", str(csv_dict['csv-deviceIP']))
+        print(" ** chassis-id -  ", str(csv_dict['csv-deviceId']))
+        print(" ** template-id - ", attach)
+        print()
+        print()
 
-        # ready to test !!
-        # response = sdwanp.post_request('template/device/config/attachfeature', payload)
-        # print (response)
+        # attach template
+        response = sdwanp.post_request('template/device/config/attachfeature', payload)
+        print("Attachment Results...")
+        print()
+        print (response)
 
         return
 
