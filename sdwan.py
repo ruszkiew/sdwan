@@ -32,7 +32,7 @@ Add more error corrrection - see Cisco sample config
 
 ISSUE
 
-19.2 apears to not store a templateID in a device template filee
+19.2 apears to not store a templateID in a device template file
 Waiting to see what Sai from Cisco says - may be bug
 
 """
@@ -836,11 +836,12 @@ def device(config, csv, detach, download, staging, template, invalid, valid, var
 @click.command()
 @click.option("--attached", help="Template to display attached devices")
 @click.option("--config", help="Template to display")
+@click.option("--csv", help="Template CSV Header")
 @click.option("--download", help="Template to download")
 @click.option("--upload", help="File to upload Template")
 @click.option("--tree", help="List templates and variables referenced")
 @click.option("--variable", help="List of variables required")
-def template_device(attached, config, download, upload, tree, variable):
+def template_device(attached, config, csv, download, upload, tree, variable):
     """Display, Download, and Upload Device Templates.
 
           List templates to derive templateID for additional actions
@@ -852,6 +853,8 @@ def template_device(attached, config, download, upload, tree, variable):
             ./sdwan.py template_device --attached <templateID>
 
             ./sdwan.py template_device --config <templateID>
+
+            ./sdwan.py template_device --csv <templateID>
 
             ./sdwan.py template_device --download <templateID> | all
 
@@ -1028,6 +1031,23 @@ def template_device(attached, config, download, upload, tree, variable):
         except UnicodeEncodeError:
             click.echo(tabulate.tabulate(table, headers,
                                          tablefmt="grid"))
+        return
+
+    if csv:
+        payload = {
+            "templateId": str(csv),
+            "deviceIds":
+                [
+                    "1.1.1.1"
+                ],
+            "isEdited": "false",
+            "isMasterEdited": "false"
+        }
+        response = sdwanp.post_request('template/device/config/input',
+                                       payload)
+        items = response['header']['columns']
+        for item in items:
+            print('"', item['property'], '",', end='', sep='')
         return
 
     # no parameter passed in - list all templates
