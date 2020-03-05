@@ -455,14 +455,15 @@ def device(attach, config, csv, detach, download, staging, template, invalid, va
         csv_file = open(csv, "rb")
         csv_var = str(csv_file.readline(),'utf-8').split('","')
         csv_val = str(csv_file.readline(),'utf-8').split('","')
+        csv_file.close()
+
         csv_dict = {}
         i = 0
         for key in csv_var:
             if i >= len(csv_val):
                 csv_val.extend([None])
-            csv_dict[key.replace('"','').replace('\n','').replace(',','')] = csv_val[i].replace('"','').replace(',','')
+            csv_dict[key.replace('",','').replace('\n','').replace(',','').replace('"','')] = csv_val[i].replace('",','').replace('"','')
             i = i + 1
-        csv_file.close()
 
         # base payload
         payload = {
@@ -477,7 +478,6 @@ def device(attach, config, csv, detach, download, staging, template, invalid, va
                     "csv-host-name":str(csv_dict['csv-host-name']),
                     "//system/host-name":str(csv_dict['//system/host-name']),
                     "//system/system-ip":str(csv_dict['//system/system-ip']),
-                    "//system/site-id":str(csv_dict['//system/site-id']),
                     "csv-templateId":str(attach),
                     "selected":"true"
                 }
@@ -488,8 +488,13 @@ def device(attach, config, csv, detach, download, staging, template, invalid, va
             ]
         }
 
+        for k, v in csv_dict.items():
+            payload['deviceTemplateList'][0]['device'][0][k] = str(v)
+
+        print()
         pprint(payload)
 
+        # ready to test !!
         # response = sdwanp.post_request('template/device/config/attachfeature', payload)
         # print (response)
 
