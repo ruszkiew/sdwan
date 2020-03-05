@@ -387,6 +387,7 @@ def tasks(clear):
 # DEVICE
 
 @click.command()
+@click.option("--attach", help="Attach Device Template")
 @click.option("--config", help="Print Device CLI Configuration")
 @click.option("--csv", help="Output Device Variables to CSV")
 @click.option("--detach", help="Detach Device from Device Template")
@@ -396,7 +397,7 @@ def tasks(clear):
 @click.option("--template", help="Display Device Template")
 @click.option("--valid", help="Make Device Certificate Valid")
 @click.option("--variable", help="Display Device Variable and Values")
-def device(config, csv, detach, download, staging, template, invalid, valid, variable):
+def device(attach, config, csv, detach, download, staging, template, invalid, valid, variable):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -404,6 +405,8 @@ def device(config, csv, detach, download, staging, template, invalid, valid, var
         Example command:
 
             ./sdwan.py device
+
+            ./sdwan.py device --attach templateID --csv <csv_file>
 
             ./sdwan.py device --config deviceID
 
@@ -424,6 +427,66 @@ def device(config, csv, detach, download, staging, template, invalid, valid, var
             ./sdwan.py device --variable deviceID
 
     """
+
+    if attach:
+        print("Attempting to Attach Device Template...")
+        print()
+
+        # grab variables from specified device template
+        payload = {
+            "templateId": str(attach),
+            "deviceIds":
+                [
+                    "1.1.1.1"
+                ],
+            "isEdited": "false",
+            "isMasterEdited": "false"
+        }
+        response = sdwanp.post_request('template/device/config/input',
+                                       payload)
+
+        items = response['header']['columns']
+        payload_var = []
+        for item in items:
+            payload_var.append(item['property'])
+        
+        # grab variables from csv
+
+        # build payload from csv
+        payload = {
+            "deviceTemplateList":[
+            {
+                "templateId":str(attach),
+                "device":[
+                {
+                    "csv-status":"complete",
+
+                    # when parsing, if device variable list misses on csv, error out
+
+                    '''
+                    "csv-deviceId":str(target),
+                    "csv-deviceIP":str(sysip),
+                    "csv-host-name":str(hostname),
+                    "/1/loopback1/interface/ip/address":str(loopip),
+                    "/0/ge0/0/interface/ip/address":str(geip),
+                    "//system/host-name":str(hostname),
+                    "//system/system-ip":str(sysip),
+                    "//system/site-id":str(siteid),
+                    "csv-templateId":str(template),
+                    '''
+                    "selected":"true"
+                }
+                ],
+                "isEdited":"false",
+                "isMasterEdited":"false"
+            }
+            ]
+        }
+
+        # response = sdwanp.post_request('template/device/config/attachfeature', payload)
+        # print (response)
+
+        return
 
     if config:
         response = sdwanp.get_request('device/config?deviceId=' +
@@ -801,7 +864,7 @@ def device(config, csv, detach, download, staging, template, invalid, valid, var
         return
 
     # no parameter passed in - list all
-    click.secho("Retrieving the devices.")
+    click.secho("Retrieving Attached Devices.")
 
     response = json.loads(sdwanp.get_request('device'))
     items = response['data']
@@ -826,6 +889,24 @@ def device(config, csv, detach, download, staging, template, invalid, valid, var
     except UnicodeEncodeError:
         click.echo(tabulate.tabulate(table, headers,
                                      tablefmt="grid"))
+
+    click.secho("Retrieving Unattached Devices.")
+    response = json.loads(sdwanp.get_request('system/device/vedges'))
+    items = response['data']
+    headers = ["Chassis Number", "Operating Mode", "Model", "Serial Number",
+               "Certificate"]
+    table = list()
+    for item in items:
+        if item['configOperationMode'] == 'cli':
+            tr = [item['chasisNumber'], item['configOperationMode'], item['deviceModel'],
+                  item['serialNumber'], item['validity']]
+            table.append(tr)
+    try:
+        click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="fancy_grid"))
+    except UnicodeEncodeError:
+        click.echo(tabulate.tabulate(table, headers,
+                                         tablefmt="grid"))
     return
 
 
