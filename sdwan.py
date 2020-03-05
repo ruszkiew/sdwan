@@ -50,6 +50,7 @@ import click
 import tabulate
 import re
 import time
+import csv
 from datetime import datetime
 from requests.packages.urllib3.exceptions import InsecureRequestWarning  # NOQA
 from requests.auth import HTTPBasicAuth
@@ -449,10 +450,21 @@ def device(attach, config, csv, detach, download, staging, template, invalid, va
         payload_var = []
         for item in items:
             payload_var.append(item['property'])
-        
-        # grab variables from csv
 
-        # build payload from csv
+        # grab variables from csv - put into a dictionary for lookup
+        csv_file = open(csv, "rb")
+        csv_var = str(csv_file.readline(),'utf-8').split('","')
+        csv_val = str(csv_file.readline(),'utf-8').split('","')
+        csv_dict = {}
+        i = 0
+        for key in csv_var:
+            if i >= len(csv_val):
+                csv_val.extend([None])
+            csv_dict[key.replace('"','').replace('\n','').replace(',','')] = csv_val[i].replace('"','').replace(',','')
+            i = i + 1
+        csv_file.close()
+
+        # base payload
         payload = {
             "deviceTemplateList":[
             {
@@ -460,20 +472,13 @@ def device(attach, config, csv, detach, download, staging, template, invalid, va
                 "device":[
                 {
                     "csv-status":"complete",
-
-                    # when parsing, if device variable list misses on csv, error out
-
-                    '''
-                    "csv-deviceId":str(target),
-                    "csv-deviceIP":str(sysip),
-                    "csv-host-name":str(hostname),
-                    "/1/loopback1/interface/ip/address":str(loopip),
-                    "/0/ge0/0/interface/ip/address":str(geip),
-                    "//system/host-name":str(hostname),
-                    "//system/system-ip":str(sysip),
-                    "//system/site-id":str(siteid),
-                    "csv-templateId":str(template),
-                    '''
+                    "csv-deviceId":str(csv_dict['csv-deviceId']),
+                    "csv-deviceIP":str(csv_dict['csv-deviceIP']),
+                    "csv-host-name":str(csv_dict['csv-host-name']),
+                    "//system/host-name":str(csv_dict['//system/host-name']),
+                    "//system/system-ip":str(csv_dict['//system/system-ip']),
+                    "//system/site-id":str(csv_dict['//system/site-id']),
+                    "csv-templateId":str(attach),
                     "selected":"true"
                 }
                 ],
@@ -482,6 +487,8 @@ def device(attach, config, csv, detach, download, staging, template, invalid, va
             }
             ]
         }
+
+        pprint(payload)
 
         # response = sdwanp.post_request('template/device/config/attachfeature', payload)
         # print (response)
