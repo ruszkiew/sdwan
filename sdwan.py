@@ -18,6 +18,14 @@ Change a specific variable by device - ./sdway.py device --set_var 100.64.1.1 "/
     grab CLI variable/value to change - update hash
     attache device to template with new payload
 
+Add Display of BFD Sessions - ./sdwan.py device --bfd deviceID
+    https://vmanage-877772.viptela.net:443/dataservice/device/bfd/sessions?deviceId=100.104.11.1&&&
+
+
+Add Display of Control Connections - ./sdwan.py device -control deviceID
+https://vmanage-877772.viptela.net:443/dataservice/device/control/connections?deviceId=100.104.11.1&&
+
+
 ISSUE
 
 19.2 apears to not store a templateID in a device template file
@@ -377,7 +385,9 @@ def tasks(clear):
 
 @click.command()
 @click.option("--attach", help="Attach Device Template")
+@click.option("--bfd", help="Display Device BFD Sessions")
 @click.option("--config", help="Print Device CLI Configuration")
+@click.option("--control", help="Display Device Control Connections")
 @click.option("--csv", help="Output Device Variables to CSV")
 @click.option("--detach", help="Detach Device from Device Template")
 @click.option("--download", help="Download Device CLI Configuration")
@@ -386,7 +396,7 @@ def tasks(clear):
 @click.option("--template", help="Display Device Template")
 @click.option("--valid", help="Make Device Certificate Valid")
 @click.option("--variable", help="Display Device Variable and Values")
-def device(attach, config, csv, detach, download, staging, template, invalid, valid, variable):
+def device(attach, bfd, config, control, csv, detach, download, staging, template, invalid, valid, variable):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -397,7 +407,11 @@ def device(attach, config, csv, detach, download, staging, template, invalid, va
 
             ./sdwan.py device --attach templateID --csv <csv_file>
 
+            ./sdwan.py device --bfd deviceID
+
             ./sdwan.py device --config deviceID
+
+            ./sdwan.py device --control deviceID
 
             ./sdwan.py device --csv deviceID | all
 
@@ -500,6 +514,29 @@ def device(attach, config, csv, detach, download, staging, template, invalid, va
 
         return
 
+    if bfd:
+        response = json.loads(sdwanp.get_request('device/bfd/sessions?deviceId=' + bfd))
+        items = response['data']
+
+        headers = ["SYSTEM IP", "SITE ID", "STATE", "SRC TLOC COLOR",
+                   "DST TLOC COLOR", "SRC IP", "DST IP", "DST PORT",
+                   "ENCAP", "DETECT MULT", "TX INTERVAL", "UPTIME", "TRANSITIONS"]
+        table = list()
+        for item in items:
+            tr = [item['system-ip'], item['site-id'], item['state'],
+                  item['local-color'], item['color'], item['src-ip'], item['dst-ip'],
+                  item['dst-port'], item['proto'], item['detect-multiplier'], item['tx-interval'],
+                  item['uptime'], item['transitions']]
+            table.append(tr)
+        try:
+            click.echo(tabulate.tabulate(table, headers,
+                                         tablefmt="fancy_grid"))
+        except UnicodeEncodeError:
+            click.echo(tabulate.tabulate(table, headers,
+                                             tablefmt="grid"))
+
+        return
+
     if config:
         response = sdwanp.get_request('device/config?deviceId=' +
                                       config)
@@ -509,6 +546,29 @@ def device(attach, config, csv, detach, download, staging, template, invalid, va
         # print('!')
         # remove base64 header/trailer
         print(re.sub("'|b'", '', str(response)).replace('\\n', '\n'))
+        return
+
+    if control:
+        response = json.loads(sdwanp.get_request('device/control/connections?deviceId=' + control))
+        items = response['data']
+
+        headers = ["PEER TYPE", "PEER PROT", "PEER SYSTEM IP", "SITE ID",
+                   "DOMAIN ID", "PEER PRIVATE IP", "PEER PRIV PORT", "PEER PUB IP",
+                   "PEER PUB PORT", "LOCAL COLOR", "PROXY", "STATE", "UPTIME"]
+        table = list()
+        for item in items:
+            tr = [item['peer-type'], item['protocol'], item['system-ip'],
+                  item['site-id'], item['domain-id'], item['private-ip'], item['private-port'],
+                  item['public-ip'], item['public-port'], item['local-color'], item['behind-proxy'],
+                  item['state'], item['uptime']]
+            table.append(tr)
+        try:
+            click.echo(tabulate.tabulate(table, headers,
+                                         tablefmt="fancy_grid"))
+        except UnicodeEncodeError:
+            click.echo(tabulate.tabulate(table, headers,
+                                             tablefmt="grid"))
+
         return
 
     if csv:
