@@ -1046,8 +1046,14 @@ def template_device(attached, config, csv, download, upload, tree, variable):
         response = sdwanp.post_request('template/device/config/input',
                                        payload)
         items = response['header']['columns']
+        print()
         for item in items:
-            print('"', item['property'], '",', end='', sep='')
+            if item['property'] == 'csv-status':
+                print()
+            else:
+                print('"', item['property'], '",', end='', sep='')
+        print()
+        print()
         return
 
     # no parameter passed in - list all templates
