@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 4.7 - Last Updated: Ed Ruszkiewicz
+#  Version 4.8 - Last Updated: Ed Ruszkiewicz
 
 
 ###############################################################################
@@ -12,19 +12,6 @@
 """
 
 TODO
-
-Change a specific variable by device - ./sdway.py device --set_var 100.64.1.1 "/0/vpn-instance/ip/route/0.0.0.0/0/next-hop/vpn0_inet_next_hop_ip_addr/address":"205.203.91.130"
-    download current variable list - put into hash
-    grab CLI variable/value to change - update hash
-    attache device to template with new payload
-
-Add Display of BFD Sessions - ./sdwan.py device --bfd deviceID
-    https://vmanage-877772.viptela.net:443/dataservice/device/bfd/sessions?deviceId=100.104.11.1&&&
-
-
-Add Display of Control Connections - ./sdwan.py device -control deviceID
-https://vmanage-877772.viptela.net:443/dataservice/device/control/connections?deviceId=100.104.11.1&&
-
 
 ISSUE
 
@@ -2074,17 +2061,11 @@ def policy_definition(config, download, upload):
 
 ###############################################################################
 
-# HELP
-
-
 @click.group()
 def cli():
     """CLI for managing policies and templates in Cisco SDWAN.
     """
     pass
-
-###############################################################################
-
 
 cli.add_command(env)
 cli.add_command(rest)
@@ -2097,7 +2078,6 @@ cli.add_command(certificate)
 cli.add_command(tasks)
 cli.add_command(template_device)
 cli.add_command(template_feature)
-cli.add_command(attach)
 
 
 ###############################################################################
