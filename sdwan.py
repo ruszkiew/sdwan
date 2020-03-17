@@ -13,6 +13,14 @@
 
 TODO
 
+- Fix upload of data prefix list - invalid POLICY
+- Add a 'delete' function to lists, definitions, templates
+- Add a 'update' function to lists, defintions - this may navigate the activate of policy/templates to devices
+        need to reference if it is a CLI or UI template
+        if you PUT to an attached item - you have 5 minutes to do the 'input' and 'attachment' follow up
+- Add debug switch and logging file
+- Add unittesting
+
 ISSUE
 
 19.2 apears to not store a templateID in a device template file
@@ -1435,7 +1443,7 @@ def policy_list(ltype, config, download, upload):
     # list specific list types
     if ltype:
         response = json.loads(sdwanp.get_request('template/policy/list/' +
-                                                 ltype))
+                                                 ltype.lower()))
         items = response['data']
         headers = ["List Name", "List Type", "List ID", "Policies Attached"]
         table = list()
@@ -1499,7 +1507,7 @@ def policy_list(ltype, config, download, upload):
     if upload:
         json_file = open(upload, "rb")
         payload = json.loads(json_file.read())
-        ltype = payload['type']
+        ltype = payload['type'].lower()
         print()
         print("Policy List File:", upload, "attempting upload...")
         print()
