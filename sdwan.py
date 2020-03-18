@@ -6,19 +6,19 @@
 
 #  Version 5.1 - Last Updated: Ed Ruszkiewicz
 
-
 ###############################################################################
 
 """
 
 TODO
 
-- Fix upload of data prefix list - invalid POLICY
 - Add a 'delete' function to lists, definitions, device templates, feature template
+                DONE to lists
+
 - Add a 'update' function to lists - this may navigate the activate of policy/templates to devices
         need to reference if it is a CLI or UI template
         if you PUT to an attached item - you have 5 minutes to do the 'input' and 'attachment' follow up
-- Add debug switch and logging file
+
 - Add unittesting
 
 ISSUE
@@ -27,7 +27,6 @@ ISSUE
 Waiting to see what Sai from Cisco says - may be bug
 
 """
-
 
 ###############################################################################
 
@@ -80,14 +79,13 @@ else:
     proxy = {}
     SDWAN_PROXY = 'None'
 
-
 ###############################################################################
 
 # REST API CLASS
 
 class rest_api_lib:
 
-    DEBUG = True
+    DEBUG = False
 
     def __init__(self, vmanage_ip, vmanage_port, username, password):
         self.vmanage_ip = vmanage_ip
@@ -237,10 +235,7 @@ class rest_api_lib:
 
         return data
 
-
-
 ###############################################################################
-
 
 # CREATE OBJECT
 
@@ -249,7 +244,6 @@ sdwanp = rest_api_lib(SDWAN_IP, SDWAN_PORT, SDWAN_USERNAME, SDWAN_PASSWORD)
 ###############################################################################
 
 # NESTED DICTIONARY VARIABLE FIND / PRINT
-
 
 def var_find(dkey, dval, dret, d):
     for k, v in d.items():
@@ -265,7 +259,6 @@ def var_find(dkey, dval, dret, d):
     return
 
 # NESTED DICTIONARY LIST FIND / PRINT
-
 
 def list_find(d):
     for k, v in d.items():
@@ -297,7 +290,6 @@ def list_find(d):
 
 # SEARCH AND REPLACE ID
 
-
 def id_fix(oldid, newid, drc):
     pattern = re.compile(oldid)
     for dirpath, dirname, filename in os.walk(drc):
@@ -314,11 +306,9 @@ def id_fix(oldid, newid, drc):
             except:
                 pass
 
-
 ###############################################################################
 
 # PRINT ENVIRONMENT
-
 
 @click.command()
 # @click.option()
@@ -350,7 +340,6 @@ def env():
     return
 
 ###############################################################################
-
 
 # SEND CERTIFICATE
 
@@ -384,11 +373,9 @@ def certificate():
 
     return
 
-
 ###############################################################################
 
 # RAW REST GET
-
 
 @click.command()
 @click.option("--object", help="URL Object.")
@@ -408,9 +395,7 @@ def rest(object):
     pprint(response)
     return
 
-
 ###############################################################################
-
 
 # VMANAGE TASKS
 
@@ -456,7 +441,6 @@ def tasks(clear):
                                      tablefmt="grid"))
     print()
     return
-
 
 ###############################################################################
 
@@ -1060,7 +1044,6 @@ def device(attach, bfd, config, control, csv, detach, download, staging, templat
                                          tablefmt="grid"))
     return
 
-
 ###############################################################################
 
 # DEVICE TEMPLATE
@@ -1455,7 +1438,6 @@ def template_feature(attached, config, download, upload):
                                      tablefmt="grid"))
     return
 
-
 ###############################################################################
 
 # ATTACH TEMPLATE
@@ -1477,7 +1459,6 @@ def attach(template, target):
 
     print("** Need to Code **")
     return
-
 
 ###############################################################################
 
@@ -1653,7 +1634,6 @@ def policy_list(ltype, config, delete, download, upload):
                                      tablefmt="grid"))
     return
 
-
 ###############################################################################
 
 # POLICY CENTRAL
@@ -1818,7 +1798,6 @@ def policy_central(config, download, upload, definition, tree):
         click.echo(tabulate.tabulate(table, headers,
                                      tablefmt="grid"))
     return
-
 
 ###############################################################################
 
@@ -2034,7 +2013,6 @@ def policy_local(config, download, upload, definition, tree):
         click.echo(tabulate.tabulate(table, headers,
                                      tablefmt="grid"))
     return
-
 
 ###############################################################################
 
