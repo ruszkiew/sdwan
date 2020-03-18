@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 4.8 - Last Updated: Ed Ruszkiewicz
+#  Version 5.0 - Last Updated: Ed Ruszkiewicz
 
 
 ###############################################################################
@@ -14,8 +14,8 @@
 TODO
 
 - Fix upload of data prefix list - invalid POLICY
-- Add a 'delete' function to lists, definitions, templates
-- Add a 'update' function to lists, defintions - this may navigate the activate of policy/templates to devices
+- Add a 'delete' function to lists, definitions, device templates, feature template
+- Add a 'update' function to lists - this may navigate the activate of policy/templates to devices
         need to reference if it is a CLI or UI template
         if you PUT to an attached item - you have 5 minutes to do the 'input' and 'attachment' follow up
 - Add debug switch and logging file
@@ -153,6 +153,23 @@ class rest_api_lib:
             data = response
 
         return data
+
+    def delete_request(self, mount_point,
+                     headers={'Content-Type': 'application/json'}):
+
+        url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.vmanage_port, mount_point)
+
+        response = self.session[self.vmanage_ip].delete(url=url,
+                                                      headers=headers,
+                                                      proxies=proxy,
+                                                      verify=False)
+        try:
+            data = response.json()
+        except:
+            data = response
+
+        return data
+
 
 
 ###############################################################################
@@ -1402,9 +1419,10 @@ def attach(template, target):
 @click.command()
 @click.option("--ltype", help="Type of List")
 @click.option("--config", help="Print List contents")
+@click.option("--delete", help="List to delete")
 @click.option("--download", help="List to download")
 @click.option("--upload", help="File to Upload List")
-def policy_list(ltype, config, download, upload):
+def policy_list(ltype, config, delete, download, upload):
     """Display, Download, and Upload Policy Lists.
 
           List policy lists to derive listID or ltype for additional action
@@ -1416,6 +1434,8 @@ def policy_list(ltype, config, download, upload):
             ./sdwan.py policy-list --ltype
 
             ./sdwan.py policy-list --config <ListID>
+
+            ./sdwan.py policy-list --delete <ListID>
 
             ./sdwan.py policy-list --download <ListID> | all
 
@@ -1432,9 +1452,7 @@ def policy_list(ltype, config, download, upload):
                 ltype = item['type'].lower()
         response = sdwanp.get_request('template/policy/list/' +
                                       ltype + '/' + config)
-        # print()
-        # print("Template ID: ", config)
-        # print()
+
         # remove base64 header/trailer
         print(re.sub("'|b'", '', str(response)))
         print()
@@ -1457,6 +1475,28 @@ def policy_list(ltype, config, download, upload):
         except UnicodeEncodeError:
             click.echo(tabulate.tabulate(table, headers,
                                          tablefmt="grid"))
+        return
+
+    # delete a list
+    if delete:
+        print()
+        print("Attempting to Delete Policy List...")
+        print()
+        response = json.loads(sdwanp.get_request('template/policy/list'))
+        items = response['data']
+        i = 0
+        for item in items:
+            if(item['listId'] == delete):
+                ltype = item['type'].lower()
+                print("  listtype:"+ ltype + " -- name:" + item['name'])
+                print()
+                i = 1
+                response = sdwanp.delete_request('template/policy/list/' +
+                                                  ltype + '/' + delete)
+                print(response)
+        if i == 0:
+            print("  List Object not Found")
+        print()
         return
 
     # download specific lists or all lists
