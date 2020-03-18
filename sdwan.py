@@ -12,12 +12,12 @@
 
 TODO
 
-- Add a 'delete' function to lists, definitions, device templates, feature template
-                DONE to lists
-
 - Add a 'update' function to lists - this may navigate the activate of policy/templates to devices
         need to reference if it is a CLI or UI template
         if you PUT to an attached item - you have 5 minutes to do the 'input' and 'attachment' follow up
+        Need to figure out how to reference listID and parse/create the payload
+
+- Change a device Variable / Value
 
 - Add unittesting
 
@@ -184,6 +184,41 @@ class rest_api_lib:
         if self.DEBUG: print()
 
         response = self.session[self.vmanage_ip].post(url=url,
+                                                      data=payload,
+                                                      headers=headers,
+                                                      proxies=proxy,
+                                                      verify=False)
+
+        if self.DEBUG: print()
+        if self.DEBUG: print("**************** RESPONSE **********************")
+        if self.DEBUG: print()
+        if self.DEBUG: pprint(response)
+        if self.DEBUG: print()
+        if self.DEBUG: print("************************************************")
+        if self.DEBUG: print()
+
+        try:
+            data = response.json()
+        except:
+            data = response
+
+        return data
+
+    def put_request(self, mount_point, payload,
+                     headers={'Content-Type': 'application/json'}):
+
+        url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.vmanage_port, mount_point)
+        payload = json.dumps(payload)
+
+        if self.DEBUG: print()
+        if self.DEBUG: print("**************** PUT ***************************")
+        if self.DEBUG: print()
+        if self.DEBUG: print(url)
+        if self.DEBUG: print()
+        if self.DEBUG: pprint(payload)
+        if self.DEBUG: print()
+
+        response = self.session[self.vmanage_ip].put(url=url,
                                                       data=payload,
                                                       headers=headers,
                                                       proxies=proxy,
@@ -1440,28 +1475,6 @@ def template_feature(attached, config, download, upload):
 
 ###############################################################################
 
-# ATTACH TEMPLATE
-
-@click.command()
-@click.option("--template", help="TemplateID to deploy")
-@click.option("--target", help="Hostname of target network device.")
-def attach(template, target):
-    """Attach a Device to a Device Template.
-
-        Attach a Device to a Device Template.
-          Provide all template parameters and their values as arguments.
-
-        Example command:
-
-          ./sdwan.py attach --template TemplateID --target deviceID
-
-    """
-
-    print("** Need to Code **")
-    return
-
-###############################################################################
-
 # LISTS
 
 @click.command()
@@ -1469,8 +1482,9 @@ def attach(template, target):
 @click.option("--config", help="Print List contents")
 @click.option("--delete", help="List to delete")
 @click.option("--download", help="List to download")
+@click.option("--update", help="File to Update List")
 @click.option("--upload", help="File to Upload List")
-def policy_list(ltype, config, delete, download, upload):
+def policy_list(ltype, config, delete, download, update, upload):
     """Display, Download, and Upload Policy Lists.
 
           List policy lists to derive listID or ltype for additional action
@@ -1486,6 +1500,8 @@ def policy_list(ltype, config, delete, download, upload):
             ./sdwan.py policy-list --delete <ListID>
 
             ./sdwan.py policy-list --download <ListID> | all
+
+            ./sdwan.py policy-list --update <ListID>
 
             ./sdwan.py policy-list --upload <file>
 
@@ -1589,6 +1605,13 @@ def policy_list(ltype, config, delete, download, upload):
                              item['name'].replace('/', '-'), "w")
             json_file.write(re.sub("'|b'", '', str(response)))
             json_file.close()
+        return
+
+    # update a list 
+    if update:
+        print()
+        print("Policy List Update.  Need to Program")
+        print()
         return
 
     # upload a list from a file
