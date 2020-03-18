@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 5.0 - Last Updated: Ed Ruszkiewicz
+#  Version 5.1 - Last Updated: Ed Ruszkiewicz
 
 
 ###############################################################################
@@ -87,6 +87,8 @@ else:
 
 class rest_api_lib:
 
+    DEBUG = True
+
     def __init__(self, vmanage_ip, vmanage_port, username, password):
         self.vmanage_ip = vmanage_ip
         self.vmanage_port = vmanage_port
@@ -107,10 +109,25 @@ class rest_api_lib:
 
         sess = requests.session()
 
+        if self.DEBUG: print()
+        if self.DEBUG: print("**************** LOGIN *************************")
+        if self.DEBUG: print()
+        if self.DEBUG: print(login_url)
+        if self.DEBUG: print()
+        if self.DEBUG: pprint(login_data)
+        if self.DEBUG: print()
+
         login_response = sess.post(url=login_url,
                                    data=login_data,
                                    proxies=proxy,
                                    verify=False)
+
+
+        if self.DEBUG: print()
+        if self.DEBUG: print("**************** RESPONSE **********************")
+        if self.DEBUG: print()
+        if self.DEBUG: pprint(login_response)
+        if self.DEBUG: print()
 
         if b'<html>' in login_response.content:
             print("Login Failed")
@@ -131,10 +148,27 @@ class rest_api_lib:
     def get_request(self, mount_point):
 
         url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.vmanage_port, mount_point)
+
+        if self.DEBUG: print()
+        if self.DEBUG: print("**************** GET ***************************")
+        if self.DEBUG: print()
+        if self.DEBUG: print(url)
+        if self.DEBUG: print()
+
         response = self.session[self.vmanage_ip].get(url,
                                                      proxies=proxy,
                                                      verify=False)
+
+        if self.DEBUG: print()
+        if self.DEBUG: print("**************** RESPONSE **********************")
+        if self.DEBUG: print()
+        if self.DEBUG: pprint(response)
+        if self.DEBUG: print()
+        if self.DEBUG: print("************************************************")
+        if self.DEBUG: print()
+
         data = response.content
+
         return data
 
     def post_request(self, mount_point, payload,
@@ -142,11 +176,29 @@ class rest_api_lib:
 
         url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.vmanage_port, mount_point)
         payload = json.dumps(payload)
+
+        if self.DEBUG: print()
+        if self.DEBUG: print("**************** POST **************************")
+        if self.DEBUG: print()
+        if self.DEBUG: print(url)
+        if self.DEBUG: print()
+        if self.DEBUG: pprint(payload)
+        if self.DEBUG: print()
+
         response = self.session[self.vmanage_ip].post(url=url,
                                                       data=payload,
                                                       headers=headers,
                                                       proxies=proxy,
                                                       verify=False)
+
+        if self.DEBUG: print()
+        if self.DEBUG: print("**************** RESPONSE **********************")
+        if self.DEBUG: print()
+        if self.DEBUG: pprint(response)
+        if self.DEBUG: print()
+        if self.DEBUG: print("************************************************")
+        if self.DEBUG: print()
+
         try:
             data = response.json()
         except:
@@ -159,10 +211,25 @@ class rest_api_lib:
 
         url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.vmanage_port, mount_point)
 
+        if self.DEBUG: print()
+        if self.DEBUG: print("************ DELETE ************************")
+        if self.DEBUG: print()
+        if self.DEBUG: print(url)
+        if self.DEBUG: print()
+
         response = self.session[self.vmanage_ip].delete(url=url,
                                                       headers=headers,
                                                       proxies=proxy,
                                                       verify=False)
+
+        if self.DEBUG: print()
+        if self.DEBUG: print("************ RESPONSE **********************")
+        if self.DEBUG: print()
+        if self.DEBUG: pprint(response)
+        if self.DEBUG: print()
+        if self.DEBUG: print("********************************************")
+        if self.DEBUG: print()
+
         try:
             data = response.json()
         except:
