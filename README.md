@@ -41,7 +41,6 @@ Script Usage
       --help  Show this message and exit.
 
     Commands:
-      attach             Attach a Device to a Device Template.
       certificate        Send Certificates to Controllers.
       device             Display, Download, and View CLI Config for Devices.
       env                Print SDWAN Environment Values.
@@ -57,6 +56,7 @@ Script Usage
 
 ## COMMANDS + ACTIONS
 
+ * [certificate](certificate)
  * [device](device)
  * [env](env)
  * [policy-central](policy-central)
@@ -130,8 +130,14 @@ Objects are linked with references.  The IDs do change after an upload so the st
 ## EXAMPLES
 
     ./sdwan.py device
+    ./sdwan.py device --bfd 100.65.30.11
+    ./sdwan.py device --control 100.65.30.11
     ./sdwan.py device --variable 100.65.30.11
     ./sdwan.py device --config 100.65.30.11
+    ./sdwan.py device --valid 100.65.30.11
+    ./sdwan.py device --staging 100.65.30.11
+    ./sdwan.py device --attach 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9 router_var.csv
+    ./sdwan.py device --set_var 100.65.30.11 '//system/gps-location/latitude' 44.9764 
     ./sdwan.py device --template 100.65.30.11
     ./sdwan.py device --detach 100.65.30.11
     ./sdwan.py device --csv 100.65.30.11
@@ -142,7 +148,9 @@ Objects are linked with references.  The IDs do change after an upload so the st
     ./sdwan.py policy-definition
     ./sdwan.py policy-list
     ./sdwan.py policy-list --config 511ea203-30c5-4c79-9050-76bc896525a2
+    ./sdwan.py policy-list --delete 511ea203-30c5-4c79-9050-76bc896525a2
     ./sdwan.py policy-list --download 511ea203-30c5-4c79-9050-76bc896525a2
+    ./sdwan.py policy-list --upload list_json_config.txt
     ./sdwan.py policy-list --download all
     ./sdwan.py policy-central
     ./sdwan.py policy-central --definition bf0e9b04-616d-44d5-8c8e-633420a233f3
