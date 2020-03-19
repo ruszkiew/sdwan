@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 5.1 - Last Updated: Ed Ruszkiewicz
+#  Version 5.2 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
@@ -12,19 +12,14 @@
 
 TODO
 
-- Add a 'update' function to lists - this may navigate the activate of policy/templates to devices
+- Add 'update' function to lists - navigate the activate of policy/templates to devices
         need to reference if it is a CLI or UI template
         if you PUT to an attached item - you have 5 minutes to do the 'input' and 'attachment' follow up
         Need to figure out how to reference listID and parse/create the payload
 
-- Change a device Variable / Value
+- Unit Testing
 
-- Add unittesting
-
-ISSUE
-
-19.2 apears to not store a templateID in a device template file
-Waiting to see what Sai from Cisco says - may be bug
+- REST Error Correction
 
 """
 
@@ -490,11 +485,12 @@ def tasks(clear):
 @click.option("--detach", help="Detach Device from Device Template")
 @click.option("--download", help="Download Device CLI Configuration")
 @click.option("--invalid", help="Make Device Certificate Invalid")
+@click.option("--set_var", nargs=3, help="Set Variable/Value for Device")
 @click.option("--staging", help="Make Device Certificate Staging")
 @click.option("--template", help="Display Device Template")
 @click.option("--valid", help="Make Device Certificate Valid")
 @click.option("--variable", help="Display Device Variable and Values")
-def device(attach, bfd, config, control, csv, detach, download, staging, template, invalid, valid, variable):
+def device(attach, bfd, config, control, csv, detach, download, set_var, staging, template, invalid, valid, variable):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -518,6 +514,8 @@ def device(attach, bfd, config, control, csv, detach, download, staging, templat
             ./sdwan.py device --download deviceID | all
 
             ./sdwan.py device --invalid deviceID
+
+            ./sdwan.py device --set_var deviceID <object> <value>
 
             ./sdwan.py device --staging deviceID
 
@@ -986,6 +984,72 @@ def device(attach, bfd, config, control, csv, detach, download, staging, templat
         print(" ** serial_num     ", serialNumber)
         print(" ** template       ", template)
         print(" ** template-id    ", templateId)
+        print()
+        print (response)
+        print()
+
+        return
+
+    if set_var:
+        # get arguements
+        deviceIP = set_var[0]
+        _object = set_var[1]
+        _value = set_var[2]
+
+        # find device template attached to
+        response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + deviceIP))
+        try:
+            templateId = response['data'][0]['templateId']
+            uuid = response['data'][0]['uuid']
+        except KeyError:
+            print()
+            print("** Device not Attached to a Template **")
+            print()
+            return 
+
+        # grab variables from device based on device template
+        payload = {"templateId": templateId, "deviceIds": [uuid],
+                       "isEdited": "false", "isMasterEdited": "false"}
+
+        response = sdwanp.post_request('template/device/config/input/',
+                                       payload)
+
+        objects = response['data'][0]
+
+        print()
+        print("Replacing Object : " + _object) 
+        print("   Current Value : " + objects[_object]) 
+        print("   New Value     : " + _value)
+        print()
+        print("On Device: " + objects['//system/host-name'] + " -- System IP: " + deviceIP)
+        print()
+
+        # change object/value
+        objects[_object] = _value
+
+        # attach device with new values
+
+        payload = {
+            "deviceTemplateList":[
+            {
+                "templateId":str(templateId),
+                "device":[
+                {
+                # to be poplulated by objects dict
+                }
+                ],
+                "isEdited":"false",
+                "isMasterEdited":"false"
+            }
+            ]
+        }
+        payload['deviceTemplateList'][0]['device'][0] = objects
+        payload['deviceTemplateList'][0]['device'][0]['csv-templateId'] = str(templateId)
+        payload['deviceTemplateList'][0]['device'][0]['selected'] = 'true'
+
+        # attach template
+        response = sdwanp.post_request('template/device/config/attachfeature', payload)
+        print("Attachment Results...")
         print()
         print (response)
         print()

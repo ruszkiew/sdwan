@@ -12,6 +12,8 @@ Usage: sdwan.py template-device [OPTIONS]
 
       ./sdwan.py template_device --config <templateID>
 
+      ./sdwan.py template_device --csv <templateID>
+
       ./sdwan.py template_device --download <templateID> | all
 
       ./sdwan.py template_device --upload <file>
@@ -23,6 +25,7 @@ Usage: sdwan.py template-device [OPTIONS]
 Options:
   --attached TEXT  Template to display attached devices
   --config TEXT    Template to display
+  --csv TEXT       Template CSV Header
   --download TEXT  Template to download
   --upload TEXT    File to upload Template
   --tree TEXT      List templates and variables referenced

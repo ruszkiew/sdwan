@@ -1,6 +1,6 @@
 Usage: sdwan.py certificate [OPTIONS]
 
-  Send Certificates to Controllers
+  Send Certificates to Controllers.
 
   Example command:
 

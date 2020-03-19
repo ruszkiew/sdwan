@@ -8,7 +8,13 @@ Usage: sdwan.py device [OPTIONS]
 
       ./sdwan.py device
 
+      ./sdwan.py device --attach templateID --csv <csv_file>
+
+      ./sdwan.py device --bfd deviceID
+
       ./sdwan.py device --config deviceID
+
+      ./sdwan.py device --control deviceID
 
       ./sdwan.py device --csv deviceID | all
 
@@ -17,6 +23,8 @@ Usage: sdwan.py device [OPTIONS]
       ./sdwan.py device --download deviceID | all
 
       ./sdwan.py device --invalid deviceID
+
+      ./sdwan.py device --set_var deviceID <object> <value>
 
       ./sdwan.py device --staging deviceID
 
@@ -27,13 +35,17 @@ Usage: sdwan.py device [OPTIONS]
       ./sdwan.py device --variable deviceID
 
 Options:
-  --config TEXT    Print Device CLI Configuration
-  --csv TEXT       Output Device Variables to CSV
-  --detach TEXT    Detach Device from Device Template
-  --download TEXT  Download Device CLI Configuration
-  --invalid TEXT   Make Device Certificate Invalid"
-  --staging TEXT   Make Device Certificate Staging"
-  --template TEXT  Display Device Template
-  --variable TEXT  Display Device Variable and Values
-  --valid TEXT     Make Device Certificate Valid"
-  --help           Show this message and exit.
+  --attach TEXT      Attach Device Template
+  --bfd TEXT         Display Device BFD Sessions
+  --config TEXT      Print Device CLI Configuration
+  --control TEXT     Display Device Control Connections
+  --csv TEXT         Output Device Variables to CSV
+  --detach TEXT      Detach Device from Device Template
+  --download TEXT    Download Device CLI Configuration
+  --invalid TEXT     Make Device Certificate Invalid
+  --set_var TEXT...  Set Variable/Value for Device
+  --staging TEXT     Make Device Certificate Staging
+  --template TEXT    Display Device Template
+  --valid TEXT       Make Device Certificate Valid
+  --variable TEXT    Display Device Variable and Values
+  --help             Show this message and exit.

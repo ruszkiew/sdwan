@@ -1,6 +1,6 @@
 Usage: sdwan.py tasks [OPTIONS]
 
-  Retrieve and/or Clear vManage Active Tasks
+  Retrieve and/or Clear vManage Active Tasks.
 
   Returns vManage Process
 

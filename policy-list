@@ -12,13 +12,19 @@ Usage: sdwan.py policy-list [OPTIONS]
 
       ./sdwan.py policy-list --config <ListID>
 
+      ./sdwan.py policy-list --delete <ListID>
+
       ./sdwan.py policy-list --download <ListID> | all
+
+      ./sdwan.py policy-list --update <ListID>
 
       ./sdwan.py policy-list --upload <file>
 
 Options:
   --ltype TEXT     Type of List
   --config TEXT    Print List contents
+  --delete TEXT    List to delete
   --download TEXT  List to download
+  --update TEXT    File to Update List
   --upload TEXT    File to Upload List
   --help           Show this message and exit.
