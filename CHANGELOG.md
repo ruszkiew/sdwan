@@ -76,5 +76,21 @@ v4.4 - Added Certificate status to device listing
 
 v4.5 - Added Certificate mode changes and Certificate Push to Controllers
 
+v4.6 - Added Display of BFD Sessions on a Device
+
+v4.7 - Added Display of Control Connections on a Device
+
+v4.8 - Added Device Attachment by referencing .csv File
+
+v4.9 - Added DEBUG switch for REST Calls
+
+v5.0 - Added Delete of a List Object
+
+v5.1 - Added ability to Change a Device Variable
+
+v5.2 - Cleaned up Code - Started Framework for Updating a Referenced List
+
+
+
 
 
