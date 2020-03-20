@@ -1676,6 +1676,14 @@ def policy_list(ltype, config, delete, download, update, upload):
         print()
         print("Policy List Update.  Need to Program")
         print()
+        
+        # get the existing list - identify references
+        # how do we want to import new list content ?
+        # create new payload with new content
+        # put the new list
+        # run an 'input' on devices currently attached
+        # run an 'attach' on devices currently attached
+
         return
 
     # upload a list from a file
