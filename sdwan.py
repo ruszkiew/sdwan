@@ -90,15 +90,15 @@ class rest_api_lib:
 
     def login(self, vmanage_ip, vmanage_port, username, password):
 
-        base_url = 'https://%s:%s/' % (vmanage_ip, vmanage_port)
+        base_url = 'https://%s:%s/dataservice/' % (vmanage_ip, vmanage_port)
 
-        login_action = '/j_security_check'
+        login_action = 'j_security_check'
 
         login_data = {'j_username': username, 'j_password': password}
 
         login_url = base_url + login_action
 
-        token_url = base_url + 'dataservice/client/token'
+        token_url = base_url + 'client/token'
 
         sess = requests.session()
 
@@ -167,7 +167,9 @@ class rest_api_lib:
     def post_request(self, mount_point, payload,
                      headers={'Content-Type': 'application/json'}):
 
+
         url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.vmanage_port, mount_point)
+
         payload = json.dumps(payload)
 
         if self.DEBUG: print()
@@ -347,7 +349,7 @@ def env():
 
         Display the SDWAN Environment Values.
 
-        Example command:
+        Example Command:
 
             ./sdwan.py env
 
@@ -377,7 +379,7 @@ def env():
 def certificate():
     """Send Certificates to Controllers.
 
-        Example command:
+        Example Command:
 
             ./sdwan.py certificate
 
@@ -414,7 +416,7 @@ def rest(object):
 
         Returns raw output in JSON format.
 
-        Example command:
+        Example Command:
 
             ./sdwan.py rest --object <rest_object>
 
@@ -436,7 +438,7 @@ def tasks(clear):
 
         Returns vManage Process
 
-        Example command:
+        Example Command:
 
             ./sdwan.py tasks
 
@@ -490,12 +492,12 @@ def tasks(clear):
 @click.option("--template", help="Display Device Template")
 @click.option("--valid", help="Make Device Certificate Valid")
 @click.option("--variable", help="Display Device Variable and Values")
-def device(attach, bfd, config, control, csv, detach, download, set_var, staging, template, invalid, valid, variable):
+def device(attach, bfd, config, control, detach, download, set_var, csv, staging, template, invalid, valid, variable):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
 
-        Example command:
+        Example Command:
 
             ./sdwan.py device
 
@@ -1160,7 +1162,7 @@ def template_device(attached, config, csv, download, upload, tree, variable):
 
           List templates to derive templateID for additional actions
 
-        Example command:
+        Example Command:
 
             ./sdwan.py template_device
 
@@ -1404,7 +1406,7 @@ def template_feature(attached, config, download, upload):
 
           List templates to derive templateID for additional action
 
-        Example command:
+        Example Command:
 
             ./sdwan.py template_feature
 
@@ -1553,7 +1555,7 @@ def policy_list(ltype, config, delete, download, update, upload):
 
           List policy lists to derive listID or ltype for additional action
 
-        Example command:
+        Example Command:
 
             ./sdwan.py policy-list
 
@@ -1744,7 +1746,7 @@ def policy_central(config, download, upload, definition, tree):
 
           List Policy to derive PolicyID for additional action
 
-        Example command:
+        Example Command:
 
             ./sdwan.py policy-central
 
@@ -1909,7 +1911,7 @@ def policy_local(config, download, upload, definition, tree):
 
           List Policy to derive PolicyID for additional actio
 
-        Example command:
+        Example Command:
 
             ./sdwan.py policy-local
 
@@ -2122,7 +2124,7 @@ def policy_definition(config, download, upload):
 
           List Policy to derive PolicyID for additional actions
 
-        Example command:
+        Example Command:
 
             ./sdwan.py policy-definition
 
