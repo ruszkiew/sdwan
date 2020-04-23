@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 5.2 - Last Updated: Ed Ruszkiewicz
+#  Version 5.3 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
@@ -17,7 +17,7 @@ TODO
         if you PUT to an attached item - you have 5 minutes to do the 'input' and 'attachment' follow up
         Need to figure out how to reference listID and parse/create the payload
 
-- Unit Testing
+- Unit Testing - Started
 
 - REST Error Correction
 
@@ -2274,5 +2274,11 @@ cli.add_command(template_feature)
 
 # MAIN
 
-if __name__ == "__main__":
+def main():
     cli()
+
+if __name__ == '__main__':
+    main()
+
+#if __name__ == "__main__":
+#    cli()
