@@ -17,8 +17,11 @@ TODO
         if you PUT to an attached item - you have 5 minutes to do the 'input' and 'attachment' follow up
         Need to figure out how to reference listID and parse/create the payload
 
-- Unit Testing - Started
+- Add Database Backup/Download Function
 
+- Fix CSV download.  Need to drop last ','.  Invalid Header Error on CSV Import
+
+- Unit Testing - Started
 - REST Error Correction
 
 """
@@ -30,6 +33,7 @@ TODO
 import requests
 import os
 import sys
+import socket
 import json
 import click
 import tabulate
@@ -41,6 +45,8 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning  # NOQA
 from requests.auth import HTTPBasicAuth
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)       # NOQA
 requests.packages.urllib3.disable_warnings()
+import paramiko
+from paramiko import SSHClient,AutoAddPolicy
 from pprint import pprint
 
 ###############################################################################
@@ -1464,7 +1470,8 @@ def template_feature(attached, config, download, upload):
             print("Downloading all Feature Templates...")
             print()
             for item in items:
-                if re.search(r'Factory_Default', item['templateName']) is None:
+                # 'Default' in Template Name will not be downloaded
+                if re.search(r'Default_', item['templateName']) is None:
                     print("  Template ID:", item['templateId'], "downloaded...")
                     response = sdwanp.get_request('template/feature/object/' +
                                                   item['templateId'])

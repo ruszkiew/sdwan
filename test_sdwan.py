@@ -53,12 +53,18 @@ from sdwan import template_feature
 
 runner = CliRunner()
 
+###############################################################################
+
 def test_env():
     response = runner.invoke(env,[])
     assert response.exit_code == 0
     assert "SDWAN_USERNAME" in response.output
 
+###############################################################################
+
 def test_rest():
     response = runner.invoke(rest, ['--object', 'device'])
     assert response.exit_code == 0
     assert "data" in response.output
+
+###############################################################################
