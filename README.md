@@ -8,6 +8,7 @@ Cisco SDWAN (Viptela) CLI Tool
        * requests
        * click
        * tabulate
+       * netmiko
 
     Clone or download this repo
 
