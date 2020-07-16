@@ -43,6 +43,7 @@ Script Usage
 
     Commands:
       certificate        Send Certificates to Controllers.
+      configuration-db   Create Database Backup File and Download.
       device             Display, Download, and View CLI Config for Devices.
       env                Print SDWAN Environment Values.
       policy-central     Display, Download, and Upload Centralized Policy.

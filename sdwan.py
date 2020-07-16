@@ -393,7 +393,7 @@ def env():
 @click.command()
 @click.option("--backup", help="File Name to Backup")
 def configuration_db(backup):
-    """Create Database Backup File and Download
+    """Create Database Backup File and Download.
 
         Returns Zipped Tarball Database File
 
