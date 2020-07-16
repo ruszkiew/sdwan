@@ -105,11 +105,12 @@ The current environment can be viewed with the 'env' command in the script.
 
     ./sdwan.py env
 
-If using SOCKS Proxy to Portforward SSH/HTTPS through a Bastion Host, add vManage entry to the .ssh_config file.
+If using SOCKS Proxy to Port forward SSH/HTTPS through a Bastion Host, add vManage entry to the .ssh_config file.
+
 It would look like:
 
-  host 52.89.253.138
-   ProxyCommand=nc -X 5 -x localhost:12345 %h %p
+    host 52.89.253.138
+     ProxyCommand=nc -X 5 -x localhost:12345 %h %p
 
 
 ## BACKUP (BATCH DOWNLOAD)
