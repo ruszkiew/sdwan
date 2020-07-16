@@ -90,6 +90,8 @@ v5.1 - Added ability to Change a Device Variable
 
 v5.2 - Cleaned up Code - Started Framework for Updating a Referenced List
 
+v5.4 - Added Database Backup using Netmiko - Updated GIT Documentation
+
 
 
 

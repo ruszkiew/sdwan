@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 5.3 - Last Updated: Ed Ruszkiewicz
+#  Version 5.4 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
@@ -16,8 +16,6 @@ TODO
         need to reference if it is a CLI or UI template
         if you PUT to an attached item - you have 5 minutes to do the 'input' and 'attachment' follow up
         Need to figure out how to reference listID and parse/create the payload
-
-- Add Database Backup/Download Function
 
 - Fix CSV download.  Need to drop last ','.  Invalid Header Error on CSV Import
 
@@ -45,9 +43,8 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning  # NOQA
 from requests.auth import HTTPBasicAuth
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)       # NOQA
 requests.packages.urllib3.disable_warnings()
-import paramiko
-from paramiko import SSHClient,AutoAddPolicy
 from pprint import pprint
+from netmiko import ConnectHandler, SCPConn
 
 ###############################################################################
 
@@ -59,6 +56,7 @@ SDWAN_USERNAME = os.environ.get("SDWAN_USERNAME")
 SDWAN_PASSWORD = os.environ.get("SDWAN_PASSWORD")
 SDWAN_CFGDIR = os.environ.get("SDWAN_CFGDIR")
 SDWAN_PROXY = os.environ.get("SDWAN_PROXY")
+SDWAN_SSH_CONFIG = './.ssh_config'
 
 if SDWAN_IP is None or SDWAN_USERNAME is None or SDWAN_PASSWORD is None:
     print("CISCO SDWAN details must be set via environment ",
@@ -79,6 +77,17 @@ if SDWAN_PROXY is not None:
 else:
     proxy = {}
     SDWAN_PROXY = 'None'
+
+# NETMIKO SSH DEVICE
+
+SSH_DEVICE = {
+    'device_type': 'linux',
+    'host': SDWAN_IP,
+    'username': SDWAN_USERNAME,
+    'password': SDWAN_PASSWORD,
+    'ssh_config_file': SDWAN_SSH_CONFIG,
+} 
+
 
 ###############################################################################
 
@@ -376,6 +385,66 @@ def env():
     print()
 
     return
+
+###############################################################################
+
+# BACKUP DATABASE FILE
+
+@click.command()
+@click.option("--backup", help="File Name to Backup")
+def configuration_db(backup):
+    """Create Database Backup File and Download
+
+        Returns Zipped Tarball Database File
+
+        Example Command:
+
+            ./sdwan.py configuration-db --backup <file_name>
+
+    """
+
+    print()
+
+    # generate backup tarball
+    print()
+    print("***********************************")
+    print("  Generating Database Tarball      ")
+    print("    *  May take a minute ...       ")
+    print("***********************************")
+    print()
+    ssh_command = 'request nms configuration-db backup path /home/admin/' + backup
+    net_connect = ConnectHandler(**SSH_DEVICE)
+    ssh_output = net_connect.send_command(ssh_command)
+    print(ssh_output)
+    print()
+    net_connect.disconnect()
+
+    # scp backup file from vmanage
+    print()
+    print("***********************************")
+    print("  Attempting to Download File      ")
+    print("    *  May take a minute ...       ")
+    print("***********************************")
+    print()
+    net_connect = ConnectHandler(**SSH_DEVICE)
+    scp_connect = SCPConn(net_connect)
+    src_file = '/home/admin/' + backup + '.tar.gz'
+    dst_file = SDWAN_CFGDIR + backup + '.tar.gz'
+    scp_connect.scp_get_file(src_file, dst_file)
+    scp_connect.close()
+    net_connect.disconnect()
+    if os.path.isfile(dst_file):
+        print('** ', dst_file, 'Successfully Downloaded')
+        print()
+        print(os.system('ls -la ' + dst_file))
+    else:
+        print('** ', dst_file, 'ERROR - Downloaded Failed')
+    
+    print()
+
+    return
+
+
 
 ###############################################################################
 
@@ -2264,6 +2333,7 @@ def cli():
     """
     pass
 
+cli.add_command(configuration_db)
 cli.add_command(env)
 cli.add_command(rest)
 cli.add_command(policy_list)
@@ -2286,6 +2356,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-#if __name__ == "__main__":
-#    cli()

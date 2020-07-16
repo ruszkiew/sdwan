@@ -1,0 +1,2 @@
+host 52.89.253.138
+ ProxyCommand=nc -X 5 -x localhost:12345 %h %p

@@ -57,6 +57,7 @@ Script Usage
 ## COMMANDS + ACTIONS
 
  * [certificate](certificate)
+ * [configuration-db](configuration-db)
  * [device](device)
  * [env](env)
  * [policy-central](policy-central)
@@ -102,6 +103,12 @@ The current environment can be viewed with the 'env' command in the script.
 
     ./sdwan.py env
 
+If using SOCKS Proxy to Portforward SSH/HTTPS through a Bastion Host, add vManage entry to the .ssh_config file.
+It would look like:
+
+  host 52.89.253.138
+   ProxyCommand=nc -X 5 -x localhost:12345 %h %p
+
 
 ## BACKUP (BATCH DOWNLOAD)
 
@@ -119,6 +126,8 @@ Objects may be uploaded to the same or older version of vManage.
 
 Objects are linked with references.  The IDs do change after an upload so the stored object files are updated with the new IDs.  When uploading in batch it is important to start with the 'leaf' objects and work towards the more complex.  Below is the advised order of upload.
 
+WARNING - Do NOT use Factory Default Feature Templates if you plan to Upload Device Templates.  ID linking will be broken.
+
   * List
   * Definition
   * Policy Local
@@ -129,6 +138,8 @@ Objects are linked with references.  The IDs do change after an upload so the st
 
 ## EXAMPLES
 
+    ./sdwan.py certificate
+    ./sdwan.py configuration-db --backup customer_backup_file_1
     ./sdwan.py device
     ./sdwan.py device --bfd 100.65.30.11
     ./sdwan.py device --control 100.65.30.11

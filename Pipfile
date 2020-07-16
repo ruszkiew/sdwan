@@ -10,6 +10,7 @@ requests = "*"
 click = "*"
 tabulate = "*"
 pytest = "*"
+netmiko = "*"
 
 [requires]
 python_version = "3.6"
