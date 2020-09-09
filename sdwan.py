@@ -12,6 +12,7 @@
 
 TODO
 
+- Token Auth
 - Add 'update' function to lists - navigate the activate of policy/templates to devices
         need to reference if it is a CLI or UI template
         if you PUT to an attached item - you have 5 minutes to do the 'input' and 'attachment' follow up
@@ -412,7 +413,7 @@ def configuration_db(backup):
     print("    *  May take a minute ...       ")
     print("***********************************")
     print()
-    ssh_command = 'request nms configuration-db backup path /home/admin/' + backup
+    ssh_command = 'request nms configuration-db backup path /home/' + SDWAN_USERNAME + '/' + backup
     net_connect = ConnectHandler(**SSH_DEVICE)
     ssh_output = net_connect.send_command(ssh_command)
     print(ssh_output)
@@ -428,7 +429,7 @@ def configuration_db(backup):
     print()
     net_connect = ConnectHandler(**SSH_DEVICE)
     scp_connect = SCPConn(net_connect)
-    src_file = '/home/admin/' + backup + '.tar.gz'
+    src_file = '/home/' + SDWAN_USERNAME + '/' + backup + '.tar.gz'
     dst_file = SDWAN_CFGDIR + backup + '.tar.gz'
     scp_connect.scp_get_file(src_file, dst_file)
     scp_connect.close()
