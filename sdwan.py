@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 5.4 - Last Updated: Ed Ruszkiewicz
+#  Version 5.5 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
@@ -13,14 +13,31 @@
 TODO
 
 - Token Auth
+
+- VRRP Verification
+- OSPF Route / Neigh
+- BGP Route / Neighbor
+- NTP
+- BFD
+- Interface Speed/Duplex/Errors/Input/Output/Clear
+
 - Add 'update' function to lists - navigate the activate of policy/templates to devices
         need to reference if it is a CLI or UI template
         if you PUT to an attached item - you have 5 minutes to do the 'input' and 'attachment' follow up
         Need to figure out how to reference listID and parse/create the payload
 
+- Add Security Policy / Definition
+
+- Add a 'Diff' function to Device Templates - Compare if migratoing to new platform
+
+- Copy a Device Template to a new Model
+
+- Investigate packet tracker functionality - similar to Silverpeak flow details
+
 - Fix CSV download.  Need to drop last ','.  Invalid Header Error on CSV Import
 
 - Unit Testing - Started
+
 - REST Error Correction
 
 """
@@ -555,6 +572,7 @@ def tasks(clear):
 # DEVICE
 
 @click.command()
+@click.option("--arp", help="Display Device ARP Cache")
 @click.option("--attach", help="Attach Device Template")
 @click.option("--bfd", help="Display Device BFD Sessions")
 @click.option("--config", help="Print Device CLI Configuration")
@@ -568,7 +586,8 @@ def tasks(clear):
 @click.option("--template", help="Display Device Template")
 @click.option("--valid", help="Make Device Certificate Valid")
 @click.option("--variable", help="Display Device Variable and Values")
-def device(attach, bfd, config, control, detach, download, set_var, csv, staging, template, invalid, valid, variable):
+@click.option("--wan", help="Display Device WAN Interface")
+def device(arp, attach, bfd, config, control, detach, download, set_var, csv, staging, template, invalid, valid, variable, wan):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -576,6 +595,8 @@ def device(attach, bfd, config, control, detach, download, set_var, csv, staging
         Example Command:
 
             ./sdwan.py device
+
+            ./sdwan.py device --arp deviceID
 
             ./sdwan.py device --attach templateID --csv <csv_file>
 
@@ -603,7 +624,33 @@ def device(attach, bfd, config, control, detach, download, set_var, csv, staging
 
             ./sdwan.py device --variable deviceID
 
+            ./sdwan.py device --wan deviceID
+
     """
+
+    if arp:
+        print()
+        response = json.loads(sdwanp.get_request('device/arp?deviceId=' + arp))
+        items = response['data']
+
+        headers = ["VPN", "Protocol", "Address", "Hardware Addr",
+                   "Type", "Interface"]
+        table = list()
+        for item in items:
+            if 'address' in item:
+                tr = [item['vpn-id'], 'Internet', item['address'],
+                      item['hardware'], 'ARPA', item['interface']]
+                table.append(tr)
+            else:
+                tr = [item['vpn-id'], 'Internet', item['ip'],
+                      item['mac'], 'ARPA', item['if-name']]
+                table.append(tr)
+
+        click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="simple"))
+
+        print()
+        return
 
     if attach:
         print("Attempting to Attach Device Template...")
@@ -636,9 +683,10 @@ def device(attach, bfd, config, control, detach, download, set_var, csv, staging
         csv_dict = {}
         i = 0
         for key in csv_var:
+            #print(key)
             if i >= len(csv_val):
                 csv_val.extend([None])
-            csv_dict[key.replace('",','').replace('\n','').replace(',','').replace('"','')] = csv_val[i].replace('",','').replace('"','')
+            csv_dict[key.replace('",','').replace('\n','').replace(',','').replace('"','')] = csv_val[i].replace('",','').replace('"','').replace('\n','')
             i = i + 1
 
         # base payload
@@ -672,6 +720,8 @@ def device(attach, bfd, config, control, detach, download, set_var, csv, staging
             else:
                 payload['deviceTemplateList'][0]['device'][0][k] = csv_dict[k]
 
+        pprint(payload)
+
         print()
         print(" ** hostname -    ", str(csv_dict['//system/host-name']))
         print(" ** system-ip -   ", str(csv_dict['csv-deviceIP']))
@@ -685,6 +735,7 @@ def device(attach, bfd, config, control, detach, download, set_var, csv, staging
         print("Attachment Results...")
         print()
         print (response)
+        print()
 
         return
 
@@ -1172,6 +1223,29 @@ def device(attach, bfd, config, control, detach, download, set_var, csv, staging
         print()
         print (response)
         print()
+
+        return
+
+    if wan:
+        response = json.loads(sdwanp.get_request('device/control/synced/waninterface?deviceId=' + wan))
+        items = response['data']
+
+        headers = ["SYSTEM IP", "HOSTNAME", "INTERFACE", "COLOR","RESTRICT",
+                   "PRIVATE IP", "PRIVATE PORT", "PUBLIC IP", "PUBLIC PORT",
+                   "STATE", "VSMARTS", "VMANAGE", "TUNNEL PREF"]
+        table = list()
+        for item in items:
+            tr = [item['vmanage-system-ip'], item['vdevice-host-name'], item['interface'],
+                  item['color'], item['restrict-str'], item['private-ip'], item['private-port'],
+                  item['public-ip'], item['public-port'], item['operation-state'], item['num-vsmarts'],
+                  item['num-vmanages'], item['preference']]
+            table.append(tr)
+        try:
+            click.echo(tabulate.tabulate(table, headers,
+                                         tablefmt="fancy_grid"))
+        except UnicodeEncodeError:
+            click.echo(tabulate.tabulate(table, headers,
+                                             tablefmt="grid"))
 
         return
 
