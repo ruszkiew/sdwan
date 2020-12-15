@@ -14,12 +14,16 @@ TODO
 
 - Token Auth
 
-- VRRP Verification
-- OSPF Route / Neigh
-- BGP Route / Neighbor
-- NTP
-- BFD
+- Postpone some of the Service side routing until cEdge only - different calls cross platform - example
+-    device/ip/routetable?deviceId=100.103.1.1
+-    device/ip/ipRoutes?deviceId=100.113.14.1 
+
+- OMP with Specific Prefix -- Works on 20.3 and 17.3 + -- older vEdge no worky
+
 - Interface Speed/Duplex/Errors/Input/Output/Clear
+- BFD Stats
+- BGP Route / Neighbor
+
 
 - Add 'update' function to lists - navigate the activate of policy/templates to devices
         need to reference if it is a CLI or UI template
@@ -581,13 +585,16 @@ def tasks(clear):
 @click.option("--detach", help="Detach Device from Device Template")
 @click.option("--download", help="Download Device CLI Configuration")
 @click.option("--invalid", help="Make Device Certificate Invalid")
+@click.option("--omp", nargs=2, help="Display Device OMP Routes") 
+@click.option("--ospf", help="Display Device OSPF Information") 
 @click.option("--set_var", nargs=3, help="Set Variable/Value for Device")
 @click.option("--staging", help="Make Device Certificate Staging")
 @click.option("--template", help="Display Device Template")
 @click.option("--valid", help="Make Device Certificate Valid")
 @click.option("--variable", help="Display Device Variable and Values")
+@click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--wan", help="Display Device WAN Interface")
-def device(arp, attach, bfd, config, control, detach, download, set_var, csv, staging, template, invalid, valid, variable, wan):
+def device(arp, attach, bfd, config, control, detach, download, omp, ospf, set_var, csv, staging, template, invalid, valid, variable, vrrp, wan):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -614,6 +621,10 @@ def device(arp, attach, bfd, config, control, detach, download, set_var, csv, st
 
             ./sdwan.py device --invalid deviceID
 
+            ./sdwan.py device --omp deviceID summary | <prefix>
+
+            ./sdwan.py device --ospf deviceID summary | <prefix>
+
             ./sdwan.py device --set_var deviceID <object> <value>
 
             ./sdwan.py device --staging deviceID
@@ -623,6 +634,8 @@ def device(arp, attach, bfd, config, control, detach, download, set_var, csv, st
             ./sdwan.py device --valid deviceID
 
             ./sdwan.py device --variable deviceID
+
+            ./sdwan.py device --vrrp deviceID
 
             ./sdwan.py device --wan deviceID
 
@@ -1119,6 +1132,126 @@ def device(arp, attach, bfd, config, control, detach, download, set_var, csv, st
 
         return
 
+    if omp:
+        # get arguements
+        deviceIP = omp[0]
+        _prefix = omp[1]
+
+        response = json.loads(sdwanp.get_request('device/omp/routes/received?deviceId=' + deviceIP))
+        items = response['data']
+
+        print()
+
+        if _prefix == 'summary':
+
+            print()
+            print('Code:')
+            print('C   -> chosen')
+            print('I   -> installed')
+            print('Red -> redistributed')
+            print('Rej -> rejected')
+            print('L   -> looped')
+            print('R   -> resolved')
+            print('S   -> stale')
+            print('Ext -> extranet')
+            print('Inv -> invalid')
+            print('Stg -> staged')
+            print('IA  -> On-demand inactive')
+            print('U   -> TLOC unresolved')
+            print()
+            print()
+
+            headers = ["VPN", "PREFIX", "FROM PEER", "PATH ID","LABEL",
+                       "STATUS", "ATTRIBUTE TYPE", "TLOC IP", "SITE ID", "COLOR",
+                       "ENCAP", "PREFERENCE"]
+            table = list()
+            for item in items:
+                tr = [item['vpn-id'], item['prefix'], item['from-peer'],
+                      item['path-id'], item['label'], item['status'], item['attribute-type'],
+                      item['originator'], item['site-id'], item['color'], item['encap'],
+                      '-']
+                table.append(tr)
+
+            click.echo(tabulate.tabulate(table, headers,
+                                         tablefmt="simple"))
+        else:
+            vpn = 1000
+            for item in items:
+                if item['prefix'] == _prefix:
+                    if item['vpn-id'] != vpn:
+                        print('---------------------------------------------------')
+                        print('omp route entries for vpn ' + item['vpn-id'] + ' route ' + item['prefix'])
+                        print('---------------------------------------------------')
+                        print()
+                        vpn = item['vpn-id']
+                    pprint(item)
+                    print()
+
+        print()
+
+        return
+
+    if ospf:
+
+        print()
+        print('--------------')
+        print('OSPF INTERFACE')
+        print('--------------')
+        print()
+
+        response = json.loads(sdwanp.get_request('device/ospf/interface?deviceId=' + ospf))
+        items = response['data']
+
+        headers = ["AREA", "INTERFACE", "COST", "PRIORITY",
+                   "TYPE", "HELLO", "DR", "STATE"]
+        table = list()
+
+        for item in items:
+            if 'area-addr' in item:
+                tr = [item['area-addr'], item['if-name'], item['cost'],
+                      item['priority'], item['if-type'], item['hello-timer'],
+                      item['designated-router-id'], item['ospf-if-state']]
+                table.append(tr)
+            else:
+                tr = [item['area-id'], item['name'], item['cost'],
+                      item['priority'], item['network-type'], item['hello-interval'],
+                      item['dr'], item['state']]
+                table.append(tr)
+
+        click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="simple"))
+
+        print()
+        print('--------------')
+        print('OSPF NEIGHBORS')
+        print('--------------')
+        print()
+
+        response = json.loads(sdwanp.get_request('device/ospf/neighbor?deviceId=' + ospf))
+        items = response['data']
+
+        headers = ["AREA", "INTERFACE", "NEIGHBOR ID", "STATE"]
+        table = list()
+
+        for item in items:
+            if 'area' in item:
+                tr = [item['area'], item['if-name'], item['router-id'],
+                      item['neighbor-state']]
+                table.append(tr)
+            else:
+                if 'neighbor-id' in item:
+                    tr = [item['area-id'], item['name'], item['neighbor-id'],
+                          item['state']]
+                    table.append(tr)
+
+        click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="simple"))
+
+        print()
+
+        return
+
+
     if set_var:
         # get arguements
         deviceIP = set_var[0]
@@ -1126,7 +1259,7 @@ def device(arp, attach, bfd, config, control, detach, download, set_var, csv, st
         _value = set_var[2]
 
         # find device template attached to
-        response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + deviceIP))
+        response = json.loads(sdwanp.get_request('system/device/vedges?deviceId=' + deviceIP))
         try:
             templateId = response['data'][0]['templateId']
             uuid = response['data'][0]['uuid']
@@ -1222,6 +1355,29 @@ def device(arp, attach, bfd, config, control, detach, download, set_var, csv, st
         print(" ** template-id    ", templateId)
         print()
         print (response)
+        print()
+
+        return
+
+    if vrrp:
+
+        print()
+
+        response = json.loads(sdwanp.get_request('device/vrrp?deviceId=' + vrrp))
+        items = response['data']
+
+        headers = ["IF NAME", "GROUP ID", "VIRTUAL IP", "VIRTUAL MAC","PRIORITY",
+                   "VRRP STATE", "OMP STATE", "LAST STATE CHANGE TIME"]
+        table = list()
+        for item in items:
+            tr = [item['if-name'], item['group-id'], item['virtual-ip'],
+                  item['virtual-mac'], item['priority'], item['vrrp-state'], item['omp-state'],
+                  item['last-state-change-time']]
+            table.append(tr)
+
+        click.echo(tabulate.tabulate(table, headers,
+                                             tablefmt="simple"))
+
         print()
 
         return
