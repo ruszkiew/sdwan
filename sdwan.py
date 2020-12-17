@@ -12,18 +12,14 @@
 
 TODO
 
-
-- Interface Speed/Duplex/Errors/Input/Output/Clear
-
 - Token Auth
 
-- OMP with Specific Prefix -- Works on 20.3 and 17.3 + -- older vEdge no worky
-
 - Add Security Policy / Definition
+
 - Add a 'Diff' function to Device Templates - Compare if migratoing to new platform
 - Copy a Device Template to a new Model
 
-- Add 'update' function to lists - navigate the activate of policy/templates to devices
+- Add 'Update' function to lists - navigate the activate of policy/templates to devices
         need to reference if it is a CLI or UI template
         if you PUT to an attached item - you have 5 minutes to do the 'input' and 'attachment' follow up
         Need to figure out how to reference listID and parse/create the payload
@@ -576,6 +572,7 @@ def tasks(clear):
 @click.option("--detach", help="Detach Device from Device Template")
 @click.option("--download", help="Download Device CLI Configuration")
 @click.option("--invalid", help="Make Device Certificate Invalid")
+@click.option("--int", help="Display Interface Statistics and State")
 @click.option("--omp", nargs=2, help="Display Device OMP Routes") 
 @click.option("--ospf", help="Display Device OSPF Information") 
 @click.option("--set_var", nargs=3, help="Set Variable/Value for Device")
@@ -586,7 +583,7 @@ def tasks(clear):
 @click.option("--variable", help="Display Device Variable and Values")
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--wan", help="Display Device WAN Interface")
-def device(arp, attach, bfd, bgp, config, control, detach, download, omp, ospf,
+def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, ospf,
            set_var, csv, sla, staging, template, invalid, valid, variable, vrrp, wan):
     """Display, Download, and View CLI Config for Devices.
 
@@ -613,6 +610,8 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, omp, ospf,
             ./sdwan.py device --detach deviceID
 
             ./sdwan.py device --download deviceID | all
+
+            ./sdwan.py device --int deviceID
 
             ./sdwan.py device --invalid deviceID
 
@@ -753,6 +752,8 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, omp, ospf,
         response = json.loads(sdwanp.get_request('device/bfd/sessions?deviceId=' + bfd))
         items = response['data']
 
+        print()
+
         headers = ["SYSTEM IP", "SITE ID", "STATE", "SRC TLOC COLOR",
                    "DST TLOC COLOR", "SRC IP", "DST IP", "DST PORT",
                    "ENCAP", "DETECT MULT", "TX INTERVAL", "UPTIME", "TRANSITIONS"]
@@ -763,12 +764,9 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, omp, ospf,
                   item['dst-port'], item['proto'], item['detect-multiplier'], item['tx-interval'],
                   item['uptime'], item['transitions']]
             table.append(tr)
-        try:
-            click.echo(tabulate.tabulate(table, headers,
-                                         tablefmt="fancy_grid"))
-        except UnicodeEncodeError:
-            click.echo(tabulate.tabulate(table, headers,
-                                             tablefmt="grid"))
+
+        click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
+        print()
 
         return
 
@@ -814,6 +812,8 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, omp, ospf,
         response = json.loads(sdwanp.get_request('device/control/connections?deviceId=' + control))
         items = response['data']
 
+        print()
+
         headers = ["PEER TYPE", "PEER PROT", "PEER SYSTEM IP", "SITE ID",
                    "DOMAIN ID", "PEER PRIVATE IP", "PEER PRIV PORT", "PEER PUB IP",
                    "PEER PUB PORT", "LOCAL COLOR", "PROXY", "STATE", "UPTIME"]
@@ -824,12 +824,10 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, omp, ospf,
                   item['public-ip'], item['public-port'], item['local-color'], item['behind-proxy'],
                   item['state'], item['uptime']]
             table.append(tr)
-        try:
-            click.echo(tabulate.tabulate(table, headers,
-                                         tablefmt="fancy_grid"))
-        except UnicodeEncodeError:
-            click.echo(tabulate.tabulate(table, headers,
-                                             tablefmt="grid"))
+
+        click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
+
+        print()
 
         return
 
@@ -1120,6 +1118,31 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, omp, ospf,
 
         return
 
+    if int:
+        response = json.loads(sdwanp.get_request('device/interface?deviceId=' + int))
+        items = response['data']
+
+        print()
+
+        headers = ["VPN", "INTERFACE", "MAC ADDR", "IP ADDR",
+                   "ADMIN STATE", "OPER STATE", "RX KBPS", "TX KBPS",
+                   "RX ERROR", "TX ERROR", "RX DROP", "TX DROP",
+                   "RX PPS", "TX PPS"]
+        table = list()
+        for item in items:
+            tr = [item['vpn-id'], item['ifname'], item['hwaddr'],
+                  item['ip-address'], item['if-admin-status'], item['if-oper-status'],
+                  item['rx-kbps'], item['tx-kbps'], item['rx-errors'],
+                  item['tx-errors'], item['rx-drops'], item['tx-drops'], item['rx-pps'],
+                  item['tx-pps']]
+            table.append(tr)
+
+        click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
+
+        print()
+
+        return
+
     if invalid:
 
         response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + invalid))
@@ -1351,6 +1374,23 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, omp, ospf,
 
         print()
 
+        response = json.loads(sdwanp.get_request('device/app-route/sla-class?deviceId=' + sla))
+        items = response['data']
+
+        headers = ["SLA", "NAME", "LOSS", "LATENCY", "JITTER"]
+
+        table = list()
+
+        for item in items:
+            tr = [item['index'], item['name'], item['loss'], item['latency'],
+                  item['jitter']]
+            table.append(tr)
+
+        click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
+
+        print()
+        print()
+
         response = json.loads(sdwanp.get_request('device/app-route/statistics?deviceId=' + sla))
         items = response['data']
 
@@ -1366,8 +1406,7 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, omp, ospf,
                   item['average-latency'], item['average-jitter']]
             table.append(tr)
 
-        click.echo(tabulate.tabulate(table, headers,
-                                     tablefmt="simple"))
+        click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
 
         print()
 
@@ -1441,6 +1480,8 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, omp, ospf,
         response = json.loads(sdwanp.get_request('device/control/synced/waninterface?deviceId=' + wan))
         items = response['data']
 
+        print()
+
         headers = ["SYSTEM IP", "HOSTNAME", "INTERFACE", "COLOR","RESTRICT",
                    "PRIVATE IP", "PRIVATE PORT", "PUBLIC IP", "PUBLIC PORT",
                    "STATE", "VSMARTS", "VMANAGE", "TUNNEL PREF"]
@@ -1451,12 +1492,10 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, omp, ospf,
                   item['public-ip'], item['public-port'], item['operation-state'], item['num-vsmarts'],
                   item['num-vmanages'], item['preference']]
             table.append(tr)
-        try:
-            click.echo(tabulate.tabulate(table, headers,
-                                         tablefmt="fancy_grid"))
-        except UnicodeEncodeError:
-            click.echo(tabulate.tabulate(table, headers,
-                                             tablefmt="grid"))
+
+        click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
+
+        print()
 
         return
 
