@@ -12,33 +12,23 @@
 
 TODO
 
-- Token Auth
 
-- Postpone some of the Service side routing until cEdge only - different calls cross platform - example
--    device/ip/routetable?deviceId=100.103.1.1
--    device/ip/ipRoutes?deviceId=100.113.14.1 
+- Interface Speed/Duplex/Errors/Input/Output/Clear
+
+- Token Auth
 
 - OMP with Specific Prefix -- Works on 20.3 and 17.3 + -- older vEdge no worky
 
-- Interface Speed/Duplex/Errors/Input/Output/Clear
-- BFD Stats
-- BGP Route / Neighbor
-
+- Add Security Policy / Definition
+- Add a 'Diff' function to Device Templates - Compare if migratoing to new platform
+- Copy a Device Template to a new Model
 
 - Add 'update' function to lists - navigate the activate of policy/templates to devices
         need to reference if it is a CLI or UI template
         if you PUT to an attached item - you have 5 minutes to do the 'input' and 'attachment' follow up
         Need to figure out how to reference listID and parse/create the payload
 
-- Add Security Policy / Definition
-
-- Add a 'Diff' function to Device Templates - Compare if migratoing to new platform
-
-- Copy a Device Template to a new Model
-
 - Investigate packet tracker functionality - similar to Silverpeak flow details
-
-- Fix CSV download.  Need to drop last ','.  Invalid Header Error on CSV Import
 
 - Unit Testing - Started
 
@@ -579,6 +569,7 @@ def tasks(clear):
 @click.option("--arp", help="Display Device ARP Cache")
 @click.option("--attach", help="Attach Device Template")
 @click.option("--bfd", help="Display Device BFD Sessions")
+@click.option("--bgp", help="Display Device BGP Information")
 @click.option("--config", help="Print Device CLI Configuration")
 @click.option("--control", help="Display Device Control Connections")
 @click.option("--csv", help="Output Device Variables to CSV")
@@ -589,12 +580,14 @@ def tasks(clear):
 @click.option("--ospf", help="Display Device OSPF Information") 
 @click.option("--set_var", nargs=3, help="Set Variable/Value for Device")
 @click.option("--staging", help="Make Device Certificate Staging")
+@click.option("--sla", help="Display Tunnel BFD SLA Statistics")
 @click.option("--template", help="Display Device Template")
 @click.option("--valid", help="Make Device Certificate Valid")
 @click.option("--variable", help="Display Device Variable and Values")
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--wan", help="Display Device WAN Interface")
-def device(arp, attach, bfd, config, control, detach, download, omp, ospf, set_var, csv, staging, template, invalid, valid, variable, vrrp, wan):
+def device(arp, attach, bfd, bgp, config, control, detach, download, omp, ospf,
+           set_var, csv, sla, staging, template, invalid, valid, variable, vrrp, wan):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -608,6 +601,8 @@ def device(arp, attach, bfd, config, control, detach, download, omp, ospf, set_v
             ./sdwan.py device --attach templateID --csv <csv_file>
 
             ./sdwan.py device --bfd deviceID
+
+            ./sdwan.py device --bgp deviceID
 
             ./sdwan.py device --config deviceID
 
@@ -628,6 +623,8 @@ def device(arp, attach, bfd, config, control, detach, download, omp, ospf, set_v
             ./sdwan.py device --set_var deviceID <object> <value>
 
             ./sdwan.py device --staging deviceID
+
+            ./sdwan.py device --sla deviceID
 
             ./sdwan.py device --template deviceID
 
@@ -775,6 +772,33 @@ def device(arp, attach, bfd, config, control, detach, download, omp, ospf, set_v
 
         return
 
+    if bgp:
+
+        print()
+        print('-------------')
+        print('BGP NEIGHBORS')
+        print('-------------')
+        print()
+
+        response = json.loads(sdwanp.get_request('device/bgp/neighbors?deviceId=' + bgp))
+        items = response['data']
+
+        headers = ["VPN", "NEIGHBOR", "AS", "STATE"]
+        table = list()
+
+        for item in items:
+            tr = [item['vpn-id'], item['peer-addr'], item['as'],
+                  item['state']]
+            table.append(tr)
+
+        click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="simple"))
+
+        print()
+
+        return
+
+
     if config:
         response = sdwanp.get_request('device/config?deviceId=' +
                                       config)
@@ -844,12 +868,15 @@ def device(arp, attach, bfd, config, control, detach, download, omp, ospf, set_v
                 if var['property'] != 'csv-status':
                     print('"' + var['property'], end='",', file=csv_file)
                     print('"' + var['property'], end='",')
-            print('', file=csv_file)
+            print('eol', file=csv_file)
+            print('eol')
             print()
             for var in properties:
                 if var['property'] != 'csv-status':
                     print('"' + objects[var['property']], end='",', file=csv_file)
                     print('"' + objects[var['property']], end='",')
+            print('eol', file=csv_file)
+            print('eol')
             csv_file.close()
             print()
             print()
@@ -884,10 +911,12 @@ def device(arp, attach, bfd, config, control, detach, download, omp, ospf, set_v
                     for var in properties:
                         if var['property'] != 'csv-status':
                             print('"' + var['property'], end='",', file=csv_file)
+                    print('eol', file=csv_file)
                     print('', file=csv_file)
                     for var in properties:
                         if var['property'] != 'csv-status':
                             print('"' + objects[var['property']], end='",', file=csv_file)
+                    print('eol', file=csv_file)
                     csv_file.close()
             print()
         return
@@ -1163,13 +1192,13 @@ def device(arp, attach, bfd, config, control, detach, download, omp, ospf, set_v
 
             headers = ["VPN", "PREFIX", "FROM PEER", "PATH ID","LABEL",
                        "STATUS", "ATTRIBUTE TYPE", "TLOC IP", "SITE ID", "COLOR",
-                       "ENCAP", "PREFERENCE"]
+                       "ENCAP", "PROTOCOL"]
             table = list()
             for item in items:
                 tr = [item['vpn-id'], item['prefix'], item['from-peer'],
                       item['path-id'], item['label'], item['status'], item['attribute-type'],
                       item['originator'], item['site-id'], item['color'], item['encap'],
-                      '-']
+                      item['protocol']]
                 table.append(tr)
 
             click.echo(tabulate.tabulate(table, headers,
@@ -1314,6 +1343,32 @@ def device(arp, attach, bfd, config, control, detach, download, omp, ospf, set_v
         print("Attachment Results...")
         print()
         print (response)
+        print()
+
+        return
+
+    if sla:
+
+        print()
+
+        response = json.loads(sdwanp.get_request('device/app-route/statistics?deviceId=' + sla))
+        items = response['data']
+
+        headers = ["LOCAL TLOC", "LOCAL IP", "PORT", "COLOR", "TX", "RX",
+                   "COLOR", "PORT", "REMOTE IP", "REMOTE TLOC", "INPOLICY",
+                   "LOSS", "LATENCY", "JITTER"]
+        table = list()
+
+        for item in items:
+            tr = [item['vdevice-name'], item['src-ip'], item['src-port'], item['local-color'],
+                  item['tx-data-pkts'], item['rx-data-pkts'], item['remote-color'], item['dst-port'],
+                  item['dst-ip'], item['remote-system-ip'], item['sla-class-index'], item['loss'],
+                  item['average-latency'], item['average-jitter']]
+            table.append(tr)
+
+        click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="simple"))
+
         print()
 
         return
