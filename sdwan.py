@@ -17,7 +17,7 @@ TODO
 - Add Security Policy / Definition
 
 - Add a 'Diff' function to Device Templates - Compare if migratoing to new platform
-- Copy a Device Template to a new Model
+- Copy/Clone a Device Template to a new Model
 
 - Add 'Update' function to lists - navigate the activate of policy/templates to devices
         need to reference if it is a CLI or UI template
@@ -26,7 +26,9 @@ TODO
 
 - Investigate packet tracker functionality - similar to Silverpeak flow details
 
-- Unit Testing - Started
+- Unit Testing - Started - For Module
+
+- Pytest for Site Type Testing - Started
 
 - REST Error Correction
 
@@ -1395,7 +1397,7 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
         items = response['data']
 
         headers = ["LOCAL TLOC", "LOCAL IP", "PORT", "COLOR", "TX", "RX",
-                   "COLOR", "PORT", "REMOTE IP", "REMOTE TLOC", "INPOLICY",
+                   "COLOR", "PORT", "REMOTE IP", "REMOTE TLOC", "IN POLICY",
                    "LOSS", "LATENCY", "JITTER"]
         table = list()
 
