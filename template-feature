@@ -4,7 +4,7 @@ Usage: sdwan.py template-feature [OPTIONS]
 
     List templates to derive templateID for additional action
 
-  Example command:
+  Example Command:
 
       ./sdwan.py template_feature
 

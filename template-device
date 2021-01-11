@@ -4,7 +4,7 @@ Usage: sdwan.py template-device [OPTIONS]
 
     List templates to derive templateID for additional actions
 
-  Example command:
+  Example Command:
 
       ./sdwan.py template_device
 

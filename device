@@ -4,13 +4,17 @@ Usage: sdwan.py device [OPTIONS]
 
   Returns information about each device that is part of the fabric.
 
-  Example command:
+  Example Command:
 
       ./sdwan.py device
+
+      ./sdwan.py device --arp deviceID
 
       ./sdwan.py device --attach templateID --csv <csv_file>
 
       ./sdwan.py device --bfd deviceID
+
+      ./sdwan.py device --bgp deviceID
 
       ./sdwan.py device --config deviceID
 
@@ -22,11 +26,19 @@ Usage: sdwan.py device [OPTIONS]
 
       ./sdwan.py device --download deviceID | all
 
+      ./sdwan.py device --int deviceID
+
       ./sdwan.py device --invalid deviceID
+
+      ./sdwan.py device --omp deviceID summary | <prefix>
+
+      ./sdwan.py device --ospf deviceID summary | <prefix>
 
       ./sdwan.py device --set_var deviceID <object> <value>
 
       ./sdwan.py device --staging deviceID
+
+      ./sdwan.py device --sla deviceID
 
       ./sdwan.py device --template deviceID
 
@@ -34,18 +46,30 @@ Usage: sdwan.py device [OPTIONS]
 
       ./sdwan.py device --variable deviceID
 
+      ./sdwan.py device --vrrp deviceID
+
+      ./sdwan.py device --wan deviceID
+
 Options:
+  --arp TEXT         Display Device ARP Cache
   --attach TEXT      Attach Device Template
   --bfd TEXT         Display Device BFD Sessions
+  --bgp TEXT         Display Device BGP Information
   --config TEXT      Print Device CLI Configuration
   --control TEXT     Display Device Control Connections
   --csv TEXT         Output Device Variables to CSV
   --detach TEXT      Detach Device from Device Template
   --download TEXT    Download Device CLI Configuration
   --invalid TEXT     Make Device Certificate Invalid
+  --int TEXT         Display Interface Statistics and State
+  --omp TEXT...      Display Device OMP Routes
+  --ospf TEXT        Display Device OSPF Information
   --set_var TEXT...  Set Variable/Value for Device
   --staging TEXT     Make Device Certificate Staging
+  --sla TEXT         Display Tunnel BFD SLA Statistics
   --template TEXT    Display Device Template
   --valid TEXT       Make Device Certificate Valid
   --variable TEXT    Display Device Variable and Values
+  --vrrp TEXT        Display Device VRRP Status
+  --wan TEXT         Display Device WAN Interface
   --help             Show this message and exit.
