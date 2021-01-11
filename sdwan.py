@@ -28,8 +28,6 @@ TODO
 
 - Unit Testing - Started - For Module
 
-- Pytest for Site Type Testing - Started
-
 - REST Error Correction
 
 """
