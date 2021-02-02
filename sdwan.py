@@ -13,7 +13,6 @@
 TODO
 
 - Token Auth
-
 - Add Security Policy / Definition
 
 - Add a 'Diff' function to Device Templates - Compare if migratoing to new platform
@@ -27,7 +26,6 @@ TODO
 - Investigate packet tracker functionality - similar to Silverpeak flow details
 
 - Unit Testing - Started - For Module
-
 - REST Error Correction
 
 """
@@ -200,7 +198,7 @@ class rest_api_lib:
         if self.DEBUG: print()
         if self.DEBUG: print(url)
         if self.DEBUG: print()
-        if self.DEBUG: pprint(payload)
+        if self.DEBUG: print(payload)
         if self.DEBUG: print()
 
         response = self.session[self.vmanage_ip].post(url=url,
@@ -1482,6 +1480,7 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
 
         print()
 
+        wan_ints = []
         headers = ["SYSTEM IP", "HOSTNAME", "INTERFACE", "COLOR","RESTRICT",
                    "PRIVATE IP", "PRIVATE PORT", "PUBLIC IP", "PUBLIC PORT",
                    "STATE", "VSMARTS", "VMANAGE", "TUNNEL PREF"]
@@ -1492,9 +1491,105 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
                   item['public-ip'], item['public-port'], item['operation-state'], item['num-vsmarts'],
                   item['num-vmanages'], item['preference']]
             table.append(tr)
+            wan_ints.append(item['interface'])
 
         click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
 
+        # determoine license watermark - 95 percentile
+        # will be moved to an 'audit' function once cisco confirms measurements
+        # collect wan interface statistics - 720 hours - 30 minute averages
+        payload = {
+            "query": {
+                "condition": "AND",
+                "rules": [
+                {
+                    "value": [
+                        "720"
+                    ],
+                    "field": "entry_time",
+                    "type": "date",
+                    "operator": "last_n_hours"
+                },
+                {
+                    "value": [
+                        str(wan)
+                    ],
+                    "field": "vdevice_name",
+                    "type": "string",
+                    "operator": "in"
+                },
+                {
+                    "value": wan_ints,
+                    "field": "interface",
+                    "type": "string",
+                    "operator": "in"
+                }
+                ]
+            },
+            "sort": [
+            {
+               "field": "entry_time",
+               "type": "date",
+               "order": "asc"
+            }
+            ],
+            "aggregation": {
+                "field": [
+                {
+                    "property": "interface",
+                    "sequence": 1
+                }
+                ],
+               "histogram": {
+                    "property": "entry_time",
+                    "type": "minute",
+                    "interval": 30,
+                    "order": "asc"
+                },
+                "metrics": [
+                {
+                    "property": "rx_kbps",
+                    "type": "avg"
+                },
+                {
+                    "property": "tx_kbps",
+                    "type": "avg"
+                }
+                ]
+            }
+        }
+
+        # retrieve wan interface rx and tx statistics
+        response = sdwanp.post_request('statistics/interface/aggregation', payload)
+        items = response['data']
+
+        # aggregate rx and tx of all wan interfaces to single hash
+        agg_data = {}
+        for item in items:
+            if item['entry_time'] not in agg_data:
+                agg_data[item['entry_time']] = {}
+                agg_data[item['entry_time']]['rx_kbps'] = 0
+                agg_data[item['entry_time']]['tx_kbps'] = 0
+            agg_data[item['entry_time']]['rx_kbps'] = agg_data[item['entry_time']]['rx_kbps'] + round(item['rx_kbps'])
+            agg_data[item['entry_time']]['tx_kbps'] = agg_data[item['entry_time']]['tx_kbps'] + round(item['tx_kbps'])
+
+        # identify for each time slice which rx or tx is higher - put higher in a list
+        # cisco measures on larger of ingress/egress
+        bw_list = []
+        for k in agg_data.keys():
+            if agg_data[k]['rx_kbps'] > agg_data[k]['tx_kbps']:
+                bw_list.append(agg_data[k]['rx_kbps'])
+            else:
+                bw_list.append(agg_data[k]['tx_kbps'])
+        # sort list highest to lowest
+        bw_list.sort()
+        # choose the time slice below the 95% of highest - return as bandwidth aggregate for device licensing
+        bw_index = round(.05 * len(bw_list))
+
+        print()
+        print('Bandwidth License Watermark: ' + str(bw_list[bw_index]) + 'kbps')
+        print(' License level is based on 95 percentile measure with 30 minute averages')
+        print(' Duration of measurment is 30 days')
         print()
 
         return
