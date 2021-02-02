@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 5.5 - Last Updated: Ed Ruszkiewicz
+#  Version 5.6 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
@@ -1588,8 +1588,10 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
 
         print()
         print('Bandwidth License Watermark: ' + str(bw_list[bw_index]) + 'kbps')
-        print(' License level is based on 95 percentile measure with 30 minute averages')
+        print(' License level is based on 95 percentile with 30 minute averages')
         print(' Duration of measurment is 30 days')
+        print(' Aggregation of all WAN Interfaces')
+        print(' Higher of RX or TX Used')
         print()
 
         return
