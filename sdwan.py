@@ -1793,6 +1793,10 @@ def template_device(attached, config, csv, download, upload, tree, variable):
 
         if 'generalTemplates' in dev_temp:
             gen_temp = response['generalTemplates']
+            if 'policyId' in dev_temp:
+                local_policy = response['policyId']
+            else:
+                local_policy = 'None Selected'
             print('  *** Feature Template Tree ***')
             print('          +Variables       ')
             print()
@@ -1814,6 +1818,10 @@ def template_device(attached, config, csv, download, upload, tree, variable):
                               "-"*(25 - len(response['templateType'])) + ' ' + response['templateName'])
                         # search for k,v pair of vipType,variableName and return value of vipVariableName
                         var_find("vipType", "variableName", "vipVariableName", response['templateDefinition'])
+            print()
+            response = json.loads(sdwanp.get_request('template/policy/vedge/definition/' + local_policy))
+            print(' local policy: ' + local_policy + ' ------------------------------ ' + response['policyName'])
+            print()
         else:
             print('    ** CLI Template - No Attached Feature Templates **')
         print()
