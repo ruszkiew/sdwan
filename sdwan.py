@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 5.6 - Last Updated: Ed Ruszkiewicz
+#  Version 5.7 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
@@ -14,6 +14,8 @@ TODO
 
 - Token Auth
 - Add Security Policy / Definition
+
+- Add name display to policy local and security --definition
 
 - Add a 'Diff' function to Device Templates - Compare if migratoing to new platform
 - Copy/Clone a Device Template to a new Model
@@ -327,6 +329,7 @@ def list_find(d):
                 for i in v:
                     m = re.match("(\w+)List", k)
                     ltype = m.group(1)
+                    print(ltype)
                     response = json.loads(sdwanp.get_request('template/policy/list/' +
                                                              ltype + '/' + i))
                     print('         list: ' + i + ' : ' + ltype +
@@ -1561,7 +1564,7 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
             agg_data[item['entry_time']]['rx_kbps'] = agg_data[item['entry_time']]['rx_kbps'] + round(item['rx_kbps'])
             agg_data[item['entry_time']]['tx_kbps'] = agg_data[item['entry_time']]['tx_kbps'] + round(item['tx_kbps'])
 
-        # identify for each time slice which rx or tx is higher - put higher in a list
+        # identify for each time slice which rx or tx is higher - put higher in a dict
         # cisco measures on larger of ingress/egress
         bw_list = []
         for k in agg_data.keys():
@@ -1569,7 +1572,7 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
                 bw_list.append(agg_data[k]['rx_kbps'])
             else:
                 bw_list.append(agg_data[k]['tx_kbps'])
-        # sort list highest to lowest
+        # sort list - lowest to highest
         bw_list.sort()
         # choose the time slice below the 95% of highest - return as bandwidth aggregate for device licensing
         bw_index = round(.95 * len(bw_list))
@@ -1784,7 +1787,11 @@ def template_device(attached, config, csv, download, upload, tree, variable):
             if 'policyId' in dev_temp:
                 local_policy = response['policyId']
             else:
-                local_policy = 'None Selected'
+                local_policy = False
+            if 'securityPolicyId' in dev_temp:
+                security_policy = response['securityPolicyId']
+            else:
+                security_policy = False
             print('  *** Feature Template Tree ***')
             print('          +Variables       ')
             print()
@@ -1807,8 +1814,12 @@ def template_device(attached, config, csv, download, upload, tree, variable):
                         # search for k,v pair of vipType,variableName and return value of vipVariableName
                         var_find("vipType", "variableName", "vipVariableName", response['templateDefinition'])
             print()
-            response = json.loads(sdwanp.get_request('template/policy/vedge/definition/' + local_policy))
-            print(' local policy: ' + local_policy + ' ------------------------------ ' + response['policyName'])
+            if local_policy:
+                response = json.loads(sdwanp.get_request('template/policy/vedge/definition/' + local_policy))
+                print(' local policy: ' + local_policy + ' ------------------------------ ' + response['policyName'])
+            if security_policy:
+                response = json.loads(sdwanp.get_request('template/policy/security/definition/' + security_policy))
+                print(' security policy: ' + security_policy + ' --------------------------- ' + response['policyName'])
             print()
         else:
             print('    ** CLI Template - No Attached Feature Templates **')
@@ -2365,8 +2376,12 @@ def policy_central(config, download, upload, definition, tree):
         assembly = response['policyDefinition']
         for def1 in assembly['assembly']:
             defs[def1['definitionId']] = def1['type']
-            response = json.loads(sdwanp.get_request('template/policy/definition/' +
-                                  def1['type'].lower() + '/' + def1['definitionId']))
+            try:
+                response = json.loads(sdwanp.get_request('template/policy/definition/' +
+                                      def1['type'].lower() + '/' + def1['definitionId']))
+            except:
+                response = json.loads(sdwanp.get_request('template/policy/definition/' +
+                                      def1['type'] + '/' + def1['definitionId']))
             print('  def: ' + response['definitionId'] + ' ---------- ' + response['type'] + ' ' +
                   "-"*(25 - len(response['type'])) + ' ' + response['name'])
             list_find(response)
@@ -2574,8 +2589,12 @@ def policy_local(config, download, upload, definition, tree):
             assembly = item['policyDefinition']
             for def1 in assembly['assembly']:
                 defs[def1['definitionId']] = def1['type']
-                response = json.loads(sdwanp.get_request('template/policy/definition/' +
-                                      def1['type'].lower() + '/' + def1['definitionId']))
+                try:
+                    response = json.loads(sdwanp.get_request('template/policy/definition/' +
+                                          def1['type'] + '/' + def1['definitionId']))
+                except:
+                    response = json.loads(sdwanp.get_request('template/policy/definition/' +
+                                          def1['type'].lower() + '/' + def1['definitionId']))
                 print('  def: ' + response['definitionId'] + ' ---------- ' + response['type'] + ' ' +
                       "-"*(25 - len(response['type'])) + ' ' + response['name'])
                 list_find(response)
@@ -2604,6 +2623,206 @@ def policy_local(config, download, upload, definition, tree):
         click.echo(tabulate.tabulate(table, headers,
                                      tablefmt="grid"))
     return
+
+# POLICY SECURITY
+
+@click.command()
+@click.option("--config", help="Print Policy Contents")
+@click.option("--download", help="Policy to Download")
+@click.option("--upload", help="File to Upload Policy")
+@click.option("--definition", help="Referenced Definitions")
+@click.option("--tree", help="List definitions and lists referenced")
+def policy_security(config, download, upload, definition, tree):
+    """Display, Download, and Upload Security Policy.
+
+          List Policy to derive PolicyID for additional actions
+
+        Example Command:
+
+            ./sdwan.py policy-security
+
+            ./sdwan.py policy-security --config PolicyID
+
+            ./sdwan.py policy-security --download PolicyID | all
+
+            ./sdwan.py policy-security --upload <file>
+
+            ./sdwan.py policy-security --definition PolicyID
+
+            ./sdwan.py policy-security --tree PolicyID
+
+    """
+
+    # print specific policy to stdout
+    if config:
+        response = sdwanp.get_request('template/policy/security/definition/' +
+                                      config)
+        # print()
+        # print("Policy ID: ", config)
+        # print()
+        # remove base64 header/trailer
+        print(re.sub("'|b'", '', str(response)))
+        print()
+        return
+
+    # download specific policy or all policies
+    if download:
+        if(download == 'all'):
+            response = json.loads(sdwanp.get_request('template/policy/security'))
+            items = response['data']
+            print()
+            print("Downloading all Security Policy...")
+            print()
+            for item in items:
+                print("  Policy ID:", item['policyId'], "downloaded...")
+                response = sdwanp.get_request('template/policy/security/definition/' +
+                                              item['policyId'])
+                json_file = open(SDWAN_CFGDIR + "policy-security____" +
+                                 item['policyType'] +
+                                 "_"*(32 - len(item['policyType'])) +
+                                 item['policyId'] + '___' +
+                                 item['policyName'].replace('/', '-'), "w")
+                json_file.write(re.sub("'|b'", '', str(response)))
+                json_file.close()
+            print()
+        else:
+            response = sdwanp.get_request('template/policy/security/definition/' +
+                                          download)
+            item = json.loads(response)
+            print()
+            print(item['policyType'])
+            print(item['policyName'])
+            print(download)
+            json_file = open(SDWAN_CFGDIR + "policy-security____" +
+                             item['policyType'] +
+                             "_"*(32 - len(item['policyType'])) +
+                             download + '___' +
+                             item['policyName'].replace('/', '-'), "w")
+            json_file.write(re.sub("'|b'", '', str(response)))
+            json_file.close()
+
+            print()
+            print("Policy ID:", download, "downloaded...")
+            print()
+        return
+
+    # upload a policy from a file
+    if upload:
+        json_file = open(upload, "rb")
+        payload = json.loads(json_file.read())
+        print()
+        print("Policy File:", upload, "attempting upload...")
+        print()
+        response = sdwanp.post_request('template/policy/security',
+                                       payload)
+        print()
+        print(response)
+        print()
+
+        # glean original policyId from file name
+        m = re.search("^.*_(\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12})_*(\w.*$)", upload)
+        if m:
+            lpid = m.group(1)
+            lpname = m.group(2)
+        # search for current Policy Id from local policy listing
+        response = json.loads(sdwanp.get_request('template/policy/security'))
+        items = response['data']
+        # compare active ID and the one in the file
+        for item in items:
+            if item['policyName'] == lpname:
+                print(item['policyName'])
+                if(item['policyId'] != lpid):
+                    print(item['policyId'])
+                    print('  ** The Policy ID Changed **')
+                    print('      This may effect other Definitions, Policies, and Templates referencing it')
+                    print('      Object files in the ' + SDWAN_CFGDIR + " directory will be updated")
+                    print('      Policy ID ' + lpid + ' will be replaced with ' + item['policyId'])
+                    print()
+                    id_fix(lpid, item['policyId'], SDWAN_CFGDIR)
+        print()
+        json_file.close()
+        return
+
+    # display referenced definitions
+    if definition:
+        response = sdwanp.get_request('template/policy/security/definition/' +
+                                      definition)
+        item = json.loads(response)
+        print()
+        print("Policy Name:", item['policyName'])
+        print("Policy ID:", definition)
+        print()
+        print("--- Attached Definitions ---")
+        print()
+        defs = item['policyDefinition']['assembly']
+        headers = ["Definition ID", "Definition Type"]
+        table = list()
+        for d in defs:
+            tr = [d['definitionId'], d['type']]
+            table.append(tr)
+        try:
+            click.echo(tabulate.tabulate(table, headers,
+                                         tablefmt="fancy_grid"))
+        except UnicodeEncodeError:
+            click.echo(tabulate.tabulate(table, headers,
+                                         tablefmt="grid"))
+        return
+
+    # display hiearchial tree of definitions and lists
+    if tree:
+        print()
+        # identify referenced definitions
+        response = sdwanp.get_request('template/policy/security/definition/' +
+                                      tree)
+        item = json.loads(response)
+        print()
+        print('  ******* Security Policy ********')
+        print('  ' + item['policyName'])
+        print('  ' + tree)
+        print()
+        print('  *** Definitions and Lists ***')
+        print()
+        # identify definitions
+        defs = {}
+        assembly = item['policyDefinition']
+        for def1 in assembly['assembly']:
+            defs[def1['definitionId']] = def1['type']
+            try:
+                response = json.loads(sdwanp.get_request('template/policy/definition/' +
+                                      def1['type'] + '/' + def1['definitionId']))
+            except:
+                response = json.loads(sdwanp.get_request('template/policy/definition/' +
+                                      def1['type'].lower() + '/' + def1['definitionId']))
+            print('  def: ' + response['definitionId'] + ' ---------- ' + response['type'] + ' ' +
+                  "-"*(25 - len(response['type'])) + ' ' + response['name'])
+            # list_find(response)
+        print()
+        print()
+        return
+    
+    # no parameter passed in - list all policies
+    response = json.loads(sdwanp.get_request('template/policy/security'))
+    items = response['data']
+    headers = ["Policy Name", "Policy ID", "Templates Attached",
+               "Devices Attached"]
+    table = list()
+    for item in items:
+        tr = [item['policyName'], item['policyId'], item['mastersAttached'],
+              item['devicesAttached']]
+        table.append(tr)
+    try:
+        click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="fancy_grid"))
+    except UnicodeEncodeError:
+        click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="grid"))
+    return
+
+    
+
+
+
+
 
 ###############################################################################
 
@@ -2643,6 +2862,15 @@ def policy_definition(config, download, upload):
                 defs[def1['definitionId']] = def1['type']
 
     response = json.loads(sdwanp.get_request('template/policy/vsmart'))
+    items = response['data']
+    for item in items:
+        # check to ensure it is not CLI definition - 17.x
+        if 'assembly' in item['policyDefinition']:
+            assembly = json.loads(item['policyDefinition'])
+            for def1 in assembly['assembly']:
+                defs[def1['definitionId']] = def1['type']
+    
+    response = json.loads(sdwanp.get_request('template/policy/security'))
     items = response['data']
     for item in items:
         # check to ensure it is not CLI definition - 17.x
@@ -2730,8 +2958,13 @@ def policy_definition(config, download, upload):
     headers = ["Definition Name", "Definition Type", "Definition ID"]
     table = list()
     for def_id, def_type in defs.items():
-        response = json.loads(sdwanp.get_request('template/policy/definition/' +
+        try:
+            response = json.loads(sdwanp.get_request('template/policy/definition/' +
                               defs[def_id].lower() + '/' + def_id))
+        except:
+            response = json.loads(sdwanp.get_request('template/policy/definition/' +
+                              defs[def_id] + '/' + def_id))
+
         tr = [response['name'], response['type'], response['definitionId']]
         table.append(tr)
     try:
@@ -2758,6 +2991,7 @@ cli.add_command(policy_list)
 cli.add_command(policy_central)
 cli.add_command(policy_local)
 cli.add_command(policy_definition)
+cli.add_command(policy_security)
 cli.add_command(device)
 cli.add_command(certificate)
 cli.add_command(tasks)
