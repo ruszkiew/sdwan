@@ -769,7 +769,6 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
         return
 
     if bgp:
-
         print()
         print('-------------')
         print('BGP NEIGHBORS')
@@ -793,7 +792,6 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
         print()
 
         return
-
 
     if config:
         response = sdwanp.get_request('device/config?deviceId=' +
@@ -957,7 +955,6 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
         return
 
     if detach:
-
         response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + detach))
         items = response['data']
 
@@ -1039,7 +1036,6 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
         return
 
     if template:
-
         response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + template))
         items = response['data']
 
@@ -1076,7 +1072,6 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
         return
 
     if valid:    
-
         response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + valid))
         items = response['data']
 
@@ -1142,7 +1137,6 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
         return
 
     if invalid:
-
         response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + invalid))
         items = response['data']
 
@@ -1242,7 +1236,6 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
         return
 
     if ospf:
-
         print()
         print('--------------')
         print('OSPF INTERFACE')
@@ -1369,9 +1362,7 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
         return
 
     if sla:
-
         print()
-
         response = json.loads(sdwanp.get_request('device/app-route/sla-class?deviceId=' + sla))
         items = response['data']
 
@@ -1411,7 +1402,6 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
         return
 
     if staging:
-
         response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + staging))
         items = response['data']
 
@@ -1452,9 +1442,7 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
         return
 
     if vrrp:
-
         print()
-
         response = json.loads(sdwanp.get_request('device/vrrp?deviceId=' + vrrp))
         items = response['data']
 
@@ -1475,10 +1463,10 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
         return
 
     if wan:
+        print()
+
         response = json.loads(sdwanp.get_request('device/control/synced/waninterface?deviceId=' + wan))
         items = response['data']
-
-        print()
 
         wan_ints = []
         headers = ["SYSTEM IP", "HOSTNAME", "INTERFACE", "COLOR","RESTRICT",
@@ -1584,7 +1572,7 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
         # sort list highest to lowest
         bw_list.sort()
         # choose the time slice below the 95% of highest - return as bandwidth aggregate for device licensing
-        bw_index = round(.05 * len(bw_list))
+        bw_index = round(.95 * len(bw_list))
 
         print()
         print('Bandwidth License Watermark: ' + str(bw_list[bw_index]) + 'kbps')
