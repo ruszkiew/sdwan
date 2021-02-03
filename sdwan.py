@@ -15,6 +15,8 @@ TODO
 - Token Auth
 - Add Security Policy / Definition
 
+- Fix list_find - Central and Local/Security policies store lists differently
+
 - Add name display to policy local and security --definition
 
 - Add a 'Diff' function to Device Templates - Compare if migratoing to new platform
@@ -316,8 +318,13 @@ def var_find(dkey, dval, dret, d):
 # NESTED DICTIONARY LIST FIND / PRINT
 
 def list_find(d):
+
+    """
+    pprint(d)
     for k, v in d.items():
         if(re.match("(\w+)List", k) is None):
+            print('IN_IF_1')
+            print('k is ' + k)
             if isinstance(v, dict):
                 list_find(v)
             elif isinstance(v, list):
@@ -325,6 +332,7 @@ def list_find(d):
                     if isinstance(i, dict):
                         list_find(i)
         else:
+            print('IN_ELSE_1')
             if isinstance(v, list):
                 for i in v:
                     m = re.match("(\w+)List", k)
@@ -335,12 +343,14 @@ def list_find(d):
                     print('         list: ' + i + ' : ' + ltype +
                           " "*(10 - len(ltype)) + ': ' + response['name'])
             else:
+                print('IN_ELSE_2')
                 m = re.match("(\w+)List", k)
                 ltype = m.group(1)
                 response = json.loads(sdwanp.get_request('template/policy/list/' +
                                       ltype + '/' + v))
                 print('         list: ' + v + ' : ' + ltype +
                       " "*(10 - len(ltype)) + ': ' + response['name'])
+    """
     return
 
 
