@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 5.7 - Last Updated: Ed Ruszkiewicz
+#  Version 5.8 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
@@ -13,9 +13,6 @@
 TODO
 
 - Token Auth
-- Add Security Policy / Definition
-
-- Fix list_find - Central and Local/Security policies store lists differently
 
 - Add name display to policy local and security --definition
 
@@ -317,14 +314,25 @@ def var_find(dkey, dval, dret, d):
 
 # NESTED DICTIONARY LIST FIND / PRINT
 
-def list_find(d):
+def list_find(d,l):
+
+    for k1, v1 in d.items():
+        if isinstance(v1,dict):
+            list_find(v1,l)
+        elif isinstance(v1,list):
+            for i in v1:
+                if isinstance(i,dict):
+                    list_find(i,l)
+        else:
+            for k2, v2 in l.items():
+                # k2 is listId - key to list dict
+                if k2 == v1:
+                    print('         list: ' + v1 + ' : ' + v2['type'] +
+                      " "*(10 - len(v2['type'])) + ': ' + v2['name'])
 
     """
-    pprint(d)
     for k, v in d.items():
         if(re.match("(\w+)List", k) is None):
-            print('IN_IF_1')
-            print('k is ' + k)
             if isinstance(v, dict):
                 list_find(v)
             elif isinstance(v, list):
@@ -332,7 +340,6 @@ def list_find(d):
                     if isinstance(i, dict):
                         list_find(i)
         else:
-            print('IN_ELSE_1')
             if isinstance(v, list):
                 for i in v:
                     m = re.match("(\w+)List", k)
@@ -343,7 +350,6 @@ def list_find(d):
                     print('         list: ' + i + ' : ' + ltype +
                           " "*(10 - len(ltype)) + ': ' + response['name'])
             else:
-                print('IN_ELSE_2')
                 m = re.match("(\w+)List", k)
                 ltype = m.group(1)
                 response = json.loads(sdwanp.get_request('template/policy/list/' +
@@ -2371,6 +2377,16 @@ def policy_central(config, download, upload, definition, tree):
     # display hiearchial tree of definitions and lists
     if tree:
         print()
+
+        # load all lists to a dict
+        response = json.loads(sdwanp.get_request('template/policy/list'))
+        items = response['data']
+        list_dict = {}
+        for item in items:
+            list_dict[item['listId']] = {}
+            list_dict[item['listId']]['type'] = item['type']
+            list_dict[item['listId']]['name'] = item['name']
+
         # identify referenced definitions
         response = json.loads(sdwanp.get_request('template/policy/vsmart/definition/' +
                                                  tree))
@@ -2394,7 +2410,7 @@ def policy_central(config, download, upload, definition, tree):
                                       def1['type'] + '/' + def1['definitionId']))
             print('  def: ' + response['definitionId'] + ' ---------- ' + response['type'] + ' ' +
                   "-"*(25 - len(response['type'])) + ' ' + response['name'])
-            list_find(response)
+            list_find(response, list_dict)
         print()
         print()
         return
@@ -2582,6 +2598,16 @@ def policy_local(config, download, upload, definition, tree):
     # display hiearchial tree of definitions and lists
     if tree:
         print()
+
+        # load all lists to a dict
+        response = json.loads(sdwanp.get_request('template/policy/list'))
+        items = response['data']
+        list_dict = {}
+        for item in items:
+            list_dict[item['listId']] = {}
+            list_dict[item['listId']]['type'] = item['type']
+            list_dict[item['listId']]['name'] = item['name']
+
         # identify referenced definitions
         response = sdwanp.get_request('template/policy/vedge/definition/' +
                                       tree)
@@ -2607,7 +2633,7 @@ def policy_local(config, download, upload, definition, tree):
                                           def1['type'].lower() + '/' + def1['definitionId']))
                 print('  def: ' + response['definitionId'] + ' ---------- ' + response['type'] + ' ' +
                       "-"*(25 - len(response['type'])) + ' ' + response['name'])
-                list_find(response)
+                list_find(response, list_dict)
             print()
             print()
         else:
@@ -2781,6 +2807,16 @@ def policy_security(config, download, upload, definition, tree):
     # display hiearchial tree of definitions and lists
     if tree:
         print()
+
+        # load all lists to a dict
+        response = json.loads(sdwanp.get_request('template/policy/list'))
+        items = response['data']
+        list_dict = {}
+        for item in items:
+            list_dict[item['listId']] = {}
+            list_dict[item['listId']]['type'] = item['type']
+            list_dict[item['listId']]['name'] = item['name']
+
         # identify referenced definitions
         response = sdwanp.get_request('template/policy/security/definition/' +
                                       tree)
@@ -2805,7 +2841,7 @@ def policy_security(config, download, upload, definition, tree):
                                       def1['type'].lower() + '/' + def1['definitionId']))
             print('  def: ' + response['definitionId'] + ' ---------- ' + response['type'] + ' ' +
                   "-"*(25 - len(response['type'])) + ' ' + response['name'])
-            # list_find(response)
+            list_find(response,list_dict)
         print()
         print()
         return
