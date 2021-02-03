@@ -16,7 +16,10 @@ TODO
 
 - Add name display to policy local and security --definition
 
+- Add SaaS OnRamp Status
+
 - Add a 'Diff' function to Device Templates - Compare if migratoing to new platform
+
 - Copy/Clone a Device Template to a new Model
 
 - Add 'Update' function to lists - navigate the activate of policy/templates to devices
@@ -27,6 +30,7 @@ TODO
 - Investigate packet tracker functionality - similar to Silverpeak flow details
 
 - Unit Testing - Started - For Module
+
 - REST Error Correction
 
 """
@@ -297,7 +301,7 @@ sdwanp = rest_api_lib(SDWAN_IP, SDWAN_PORT, SDWAN_USERNAME, SDWAN_PASSWORD)
 
 ###############################################################################
 
-# NESTED DICTIONARY VARIABLE FIND / PRINT
+# DICTIONARY VARIABLE FIND / PRINT
 
 def var_find(dkey, dval, dret, d):
     for k, v in d.items():
@@ -312,10 +316,9 @@ def var_find(dkey, dval, dret, d):
                     var_find(dkey, dval, dret, i)
     return
 
-# NESTED DICTIONARY LIST FIND / PRINT
+# DICTIONARY LIST FIND / PRINT
 
 def list_find(d,l):
-
     for k1, v1 in d.items():
         if isinstance(v1,dict):
             list_find(v1,l)
@@ -325,38 +328,9 @@ def list_find(d,l):
                     list_find(i,l)
         else:
             for k2, v2 in l.items():
-                # k2 is listId - key to list dict
                 if k2 == v1:
                     print('         list: ' + v1 + ' : ' + v2['type'] +
                       " "*(10 - len(v2['type'])) + ': ' + v2['name'])
-
-    """
-    for k, v in d.items():
-        if(re.match("(\w+)List", k) is None):
-            if isinstance(v, dict):
-                list_find(v)
-            elif isinstance(v, list):
-                for i in v:
-                    if isinstance(i, dict):
-                        list_find(i)
-        else:
-            if isinstance(v, list):
-                for i in v:
-                    m = re.match("(\w+)List", k)
-                    ltype = m.group(1)
-                    print(ltype)
-                    response = json.loads(sdwanp.get_request('template/policy/list/' +
-                                                             ltype + '/' + i))
-                    print('         list: ' + i + ' : ' + ltype +
-                          " "*(10 - len(ltype)) + ': ' + response['name'])
-            else:
-                m = re.match("(\w+)List", k)
-                ltype = m.group(1)
-                response = json.loads(sdwanp.get_request('template/policy/list/' +
-                                      ltype + '/' + v))
-                print('         list: ' + v + ' : ' + ltype +
-                      " "*(10 - len(ltype)) + ': ' + response['name'])
-    """
     return
 
 
@@ -377,6 +351,7 @@ def id_fix(oldid, newid, drc):
                 f.close()
             except:
                 pass
+    return
 
 ###############################################################################
 
@@ -1502,7 +1477,7 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
 
         click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
 
-        # determoine license watermark - 95 percentile
+        # determine license watermark - 90 percentile
         # will be moved to an 'audit' function once cisco confirms measurements
         # collect wan interface statistics - 720 hours - 30 minute averages
         payload = {
@@ -1591,11 +1566,11 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
         # sort list - lowest to highest
         bw_list.sort()
         # choose the time slice below the 95% of highest - return as bandwidth aggregate for device licensing
-        bw_index = round(.95 * len(bw_list))
+        bw_index = round(.90 * len(bw_list))
 
         print()
         print('Bandwidth License Watermark: ' + str(bw_list[bw_index]) + 'kbps')
-        print(' License level is based on 95 percentile with 30 minute averages')
+        print(' License level is based on 90 percentile with 30 minute averages')
         print(' Duration of measurment is 30 days')
         print(' Aggregation of all WAN Interfaces')
         print(' Higher of RX or TX Used')
