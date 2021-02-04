@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 5.8 - Last Updated: Ed Ruszkiewicz
+#  Version 5.9 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
@@ -14,9 +14,9 @@ TODO
 
 - Token Auth
 
-- Add name display to policy local and security --definition
-
 - Add SaaS OnRamp Status
+
+- Add chart plotting for utilization - gnuplotlib
 
 - Add a 'Diff' function to Device Templates - Compare if migratoing to new platform
 
@@ -1570,10 +1570,10 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
 
         print()
         print('Bandwidth License Watermark: ' + str(bw_list[bw_index]) + 'kbps')
-        print(' License level is based on 90 percentile with 30 minute averages')
+        print(' License level is based on 90 percentile with 30 minute time slice averages')
         print(' Duration of measurment is 30 days')
         print(' Aggregation of all WAN Interfaces')
-        print(' Higher of RX or TX Used')
+        print(' Higher of RX or TX used per WAN Interface per time slice')
         print()
 
         return
@@ -2553,10 +2553,16 @@ def policy_local(config, download, upload, definition, tree):
             print("--- Attached Definitions ---")
             print()
             defs = item['policyDefinition']['assembly']
-            headers = ["Definition ID", "Definition Type"]
+            headers = ["Definition ID", "Definition Type","Definition Name"]
             table = list()
             for d in defs:
-                tr = [d['definitionId'], d['type']]
+                try:
+                    response = json.loads(sdwanp.get_request('template/policy/definition/' +
+                              d['type'].lower() + '/' + d['definitionId']))
+                except:
+                    response = json.loads(sdwanp.get_request('template/policy/definition/' +
+                              d['type'] + '/' + d['definitionId']))
+                tr = [d['definitionId'], d['type'], response['name']]
                 table.append(tr)
             try:
                 click.echo(tabulate.tabulate(table, headers,
@@ -2766,10 +2772,16 @@ def policy_security(config, download, upload, definition, tree):
         print("--- Attached Definitions ---")
         print()
         defs = item['policyDefinition']['assembly']
-        headers = ["Definition ID", "Definition Type"]
+        headers = ["Definition ID", "Definition Type","Definition Name"]
         table = list()
         for d in defs:
-            tr = [d['definitionId'], d['type']]
+            try:
+                response = json.loads(sdwanp.get_request('template/policy/definition/' +
+                          d['type'].lower() + '/' + d['definitionId']))
+            except:
+                response = json.loads(sdwanp.get_request('template/policy/definition/' +
+                          d['type'] + '/' + d['definitionId']))
+            tr = [d['definitionId'], d['type'], response['name']]
             table.append(tr)
         try:
             click.echo(tabulate.tabulate(table, headers,
