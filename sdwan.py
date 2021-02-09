@@ -14,8 +14,6 @@ TODO
 
 - Token Auth
 
-- Show per site SaaS State
-
 - Add chart plotting for utilization - gnuplotlib
 
 - Add a 'Diff' function to Device Templates - Compare if migratoing to new platform
@@ -3092,24 +3090,27 @@ def saas(status):
     response = json.loads(sdwanp.get_request('template/cloudx/attachedgateway'))
     items = response['data']
     for item in items:
-        tr = ['Gateway', item['site-id'], item['vedgeList'][0]['host-name'],item['vedgeList'][0]['system-ip'],
-             item['vedgeList'][0]['colorList'],
-             item['vedgeList'][0]['configStatusMessage']]
-        table.append(tr)
+        for i in range(len(item['vedgeList'])):
+            tr = ['Gateway', item['site-id'], item['vedgeList'][i]['host-name'],item['vedgeList'][i]['system-ip'],
+                 item['vedgeList'][i]['colorList'],
+                 item['vedgeList'][i]['configStatusMessage']]
+            table.append(tr)
     response = json.loads(sdwanp.get_request('template/cloudx/attachedclient'))
     items = response['data']
     for item in items:
-        tr = ['Client', item['site-id'], item['vedgeList'][0]['host-name'],item['vedgeList'][0]['system-ip'],
-             item['vedgeList'][0]['colorList'],
-             item['vedgeList'][0]['configStatusMessage']]
-        table.append(tr)
+        for i in range(len(item['vedgeList'])):
+            tr = ['Client', item['site-id'], item['vedgeList'][i]['host-name'],item['vedgeList'][i]['system-ip'],
+                 item['vedgeList'][i]['colorList'],
+                 item['vedgeList'][i]['configStatusMessage']]
+            table.append(tr)
     response = json.loads(sdwanp.get_request('template/cloudx/attacheddia'))
     items = response['data']
     for item in items:
-        tr = ['DIA', item['site-id'], item['vedgeList'][0]['host-name'],item['vedgeList'][0]['system-ip'],
-             item['vedgeList'][0]['colorList'],
-             item['vedgeList'][0]['configStatusMessage']]
-        table.append(tr)
+        for i in range(len(item['vedgeList'])):
+            tr = ['DIA', item['site-id'], item['vedgeList'][i]['host-name'],item['vedgeList'][i]['system-ip'],
+                 item['vedgeList'][i]['colorList'],
+             item['vedgeList'][i]['configStatusMessage']]
+            table.append(tr)
     try:
         click.echo(tabulate.tabulate(table, headers,
                                      tablefmt="fancy_grid"))
