@@ -1360,6 +1360,22 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
 
     if saas:
         print()
+        response = json.loads(sdwanp.get_request('device/cloudx/applications?deviceId=' + saas))
+        items = response['data']
+        headers = ["Site ID", "Hostname", "System IP","Application", "Interface","VPN", "Color","Loss", "Latency","VQE Score", "VQE Status","Exit", "Gateway"]
+        table = list()
+        for item in items:
+            tr = [item['site-id'], item['vdevice-host-name'], item['vdevice-name'], item['application'],
+                  item['interface'], item['vpn-id'], item['local-color'], item['loss'], item['latency'],
+                  item['vqe-score'], item['vqe-status'], item['exit-type'], item['gateway-system-ip']]
+            table.append(tr)
+        try:
+            click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="fancy_grid"))
+        except UnicodeEncodeError:
+            click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="grid"))
+        print()
         return
 
     if sla:
@@ -3071,28 +3087,27 @@ def saas(status):
         click.echo(tabulate.tabulate(table, headers,
                                      tablefmt="grid"))
     print()
-
-    headers = ["Site Type", "Site ID", "Hostname", "System IP", "Interface", "Color", "Status"]
+    headers = ["Site Type", "Site ID", "Hostname", "System IP", "Color", "Status"]
     table = list()
     response = json.loads(sdwanp.get_request('template/cloudx/attachedgateway'))
     items = response['data']
     for item in items:
         tr = ['Gateway', item['site-id'], item['vedgeList'][0]['host-name'],item['vedgeList'][0]['system-ip'],
-             item['vedgeList'][0]['cloudxInterfaceList'],item['vedgeList'][0]['colorList'],
+             item['vedgeList'][0]['colorList'],
              item['vedgeList'][0]['configStatusMessage']]
         table.append(tr)
     response = json.loads(sdwanp.get_request('template/cloudx/attachedclient'))
     items = response['data']
     for item in items:
         tr = ['Client', item['site-id'], item['vedgeList'][0]['host-name'],item['vedgeList'][0]['system-ip'],
-             item['vedgeList'][0]['cloudxInterfaceList'],item['vedgeList']['colorList'],
+             item['vedgeList'][0]['colorList'],
              item['vedgeList'][0]['configStatusMessage']]
         table.append(tr)
     response = json.loads(sdwanp.get_request('template/cloudx/attacheddia'))
     items = response['data']
     for item in items:
         tr = ['DIA', item['site-id'], item['vedgeList'][0]['host-name'],item['vedgeList'][0]['system-ip'],
-             item['vedgeList'][0]['cloudxInterfaceList'],item['vedgeList'][0]['colorList'],
+             item['vedgeList'][0]['colorList'],
              item['vedgeList'][0]['configStatusMessage']]
         table.append(tr)
     try:

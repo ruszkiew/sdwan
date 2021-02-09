@@ -34,6 +34,8 @@ Usage: sdwan.py device [OPTIONS]
 
       ./sdwan.py device --ospf deviceID summary | <prefix>
 
+      ./sdwan.py device --saas deviceID
+
       ./sdwan.py device --set_var deviceID <object> <value>
 
       ./sdwan.py device --staging deviceID
@@ -64,6 +66,7 @@ Options:
   --int TEXT         Display Interface Statistics and State
   --omp TEXT...      Display Device OMP Routes
   --ospf TEXT        Display Device OSPF Information
+  --saas TEXT        Display SaaS OnRamp State
   --set_var TEXT...  Set Variable/Value for Device
   --staging TEXT     Make Device Certificate Staging
   --sla TEXT         Display Tunnel BFD SLA Statistics
