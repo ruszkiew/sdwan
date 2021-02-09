@@ -14,7 +14,7 @@ TODO
 
 - Token Auth
 
-- Add SaaS OnRamp Status
+- Show per site SaaS State
 
 - Add chart plotting for utilization - gnuplotlib
 
@@ -567,6 +567,7 @@ def tasks(clear):
 @click.option("--int", help="Display Interface Statistics and State")
 @click.option("--omp", nargs=2, help="Display Device OMP Routes") 
 @click.option("--ospf", help="Display Device OSPF Information") 
+@click.option("--saas", help="Display SaaS OnRamp State")
 @click.option("--set_var", nargs=3, help="Set Variable/Value for Device")
 @click.option("--staging", help="Make Device Certificate Staging")
 @click.option("--sla", help="Display Tunnel BFD SLA Statistics")
@@ -576,7 +577,7 @@ def tasks(clear):
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--wan", help="Display Device WAN Interface")
 def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, ospf,
-           set_var, csv, sla, staging, template, invalid, valid, variable, vrrp, wan):
+           set_var, csv, saas, sla, staging, template, invalid, valid, variable, vrrp, wan):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -610,6 +611,8 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
             ./sdwan.py device --omp deviceID summary | <prefix>
 
             ./sdwan.py device --ospf deviceID summary | <prefix>
+
+            ./sdwan.py device --saas deviceID
 
             ./sdwan.py device --set_var deviceID <object> <value>
 
@@ -1353,6 +1356,10 @@ def device(arp, attach, bfd, bgp, config, control, detach, download, int, omp, o
         print (response)
         print()
 
+        return
+
+    if saas:
+        print()
         return
 
     if sla:
@@ -3011,6 +3018,95 @@ def policy_definition(config, download, upload):
 
 ###############################################################################
 
+# SAAS ONRAMP
+
+@click.command()
+@click.option("--status", help="SaaS Application")
+def saas(status):
+    """Display SaaS OnRamp Status.
+
+          List Policy to derive PolicyID for additional actions
+
+        Example Command:
+
+            ./sdwan.py saas
+
+            ./sdwan.py saas --status Application Name
+
+    """
+    if status:
+        print()
+        response = json.loads(sdwanp.get_request('template/cloudx/status/?appName=' + status))
+        items = response['data']
+        headers = ["Site ID", "Hotname", "System IP","Interface","Color", "Latency","VQE Score", "VQE Status", "Gateway"]
+        table = list()
+        for item in items:
+            tr = [item['site-id'], item['host-name'], item['system-ip'],
+                  item['interface'], item['local-color'], item['latency'],
+                  item['vqe-score'], item['vqe-status'], item['gateway-system-ip']]
+            table.append(tr)
+        try:
+            click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="fancy_grid"))
+        except UnicodeEncodeError:
+            click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="grid"))
+        print()
+        return
+
+    # no parameter passed in - list active applications and site lists
+    print()
+    response = json.loads(sdwanp.get_request('template/cloudx/manage/apps'))
+    items = response['data']
+    headers = ["Application", "App Name", "VPN", "Enabled"]
+    table = list()
+    for item in items:
+        tr = [item['longName'], item['appType'], item['appVpnList'],
+              item['policyEnabled']]
+        table.append(tr)
+    try:
+        click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="fancy_grid"))
+    except UnicodeEncodeError:
+        click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="grid"))
+    print()
+
+    headers = ["Site Type", "Site ID", "Hostname", "System IP", "Interface", "Color", "Status"]
+    table = list()
+    response = json.loads(sdwanp.get_request('template/cloudx/attachedgateway'))
+    items = response['data']
+    for item in items:
+        tr = ['Gateway', item['site-id'], item['vedgeList'][0]['host-name'],item['vedgeList'][0]['system-ip'],
+             item['vedgeList'][0]['cloudxInterfaceList'],item['vedgeList'][0]['colorList'],
+             item['vedgeList'][0]['configStatusMessage']]
+        table.append(tr)
+    response = json.loads(sdwanp.get_request('template/cloudx/attachedclient'))
+    items = response['data']
+    for item in items:
+        tr = ['Client', item['site-id'], item['vedgeList'][0]['host-name'],item['vedgeList'][0]['system-ip'],
+             item['vedgeList'][0]['cloudxInterfaceList'],item['vedgeList']['colorList'],
+             item['vedgeList'][0]['configStatusMessage']]
+        table.append(tr)
+    response = json.loads(sdwanp.get_request('template/cloudx/attacheddia'))
+    items = response['data']
+    for item in items:
+        tr = ['DIA', item['site-id'], item['vedgeList'][0]['host-name'],item['vedgeList'][0]['system-ip'],
+             item['vedgeList'][0]['cloudxInterfaceList'],item['vedgeList'][0]['colorList'],
+             item['vedgeList'][0]['configStatusMessage']]
+        table.append(tr)
+    try:
+        click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="fancy_grid"))
+    except UnicodeEncodeError:
+        click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="grid"))
+    print()
+
+    return
+
+###############################################################################
+
 @click.group()
 def cli():
     """CLI for managing policies and templates in Cisco SDWAN.
@@ -3027,6 +3123,7 @@ cli.add_command(policy_definition)
 cli.add_command(policy_security)
 cli.add_command(device)
 cli.add_command(certificate)
+cli.add_command(saas)
 cli.add_command(tasks)
 cli.add_command(template_device)
 cli.add_command(template_feature)
