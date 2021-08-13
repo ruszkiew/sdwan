@@ -68,7 +68,9 @@ Script Usage
       policy-definition  Display, Download, and Upload Policy Definitions.
       policy-list        Display, Download, and Upload Policy Lists.
       policy-local       Display, Download, and Upload Local Policy.
+      policy-security    Display, Download, and Upload Security Policy.
       rest               Execute raw REST GET request.
+      saas               Display SaaS OnRamp Status.
       tasks              Retrieve and/or Clear vManage Active Tasks.
       template-device    Display, Download, and Upload Device Templates.
       template-feature   Display, Download, and Upload Feature Templates.
@@ -84,7 +86,9 @@ Script Usage
  * [policy-definition](policy-definition)
  * [policy-list](policy-list)
  * [policy-local](policy-local)
+ * [policy-security](policy-security)
  * [rest](rest)
+ * [saas](saas)
  * [tasks](tasks)
  * [template-device](template-device)
  * [template-feature](template-feature)
@@ -147,7 +151,7 @@ Objects may be uploaded to the same or older version of vManage.
 
 Objects are linked with references.  The IDs do change after an upload so the stored object files are updated with the new IDs.  When uploading in batch it is important to start with the 'leaf' objects and work towards the more complex.  Below is the advised order of upload.
 
-WARNING - Do NOT use Factory Default Feature Templates if you plan to Upload Device Templates.  ID linking will be broken.
+WARNING - Do NOT use Factory Default Feature Templates if you plan to Upload Device Templates.  ID linking will be broken.  
 
   * List
   * Definition
