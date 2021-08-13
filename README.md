@@ -139,7 +139,7 @@ It would look like:
 
 Lists, Definitions, Policies, and Templates are the core Components to vManage.
 
-DIAGRAM(VMANAGE COMPONENTS.pdf)
+VMANAGE COMPONENTS.pdf
 
 
 ## BACKUP (BATCH DOWNLOAD)
