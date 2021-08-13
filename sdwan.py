@@ -4,15 +4,13 @@
 
 #  SDWAN CLI Tool
 
-#  Version 6.0 - Last Updated: Ed Ruszkiewicz
+#  Version 6.1 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
 """
 
 TODO
-
-
 
 - Token Auth
 - Copy/Clone a Device Template to a new Model

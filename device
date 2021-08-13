@@ -20,15 +20,25 @@ Usage: sdwan.py device [OPTIONS]
 
       ./sdwan.py device --control deviceID
 
+      ./sdwan.py device --count_aar deviceID
+
+      ./sdwan.py device --count_dp deviceID
+
       ./sdwan.py device --csv deviceID | all
 
       ./sdwan.py device --detach deviceID
 
       ./sdwan.py device --download deviceID | all
 
+      ./sdwan.py device --events_hr deviceID
+
+      ./sdwan.py device --events_crit deviceID
+
       ./sdwan.py device --int deviceID
 
       ./sdwan.py device --invalid deviceID
+
+      ./sdwan.py device --models
 
       ./sdwan.py device --omp deviceID summary | <prefix>
 
@@ -53,26 +63,31 @@ Usage: sdwan.py device [OPTIONS]
       ./sdwan.py device --wan deviceID
 
 Options:
-  --arp TEXT         Display Device ARP Cache
-  --attach TEXT      Attach Device Template
-  --bfd TEXT         Display Device BFD Sessions
-  --bgp TEXT         Display Device BGP Information
-  --config TEXT      Print Device CLI Configuration
-  --control TEXT     Display Device Control Connections
-  --csv TEXT         Output Device Variables to CSV
-  --detach TEXT      Detach Device from Device Template
-  --download TEXT    Download Device CLI Configuration
-  --invalid TEXT     Make Device Certificate Invalid
-  --int TEXT         Display Interface Statistics and State
-  --omp TEXT...      Display Device OMP Routes
-  --ospf TEXT        Display Device OSPF Information
-  --saas TEXT        Display SaaS OnRamp State
-  --set_var TEXT...  Set Variable/Value for Device
-  --staging TEXT     Make Device Certificate Staging
-  --sla TEXT         Display Tunnel BFD SLA Statistics
-  --template TEXT    Display Device Template
-  --valid TEXT       Make Device Certificate Valid
-  --variable TEXT    Display Device Variable and Values
-  --vrrp TEXT        Display Device VRRP Status
-  --wan TEXT         Display Device WAN Interface
-  --help             Show this message and exit.
+  --arp TEXT          Display Device ARP Cache
+  --attach TEXT       Attach Device Template
+  --bfd TEXT          Display Device BFD Sessions
+  --bgp TEXT          Display Device BGP Information
+  --config TEXT       Print Device CLI Configuration
+  --control TEXT      Display Device Control Connections
+  --count_aar TEXT    Display AAR Policy Counters
+  --count_dp TEXT     Display Traffic Data Policy Counters
+  --csv TEXT          Output Device Variables to CSV
+  --detach TEXT       Detach Device from Device Template
+  --download TEXT     Download Device CLI Configuration
+  --events_hr TEXT    Display 1 Hour All Events
+  --events_crit TEXT  Display 7 Days Critical Events
+  --invalid TEXT      Make Device Certificate Invalid
+  --int TEXT          Display Interface Statistics and State
+  --models            Display Valid Device Models
+  --omp TEXT...       Display Device OMP Routes
+  --ospf TEXT         Display Device OSPF Information
+  --saas TEXT         Display SaaS OnRamp State
+  --set_var TEXT...   Set Variable/Value for Device
+  --staging TEXT      Make Device Certificate Staging
+  --sla TEXT          Display Tunnel BFD SLA Statistics
+  --template TEXT     Display Device Template
+  --valid TEXT        Make Device Certificate Valid
+  --variable TEXT     Display Device Variable and Values
+  --vrrp TEXT         Display Device VRRP Status
+  --wan TEXT          Display Device WAN Interface
+  --help              Show this message and exit.
