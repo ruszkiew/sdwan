@@ -64,9 +64,10 @@ import csv
 from datetime import datetime
 from requests.packages.urllib3.exceptions import InsecureRequestWarning  # NOQA
 from requests.auth import HTTPBasicAuth
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)       # NOQA
+requests.packages.urllib3.disable_warnings()
 from pprint import pprint
 from netmiko import ConnectHandler, SCPConn
-
 
 ###############################################################################
 
@@ -126,9 +127,6 @@ class rest_api_lib:
         self.login(self.vmanage_ip, vmanage_port, username, password)
 
     def login(self, vmanage_ip, vmanage_port, username, password):
-
-        requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-        requests.packages.urllib3.disable_warnings()
 
         base_url = 'https://%s:%s/dataservice/' % (vmanage_ip, vmanage_port)
 
