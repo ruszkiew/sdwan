@@ -181,12 +181,24 @@ WARNING - Do NOT use Factory Default Feature Templates if you plan to Upload Dev
     ./sdwan.py device --valid 100.65.30.11
     ./sdwan.py device --staging 100.65.30.11
     ./sdwan.py device --attach 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9 router_var.csv
+    ./sdwan.py device --template 100.65.30.11
     ./sdwan.py device --set_var 100.65.30.11 '//system/gps-location/latitude' 44.9764 
     ./sdwan.py device --template 100.65.30.11
     ./sdwan.py device --detach 100.65.30.11
     ./sdwan.py device --csv 100.65.30.11
     ./sdwan.py device --download 100.65.30.11
     ./sdwan.py device --download all
+    ./sdwan.py device --sla 100.65.30.11
+    ./sdwan.py device --wan 100.65.30.11
+    ./sdwan.py device --int 100.65.30.11
+    ./sdwan.py device --arp 100.65.30.11
+    ./sdwan.py device --ospf 100.65.30.11
+    ./sdwan.py device --bgp 100.65.30.11
+    ./sdwan.py device --count_dp 100.65.30.11
+    ./sdwan.py device --count_aar 100.65.30.11
+    ./sdwan.py device --events_hr 100.65.30.11
+    ./sdwan.py device --events_crit 100.65.30.11
+    ./sdwan.py device --models
     ./sdwan.py env
     ./sdwan.py tasks
     ./sdwan.py policy-definition
@@ -202,6 +214,9 @@ WARNING - Do NOT use Factory Default Feature Templates if you plan to Upload Dev
     ./sdwan.py policy-local
     ./sdwan.py policy-local --tree 729641be-a54a-43b0-bc86-9c5822aba0f8
     ./sdwan.py policy-local --config 729641be-a54a-43b0-bc86-9c5822aba0f8
+    ./sdwan.py policy-security
+    ./sdwan.py rest --object <api_object>
+    ./sdwan.py saas
     ./sdwan.py template-device --tree 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
     ./sdwan.py template-device --variable 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
     ./sdwan.py template-device --config 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
@@ -210,6 +225,8 @@ WARNING - Do NOT use Factory Default Feature Templates if you plan to Upload Dev
     ./sdwan.py template-feature --config dc079e4e-7631-4246-923a-71943427a4fd
     ./sdwan.py template-feature --download dc079e4e-7631-4246-923a-71943427a4fd
     ./sdwan.py template-feature --download all
+    ./sdwan.py template-feature --models dc079e4e-7631-4246-923a-71943427a4fd
+    ./sdwan.py template-feature --model_update dc079e4e-7631-4246-923a-71943427a4fd vedge-1000,vedge-100,vedge-2000
 
 
 ## TODO
@@ -222,7 +239,6 @@ E-mail the authors for:
 
   * Bugs
   * Feature Requests
-  * Documentation Clarification / Improvements
 
 These items will be staged on the GitHub 'Issues' tracker.
 

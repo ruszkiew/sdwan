@@ -4,48 +4,12 @@
 
 #  SDWAN CLI Tool
 
-#  Version 6.1 - Last Updated: Ed Ruszkiewicz
+#  Version 6.2 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
-"""
+# NOTES
 
-TODO
-
-- Token Auth
-- Copy/Clone a Device Template to a new Model
-- Add / Remove Model from Feature Template
-
-ADD
----
-Check to ensure passed model is a valid model number        - download and compare all models
-Check to ensure model number is valid for the template type - template class from above output
-Grab template values                                        - current download function
-Update template Dict                                        - replace contents in file
-Put - Upload the new template                               - upload new template - may need to learn how to 'force'
-
-REMOVE
------
-Check to ensure passed model is a valid model number
-Check to ensure no device template is referencing it
-Grab template values
-Update template Dict
-Put - Upload the new template
-
-
-- Add a 'Diff' function to Device Templates - Compare if migratoing to new platform
-- Investigate packet tracker functionality - similar to Silverpeak flow details
-- Unit Testing - Started - For Module
-
-- REST Error Correction
-
-- Add 'Update' function to lists - navigate the activate of policy/templates to devices
-        need to reference if it is a CLI or UI template
-        if you PUT to an attached item - you have 5 minutes to do the 'input' and 'attachment' follow up
-        Need to figure out how to reference listID and parse/create the payload
-
-
-"""
 
 ###############################################################################
 
@@ -639,7 +603,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
             ./sdwan.py device --omp deviceID summary | <prefix>
 
-            ./sdwan.py device --ospf deviceID summary | <prefix>
+            ./sdwan.py device --ospf deviceID
 
             ./sdwan.py device --saas deviceID
 
