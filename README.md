@@ -135,6 +135,13 @@ It would look like:
      ProxyCommand=nc -X 5 -x localhost:12345 %h %p
 
 
+## VMANAGE OBJECTS/COMPONENTS
+
+Lists, Definitions, Policies, and Templates are the core Components to vManage.
+
+DIAGRAM(VMANAGE COMPONENTS.pdf)
+
+
 ## BACKUP (BATCH DOWNLOAD)
 
 The [backup](backup) script will download all of the SDWAN environmental objects.
