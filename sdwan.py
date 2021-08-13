@@ -64,7 +64,7 @@ import re
 import time
 import csv
 from datetime import datetime
-from requests.packages.urllib3.exceptions import InsecureRequestWarning  # NOQA
+from requests.packages.urllib3.exceptions import InsecureRequestWarning  # pylint: disable=import-error
 from requests.auth import HTTPBasicAuth
 from pprint import pprint
 from netmiko import ConnectHandler, SCPConn
@@ -129,8 +129,8 @@ class rest_api_lib:
 
     def login(self, vmanage_ip, vmanage_port, username, password):
 
-        requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-        requests.packages.urllib3.disable_warnings()
+        requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # pylint: disable=no-member
+        requests.packages.urllib3.disable_warnings()                        # pylint: disable=no-member
 
         base_url = 'https://%s:%s/dataservice/' % (vmanage_ip, vmanage_port)
 
@@ -320,7 +320,7 @@ sdwanp = rest_api_lib(SDWAN_IP, SDWAN_PORT, SDWAN_USERNAME, SDWAN_PASSWORD)
 # DICTIONARY VARIABLE FIND / PRINT
 
 def var_find(dkey, dval, dret, d):
-    for k, v in d.items():
+    for k, v in d.items():                            # pylint: disable=unused-variable
         if isinstance(v, dict):
             if dkey in v.keys():
                 if(v[dkey] == dval):
@@ -335,7 +335,7 @@ def var_find(dkey, dval, dret, d):
 # DICTIONARY LIST FIND / PRINT
 
 def list_find(d,l):
-    for k1, v1 in d.items():
+    for k1, v1 in d.items():                         # pylint: disable=unused-variable
         if isinstance(v1,dict):
             list_find(v1,l)
         elif isinstance(v1,list):
@@ -354,7 +354,7 @@ def list_find(d,l):
 
 def id_fix(oldid, newid, drc):
     pattern = re.compile(oldid)
-    for dirpath, dirname, filename in os.walk(drc):
+    for dirpath, dirname, filename in os.walk(drc):  # pylint: disable=unused-variable
         for fname in filename:
             path = os.path.join(dirpath, fname)
             try:
@@ -2774,7 +2774,7 @@ def policy_local(config, download, upload, definition, tree):
         print()
 
         # glean original policyId from file name
-        m = re.search("^.*_(\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12})_*(\w.*$)", upload)
+        m = re.search("^.*_(\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12})_*(\w.*$)", upload) # pylint: disable=anomalous-backslash-in-string
         if m:
             lpid = m.group(1)
             lpname = m.group(2)
@@ -2994,7 +2994,7 @@ def policy_security(config, download, upload, definition, tree):
         print()
 
         # glean original policyId from file name
-        m = re.search("^.*_(\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12})_*(\w.*$)", upload)
+        m = re.search("^.*_(\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12})_*(\w.*$)", upload) # pylint: disable=anomalous-backslash-in-string
         if m:
             lpid = m.group(1)
             lpname = m.group(2)
