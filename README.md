@@ -142,7 +142,6 @@ Lists, Definitions, Policies, and Templates are the core Components to vManage.
 [VMANAGE COMPONENTS](https://github.com/ruszkiew/sdwan/blob/master/VMANAGE%20COMPONENTS.pdf)
 
 
-
 ## BACKUP (BATCH DOWNLOAD)
 
 The [backup](backup) script will download all of the SDWAN environmental objects.
@@ -164,6 +163,7 @@ WARNING - Do NOT use Factory Default Feature Templates if you plan to Upload Dev
   * List
   * Definition
   * Policy Local
+  * Policy Security
   * Policy Central
   * Template Feature
   * Template Device

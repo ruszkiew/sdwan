@@ -10,6 +10,11 @@
 
 # NOTES
 
+"""
+
+  Get Feature Model Change done
+
+"""
 
 ###############################################################################
 
@@ -164,9 +169,21 @@ class rest_api_lib:
         if self.DEBUG: print("************************************************")
         if self.DEBUG: print()
 
-        data = response.content
-
-        return data
+        # validate a successful response
+        if response.status_code == 200:
+            data = response.content
+            return data
+        else:
+            print()
+            print('*** ERROR ***')
+            print()
+            pprint(response)
+            print()
+            pprint(json.loads(response.content))
+            print()
+            quit()
+        
+        return
 
     def post_request(self, mount_point, payload,
                      headers={'Content-Type': 'application/json'}):
