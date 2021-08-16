@@ -215,7 +215,7 @@ WARNING - Do NOT use Factory Default Feature Templates if you plan to Upload Dev
     ./sdwan.py policy-local --tree 729641be-a54a-43b0-bc86-9c5822aba0f8
     ./sdwan.py policy-local --config 729641be-a54a-43b0-bc86-9c5822aba0f8
     ./sdwan.py policy-security
-    ./sdwan.py rest --object <api_object>
+    ./sdwan.py rest --get <api_object>
     ./sdwan.py saas
     ./sdwan.py template-device --tree 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
     ./sdwan.py template-device --variable 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9

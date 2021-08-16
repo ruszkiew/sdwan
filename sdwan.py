@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 6.2 - Last Updated: Ed Ruszkiewicz
+#  Version 6.4 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
@@ -12,7 +12,9 @@
 
 """
 
-  Get Feature Model Change done
+ - Clone template of same class to a different model
+ - Validatate if there are subtle differences they will
+     be resolved by vManange
 
 """
 
@@ -226,6 +228,7 @@ class rest_api_lib:
                      headers={'Content-Type': 'application/json'}):
 
         url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.vmanage_port, mount_point)
+        # payload = json.dumps(payload, indent=1)
         payload = json.dumps(payload)
 
         if self.DEBUG: print()
@@ -480,20 +483,20 @@ def certificate():
 # RAW REST GET
 
 @click.command()
-@click.option("--object", help="URL Object.")
-def rest(object):
+@click.option("--get", help="URL Object.")
+def rest(get):
     """Execute raw REST GET request.
 
         Returns raw output in JSON format.
 
         Example Command:
 
-            ./sdwan.py rest --object <rest_object>
+            ./sdwan.py rest --get <rest_object>
 
     """
 
     click.secho("Retrieving REST response.")
-    response = json.loads(sdwanp.get_request(object))
+    response = json.loads(sdwanp.get_request(get))
     pprint(response)
     return
 
@@ -2139,8 +2142,10 @@ def template_feature(attached, config, download, models, model_update, upload):
         print()
         print('Device Models Enabled')
         print()
+        print(' ')
         for item in device_models:
-            print(' ', item)
+            sys.stdout.write(item + ',')
+        print()
         print()
         pprint(device_models)
         print()
@@ -2182,12 +2187,36 @@ def template_feature(attached, config, download, models, model_update, upload):
         if (set(models).issubset(set(valid_models))):
             flag = 1
         if flag:
-            print('** Input model list is validated')
+            print('** Input model list is Validated')
             print()
         else :
-            print('ERROR - Input model list is not supported')
+            print('ERROR - Input model list is not Supported')
             print()
             return
+
+        # check to ensure new model list supports all attached device templates
+        print('** Checking new model list supprts attached Device Templates')
+        print()
+        url = "template/feature/devicetemplates/{0}".format(deviceId)
+        response = json.loads(sdwanp.get_request(url))
+        items = response['data']
+        for item in items:
+            if 'templateId' in item:
+                device_type = json.loads(sdwanp.get_request('template/device/object/' +
+                                     item['templateId']))['deviceType']
+                if device_type in models:
+                    flag = 0
+                else:
+                    flag = 1
+                    print(item['templateName'] + " -- " + item['templateId'] + " -- " + device_type +
+                        " is MISSING")
+                    print()
+                    print("Changes will NOT be Submitted")
+                    print()
+                    return
+        print()
+        print('** Attached device template models are Validated')
+        print()
 
         # get existing template
         response = sdwanp.get_request('template/feature/object/' +
@@ -2195,36 +2224,19 @@ def template_feature(attached, config, download, models, model_update, upload):
         items = json.loads(response)
         items['deviceType'] = models
 
-        # update the feature template from a put
+        # create put payload with updated deviceType
         payload = items
 
-        pprint(payload)
+        print()
+        print("Template File:", deviceId, "attempting to update with new model list")
+        print()
 
-        payload['httpResponseHeader'] = {
-            "cache-control": "no-cache",
-            "content-encoding": "gzip",
-            "content-type": "application/json",
-            "date": "Thu, 12 Aug 2021 16:43:47 GMT",
-            "expires": "Thu, 01 Jan 1970 00:00:00 GMT",
-            "pragma": "no-cache",
-            "server": "svcproxy",
-            "strict-transport-security": "max-age=31536000; includeSubDomains",
-            "transfer-encoding": "chunked",
-            "vary": "Accept-Encoding",
-            "x-content-type-options": "nosniff",
-            "x-frame-options": "DENY",
-            "x-xss-protection": "1; mode=block"
-            }
-        
-        print()
-        print("Template File:", deviceId, "attempting to update device models...")
-        print()
-        response = sdwanp.put_request('template/feature',
+        # put updated template
+        response = sdwanp.put_request('template/feature/' + deviceId,
                                        payload)
-        print()
         print(response)
         print()
-        print()
+
         return
 
 
@@ -2235,7 +2247,7 @@ def template_feature(attached, config, download, models, model_update, upload):
         print()
         print("Template File:", upload, "attempting upload...")
         print()
-        response = sdwanp.put_request('template/feature',
+        response = sdwanp.post_request('template/feature',
                                        payload)
         print()
         print(response)
