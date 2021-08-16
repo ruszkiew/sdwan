@@ -13,8 +13,6 @@
 """
 
  - Clone template of same class to a different model
- - Validatate if there are subtle differences they will
-     be resolved by vManange
 
 """
 
@@ -299,7 +297,7 @@ sdwanp = rest_api_lib(SDWAN_IP, SDWAN_PORT, SDWAN_USERNAME, SDWAN_PASSWORD)
 
 ###############################################################################
 
-# DICTIONARY VARIABLE FIND / PRINT
+# DICTIONARY VARIABLE FIND / PRINT - USED IN TREE FUNCTIONS
 
 def var_find(dkey, dval, dret, d):
     for k, v in d.items():                            # pylint: disable=unused-variable
@@ -314,7 +312,7 @@ def var_find(dkey, dval, dret, d):
                     var_find(dkey, dval, dret, i)
     return
 
-# DICTIONARY LIST FIND / PRINT
+# DICTIONARY LIST FIND / PRINT - USED IN TREE FUNCTIONS
 
 def list_find(d,l):
     for k1, v1 in d.items():                         # pylint: disable=unused-variable
@@ -332,7 +330,7 @@ def list_find(d,l):
     return
 
 
-# SEARCH AND REPLACE ID
+# SEARCH AND REPLACE ID - USED IN UPLOAD FUNCTIONS
 
 def id_fix(oldid, newid, drc):
     pattern = re.compile(oldid)
