@@ -12,8 +12,7 @@ This project has several objectives:
  * Provide sample configuration chunks
  * Have fun
 
- Certainly this code could and should be modularized.  It is intenially kept
- in a single script to provide a single place to explore.
+ This code has grown and is pretty lenghthy.  It could and should be modularized.  For now it is intenialy kept in a single script to provide a single place to explore.
 
  The script grew from the Cisco DevNet SDWAN Learning Labs.  It is recommend
  to run through the series.
@@ -132,7 +131,7 @@ If using SOCKS Proxy to Port forward SSH/HTTPS through a Bastion Host, add vMana
 
 It would look like:
 
-    host 52.89.253.138
+    host 64.103.37.21
      ProxyCommand=nc -X 5 -x localhost:12345 %h %p
 
 
