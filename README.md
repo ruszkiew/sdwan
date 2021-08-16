@@ -11,7 +11,7 @@ This project has several objectives:
  * Provide sample configuration chunks
  * Have fun
 
- This code has grown and is pretty lenghthy.  It could and should be modularized.  For now it is intenialy kept in a single script to provide a single place to explore.
+ This code has grown and is pretty long.  It could and should be modularized.  For now it is intentionaly kept in a single script to provide a single place to explore.
 
  The script grew from the Cisco DevNet SDWAN Learning Labs.  It is recommend
  to run through the series.
