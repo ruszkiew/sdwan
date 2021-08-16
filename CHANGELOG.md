@@ -4,7 +4,7 @@ v1.0 - DevNet Lab - Getting Started Script
 
 v1.1 - Added feature template list
 
-v1.2 - Added straight rest call
+v1.2 - Added straight rest get call
 
 v1.3 - Upload and Download Feature Template
 
