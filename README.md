@@ -246,7 +246,7 @@ Contributors will be assigned to items on the list.
 
 ## AUTHORS
 
-[Ed Ruszkiewicz](ed.ruszkiewicz@cdw.com) 
+[Ed Ruszkiewicz - CDW](ed.ruszkiewicz@cdw.com) 
 
 
 ## CHANGELOG

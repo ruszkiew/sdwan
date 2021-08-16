@@ -92,7 +92,20 @@ v5.2 - Cleaned up Code - Started Framework for Updating a Referenced List
 
 v5.4 - Added Database Backup using Netmiko - Updated GIT Documentation
 
+v5.6 - OSPF/BGP Routing Adjacencies
 
+v5.7 - Display Device Events
 
+v5.8 - Added Security Policy
 
+v5.9 - Added SaaS OnRamp Monitoring
 
+v6.0 - Display SLA Statistics
+
+v6.1 - Display OMP Routes
+
+v6.2 - Display WAN interfaces and 95percentile for License Validation
+
+v6.4 - Display Interfaces on Devicea
+
+v6.4 - Added ability to change Device Models in Feature Template

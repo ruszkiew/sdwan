@@ -4,10 +4,10 @@ Usage: sdwan.py rest [OPTIONS]
 
   Returns raw output in JSON format.
 
-  Example command:
+  Example Command:
 
-      ./sdwan.py rest --object <rest_object>
+      ./sdwan.py rest --get <rest_object>
 
 Options:
-  --object TEXT  URL Object.
-  --help         Show this message and exit.
+  --get TEXT  URL Object.
+  --help      Show this message and exit.
