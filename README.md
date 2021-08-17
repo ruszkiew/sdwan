@@ -254,8 +254,8 @@ Contributors will be assigned to items on the list.
 
 ## AUTHORS
 
-[Ed Ruszkiewicz](ed@ruszkiewicz.net) 
-
+Ed Ruszkiewicz - ed@ruszkiewicz.net
+ 
 
 ## CHANGELOG
 
