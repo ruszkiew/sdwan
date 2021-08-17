@@ -169,8 +169,8 @@ WARNING - Do NOT use Factory Default Feature Templates if you plan to Upload Dev
   * Template Feature
   * Template Device
 
-CiscoDevNet/sastre is a much better script for heavy exporting and importing.
-[SASTRE](https://github.com/CiscoDevNet/sastre)
+CiscoDevNet/[SASTRE](https://github.com/CiscoDevNet/sastre)is a much better script for heavy exporting and importing.
+
 
 ## EXAMPLES
 
