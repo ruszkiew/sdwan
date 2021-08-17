@@ -231,6 +231,9 @@ CiscoDevNet/[SASTRE](https://github.com/CiscoDevNet/sastre) is a much better scr
     ./sdwan.py template-feature --models dc079e4e-7631-4246-923a-71943427a4fd
     ./sdwan.py template-feature --model_update dc079e4e-7631-4246-923a-71943427a4fd vedge-1000,vedge-100,vedge-2000
 
+## EDGE VALIDATION TESTING
+Use pytest along with sdwan to automate validation.  See linked file for any example.
+[EXAMPLE VALIDATION SCRIPT](https://github.com/ruszkiew/sdwan/blob/master/test_site.py)
 
 ## TODO
 See the GitHub 'Issues' tracker for a list of planned features/fixes.
