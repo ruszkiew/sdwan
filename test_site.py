@@ -8,9 +8,9 @@
 
 """
 
-Automated Remote Site Test Script - Site Type 11 - Layer 3
+Automated Remote Site Test Script - Site Type XX - Layer 3 Switch
 
-USAGE: pytest --disable-warnings -v test_site.py --deviceId 1.1.1.1
+USAGE: pytest --disable-warnings -v test_site.py --deviceId A.A.A.A
 
 """
 
