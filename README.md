@@ -5,10 +5,10 @@ Cisco SDWAN (Viptela) CLI Tool
 This project has several objectives:
  * Learn Cisco SDWAN API
  * Learn Python
- * Provide a method to gather environment information via CLI
+ * Provide a method to gather data via CLI
  * Bridge functional gaps in the vManage UI
  * Optimize configuration, deployment, and validation of SDWAN
- * Provide some what intuitive sample configuration chunks
+ * Provide somewhat intuitive sample configuration chunks
  * Have fun
 
  This code has grown and is pretty long.  It could and should be modularized.  For now it is intentionaly kept in a single script to provide a single place to explore.
