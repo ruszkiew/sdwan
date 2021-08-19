@@ -4,15 +4,11 @@
 
 #  SDWAN CLI Tool
 
-#  Version 6.4 - Last Updated: Ed Ruszkiewicz
+#  Version 6.5 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
-# NOTES
-
 """
-
- - Clone template of same class to a different model
 
 """
 
@@ -1471,6 +1467,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
     if saas:
         print()
         response = json.loads(sdwanp.get_request('device/cloudx/applications?deviceId=' + saas))
+        pprint(response)
         items = response['data']
         headers = ["Site ID", "Hostname", "System IP","Application", "Interface","VPN", "Color","Loss", "Latency","VQE Score", "VQE Status","Exit", "Gateway"]
         table = list()
@@ -1763,13 +1760,14 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
 @click.command()
 @click.option("--attached", help="Template to display attached devices")
+@click.option("--clone", nargs=2, help="Clone Template to same or different Model")
 @click.option("--config", help="Template to display")
 @click.option("--csv", help="Template CSV Header")
 @click.option("--download", help="Template to download")
 @click.option("--upload", help="File to upload Template")
 @click.option("--tree", help="List templates and variables referenced")
 @click.option("--variable", help="List of variables required")
-def template_device(attached, config, csv, download, upload, tree, variable):
+def template_device(attached, clone, config, csv, download, upload, tree, variable):
     """Display, Download, and Upload Device Templates.
 
           List templates to derive templateID for additional actions
@@ -1779,6 +1777,8 @@ def template_device(attached, config, csv, download, upload, tree, variable):
             ./sdwan.py template_device
 
             ./sdwan.py template_device --attached <templateID>
+
+            ./sdwan.py template_device --clone <templateID> <model>
 
             ./sdwan.py template_device --config <templateID>
 
@@ -1811,6 +1811,75 @@ def template_device(attached, config, csv, download, upload, tree, variable):
         except UnicodeEncodeError:
             click.echo(tabulate.tabulate(table, headers,
                                          tablefmt="grid"))
+        return
+
+    # clone device template
+    if clone:
+        # get arguements
+        templateId = clone[0]
+        dst_model = clone[1]
+
+        print()
+        
+        # grab source template model and class
+        response = json.loads(sdwanp.get_request('template/device/object/' +
+                                      templateId))
+        src_class = response['templateClass']
+        src_model = response['deviceType']
+
+        # validate dst model and class
+        response = json.loads(sdwanp.get_request('device/models'))
+        items = response['data']
+        i = 0
+        for item in items:
+            if dst_model == item['name']:
+                if item['templateClass'] == src_class:
+                   print('** Input model list is Validated')
+                   print()
+                   i = 1
+                else:
+                   print('** Device Model is wrong Temmplate Class')
+                   print()
+                   return
+        if i == 0:
+            print('** Device Model not Valid')
+            print()
+            return
+
+        # download source template
+        response = json.loads(sdwanp.get_request('template/device/object/' +
+                                      templateId))
+
+        # update Names, iD, Type
+        new_template = response
+        new_template['templateName'] = ('Clone_' + response['templateName'])
+        new_template['templateId'] = '10101010-1010-1010-1010-101010101010'
+        new_template['deviceType'] = dst_model
+
+        # push new template
+        print('Attempting to upload new Template: ' + new_template['templateName'])
+        print()
+        response = sdwanp.post_request('template/device/feature',
+                                    new_template)
+        pprint(response)
+        print()
+        print('Please update Template Name and Description in vManage')
+        print()
+        # put - update new template with new description (cleanup)
+        new_template['templateId'] = response['templateId']
+        new_template['templateDescription'] = ('CLONE - ' + new_template['templateDescription'])
+        response = sdwanp.put_request('template/device/' + new_template['templateId'],
+                            new_template)
+
+        # download new template
+        response = json.loads(sdwanp.get_request('template/device/object/' +
+                                      new_template['templateId']))
+        print('Template Name: ' + response['templateName'])
+        print('Template Description: ' + response['templateDescription'])
+        print('Template ID: ' + response['templateId'])
+        print()
+        print('** Clone Completed')
+        print()
         return
 
     # print specific template to stdout

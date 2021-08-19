@@ -109,3 +109,5 @@ v6.2 - Display WAN interfaces and 95percentile for License Validation
 v6.4 - Display Interfaces on Devicea
 
 v6.4 - Added ability to change Device Models in Feature Template
+
+v6.5 - Clone a Device Template to a different same class Model

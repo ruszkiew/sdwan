@@ -9,7 +9,7 @@ This project has several objectives:
  * Bridge functional gaps in the vManage UI
  * Optimize configuration, deployment, and validation of SDWAN
  * Provide somewhat intuitive sample configuration chunks
- * Have fun
+ * Have some fun
 
  This code has grown and is pretty long.  It could and should be modularized.  For now it is intentionaly kept in a single script to provide a single place to explore.
 
@@ -18,6 +18,17 @@ This project has several objectives:
 
  https://developer.cisco.com/sdwan/learn/
 
+## BRIDGING THE GAP
+
+These are the functional items the script provides that cannot be done in vManage.
+
+ * Import/Export Template and Policy Objects.
+ * Clear Tasks.
+ * Database Backup.
+ * Change Device Models in Feature Template.
+ * Clone Device Template to different Model.
+ * Audit Bandwidth consumption to Licensing.
+ * Automate Validation.
 
 ## INSTALLATION
 
@@ -145,7 +156,7 @@ Lists, Definitions, Policies, and Templates are the core Components to vManage.
 
 ## BACKUP (BATCH DOWNLOAD)
 
-The [backup](backup) script will download all of the SDWAN environmental objects.
+The [backup](backup) script will download all of the SDWAN objects.
 
  * Policies + Building Blocks (Lists,Definitions)
  * Templates (Device and Feature)
@@ -220,6 +231,7 @@ CiscoDevNet/[SASTRE](https://github.com/CiscoDevNet/sastre) is a much better scr
     ./sdwan.py policy-security
     ./sdwan.py rest --get <api_object>
     ./sdwan.py saas
+    ./sdwan.py template-device --clone 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9 vedge-1000
     ./sdwan.py template-device --tree 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
     ./sdwan.py template-device --variable 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
     ./sdwan.py template-device --config 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
