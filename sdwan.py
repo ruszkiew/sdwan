@@ -4,11 +4,12 @@
 
 #  SDWAN CLI Tool
 
-#  Version 6.5 - Last Updated: Ed Ruszkiewicz
+#  Version 6.6 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
 """
+Clone a Feature Template - set new Models
 
 """
 
@@ -1827,14 +1828,14 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
         src_class = response['templateClass']
         src_model = response['deviceType']
 
-        # validate dst model and class
+        # validate dst model and class is valid to device template
         response = json.loads(sdwanp.get_request('device/models'))
         items = response['data']
         i = 0
         for item in items:
             if dst_model == item['name']:
                 if item['templateClass'] == src_class:
-                   print('** Input model list is Validated')
+                   print('** Device Model is Validated')
                    print()
                    i = 1
                 else:
@@ -1846,11 +1847,55 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
             print()
             return
 
+        # validate dst model exists in feature templates attached to device template
+        print('Validating Feature Templates support the new Model...')
+        print()
+        response = json.loads(sdwanp.get_request('template/device/object/' +
+                                      templateId))
+        if 'generalTemplates' in response:
+            gen_temp = response['generalTemplates']
+            # identify first level templates
+            flag=0
+            for tmp in gen_temp:
+                response = json.loads(sdwanp.get_request('template/feature/object/' +
+                                      tmp['templateId']))
+                device_models=response['deviceType']
+                if dst_model in response['deviceType']:
+                    print(' Feature Tempalte: ' + response['templateName'] + ' -- ' +  response['templateId'] + ' -- SUCCESS')
+                else:
+                    print(' Feature Tempalte: ' + response['templateName'] + ' -- ' +  response['templateId'] + ' -- FAILED')
+                    flag=1
+                # identify second level templates
+                if 'subTemplates' in tmp.keys():
+                    sub_temp = tmp['subTemplates']
+                    for sub in sub_temp:
+                        response = json.loads(sdwanp.get_request('template/feature/object/' +
+                                              sub['templateId']))
+                        device_models=response['deviceType']
+                        if dst_model in response['deviceType']:
+                            print(' Feature Tempalte: ' + response['templateName'] + ' -- ' +  response['templateId'] + ' -- SUCCESS')
+                        else:
+                            print(' Feature Tempalte: ' + response['templateName'] + ' -- ' +  response['templateId'] + ' -- FAILED')
+                            flag=1
+            print()
+            if flag == 1:
+                print('** Feature Templates do NOT support the Model of the Clone Device Template')
+                print()
+                print('Device Template Clone NOT created')
+                print()
+                return
+            else:
+                print('** Feature Templates ALL support the Model of the Clone Device Template')
+                print()
+        else:
+            print('    ** CLI Template - No Attached Feature Templates **')
+        print()
+
         # download source template
         response = json.loads(sdwanp.get_request('template/device/object/' +
                                       templateId))
 
-        # update Names, iD, Type
+        # update names, id, type
         new_template = response
         new_template['templateName'] = ('Clone_' + response['templateName'])
         new_template['templateId'] = '10101010-1010-1010-1010-101010101010'
