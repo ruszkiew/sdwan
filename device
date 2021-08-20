@@ -8,59 +8,59 @@ Usage: sdwan.py device [OPTIONS]
 
       ./sdwan.py device
 
-      ./sdwan.py device --arp deviceID
+      ./sdwan.py device --arp <deviceId>
 
-      ./sdwan.py device --attach templateID --csv <csv_file>
+      ./sdwan.py device --attach <templateId> --csv <csv_file>
 
-      ./sdwan.py device --bfd deviceID
+      ./sdwan.py device --bfd <deviceId>
 
-      ./sdwan.py device --bgp deviceID
+      ./sdwan.py device --bgp <deviceId>
 
-      ./sdwan.py device --config deviceID
+      ./sdwan.py device --config <deviceId>
 
-      ./sdwan.py device --control deviceID
+      ./sdwan.py device --control <deviceId>
 
-      ./sdwan.py device --count_aar deviceID
+      ./sdwan.py device --count_aar <deviceId>
 
-      ./sdwan.py device --count_dp deviceID
+      ./sdwan.py device --count_dp <deviceId>
 
-      ./sdwan.py device --csv deviceID | all
+      ./sdwan.py device --csv <deviceId> | all
 
-      ./sdwan.py device --detach deviceID
+      ./sdwan.py device --detach <deviceId>
 
-      ./sdwan.py device --download deviceID | all
+      ./sdwan.py device --download <deviceId> | all
 
-      ./sdwan.py device --events_hr deviceID
+      ./sdwan.py device --events_hr <deviceId>
 
-      ./sdwan.py device --events_crit deviceID
+      ./sdwan.py device --events_crit <deviceId>
 
-      ./sdwan.py device --int deviceID
+      ./sdwan.py device --int <deviceId>
 
-      ./sdwan.py device --invalid deviceID
+      ./sdwan.py device --invalid <deviceId>
 
       ./sdwan.py device --models
 
-      ./sdwan.py device --omp deviceID summary | <prefix>
+      ./sdwan.py device --omp <deviceId> summary | <prefix>
 
-      ./sdwan.py device --ospf deviceID summary | <prefix>
+      ./sdwan.py device --ospf <deviceId>
 
-      ./sdwan.py device --saas deviceID
+      ./sdwan.py device --saas <deviceId>
 
-      ./sdwan.py device --set_var deviceID <object> <value>
+      ./sdwan.py device --set_var <deviceId> <object> <value>
 
-      ./sdwan.py device --staging deviceID
+      ./sdwan.py device --staging <deviceId>
 
-      ./sdwan.py device --sla deviceID
+      ./sdwan.py device --sla <deviceId>
 
-      ./sdwan.py device --template deviceID
+      ./sdwan.py device --template <deviceId>
 
-      ./sdwan.py device --valid deviceID
+      ./sdwan.py device --valid <deviceId>
 
-      ./sdwan.py device --variable deviceID
+      ./sdwan.py device --variable <deviceId>
 
-      ./sdwan.py device --vrrp deviceID
+      ./sdwan.py device --vrrp <deviceId>
 
-      ./sdwan.py device --wan deviceID
+      ./sdwan.py device --wan <deviceId>
 
 Options:
   --arp TEXT          Display Device ARP Cache

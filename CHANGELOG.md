@@ -110,4 +110,6 @@ v6.4 - Display Interfaces on Devicea
 
 v6.4 - Added ability to change Device Models in Feature Template
 
-v6.5 - Clone a Device Template to a different same class Model
+v6.5 - Clone a Device Template to a different same Device Model
+
+v6.6 - Clone a Feature Template allowing to set Device Model

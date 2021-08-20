@@ -4,19 +4,19 @@ Usage: sdwan.py policy-list [OPTIONS]
 
     List policy lists to derive listID or ltype for additional action
 
-  Example command:
+  Example Command:
 
       ./sdwan.py policy-list
 
       ./sdwan.py policy-list --ltype
 
-      ./sdwan.py policy-list --config <ListID>
+      ./sdwan.py policy-list --config <listId>
 
-      ./sdwan.py policy-list --delete <ListID>
+      ./sdwan.py policy-list --delete <listId>
 
-      ./sdwan.py policy-list --download <ListID> | all
+      ./sdwan.py policy-list --download <listId> | all
 
-      ./sdwan.py policy-list --update <ListID>
+      ./sdwan.py policy-list --update <listId>
 
       ./sdwan.py policy-list --upload <file>
 

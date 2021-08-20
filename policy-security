@@ -8,15 +8,15 @@ Usage: sdwan.py policy-security [OPTIONS]
 
       ./sdwan.py policy-security
 
-      ./sdwan.py policy-security --config PolicyID
+      ./sdwan.py policy-security --config <policyId>
 
-      ./sdwan.py policy-security --download PolicyID | all
+      ./sdwan.py policy-security --download <policyId> | all
 
       ./sdwan.py policy-security --upload <file>
 
-      ./sdwan.py policy-security --definition PolicyID
+      ./sdwan.py policy-security --definition <policyId>
 
-      ./sdwan.py policy-security --tree PolicyID
+      ./sdwan.py policy-security --tree <policyId>
 
 Options:
   --config TEXT      Print Policy Contents

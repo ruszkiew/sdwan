@@ -4,13 +4,13 @@ Usage: sdwan.py policy-definition [OPTIONS]
 
     List Policy to derive PolicyID for additional actions
 
-  Example command:
+  Example Command:
 
       ./sdwan.py policy-definition
 
-      ./sdwan.py policy-definition --config DefinitionID
+      ./sdwan.py policy-definition --config <definitionId>
 
-      ./sdwan.py policy-definition --download DefinitionID | all
+      ./sdwan.py policy-definition --download <definitionId> | all
 
       ./sdwan.py policy-definition --upload <file>
 

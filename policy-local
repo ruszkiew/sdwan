@@ -4,19 +4,19 @@ Usage: sdwan.py policy-local [OPTIONS]
 
     List Policy to derive PolicyID for additional actio
 
-  Example command:
+  Example Command:
 
       ./sdwan.py policy-local
 
-      ./sdwan.py policy-local --config PolicyID
+      ./sdwan.py policy-local --config <policyId>
 
-      ./sdwan.py policy-local --download PolicyID | all
+      ./sdwan.py policy-local --download <policyId> | all
 
       ./sdwan.py policy-local --upload <file>
 
-      ./sdwan.py policy-local --definition PolicyID
+      ./sdwan.py policy-local --definition <policyId>
 
-      ./sdwan.py policy-local --tree PolicyID
+      ./sdwan.py policy-local --tree <policyId>
 
 Options:
   --config TEXT      Print Policy Contents

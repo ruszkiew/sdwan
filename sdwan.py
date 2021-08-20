@@ -510,7 +510,7 @@ def tasks(clear):
 
             ./sdwan.py tasks
 
-            ./sdwan.py tasks --clear processID
+            ./sdwan.py tasks --clear <processId>
 
     """
     if clear:
@@ -584,59 +584,59 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
             ./sdwan.py device
 
-            ./sdwan.py device --arp deviceID
+            ./sdwan.py device --arp <deviceId>
 
-            ./sdwan.py device --attach templateID --csv <csv_file>
+            ./sdwan.py device --attach <templateId> --csv <csv_file>
 
-            ./sdwan.py device --bfd deviceID
+            ./sdwan.py device --bfd <deviceId>
 
-            ./sdwan.py device --bgp deviceID
+            ./sdwan.py device --bgp <deviceId>
 
-            ./sdwan.py device --config deviceID
+            ./sdwan.py device --config <deviceId>
 
-            ./sdwan.py device --control deviceID
+            ./sdwan.py device --control <deviceId>
 
-            ./sdwan.py device --count_aar deviceID
+            ./sdwan.py device --count_aar <deviceId>
 
-            ./sdwan.py device --count_dp deviceID
+            ./sdwan.py device --count_dp <deviceId>
 
-            ./sdwan.py device --csv deviceID | all
+            ./sdwan.py device --csv <deviceId> | all
 
-            ./sdwan.py device --detach deviceID
+            ./sdwan.py device --detach <deviceId>
 
-            ./sdwan.py device --download deviceID | all
+            ./sdwan.py device --download <deviceId> | all
 
-            ./sdwan.py device --events_hr deviceID
+            ./sdwan.py device --events_hr <deviceId>
 
-            ./sdwan.py device --events_crit deviceID
+            ./sdwan.py device --events_crit <deviceId>
 
-            ./sdwan.py device --int deviceID
+            ./sdwan.py device --int <deviceId>
 
-            ./sdwan.py device --invalid deviceID
+            ./sdwan.py device --invalid <deviceId>
 
             ./sdwan.py device --models
 
-            ./sdwan.py device --omp deviceID summary | <prefix>
+            ./sdwan.py device --omp <deviceId> summary | <prefix>
 
-            ./sdwan.py device --ospf deviceID
+            ./sdwan.py device --ospf <deviceId>
 
-            ./sdwan.py device --saas deviceID
+            ./sdwan.py device --saas <deviceId>
 
-            ./sdwan.py device --set_var deviceID <object> <value>
+            ./sdwan.py device --set_var <deviceId> <object> <value>
 
-            ./sdwan.py device --staging deviceID
+            ./sdwan.py device --staging <deviceId>
 
-            ./sdwan.py device --sla deviceID
+            ./sdwan.py device --sla <deviceId>
 
-            ./sdwan.py device --template deviceID
+            ./sdwan.py device --template <deviceId>
 
-            ./sdwan.py device --valid deviceID
+            ./sdwan.py device --valid <deviceId>
 
-            ./sdwan.py device --variable deviceID
+            ./sdwan.py device --variable <deviceId>
 
-            ./sdwan.py device --vrrp deviceID
+            ./sdwan.py device --vrrp <deviceId>
 
-            ./sdwan.py device --wan deviceID
+            ./sdwan.py device --wan <deviceId>
 
     """
 
@@ -1777,21 +1777,21 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
 
             ./sdwan.py template_device
 
-            ./sdwan.py template_device --attached <templateID>
+            ./sdwan.py template_device --attached <templateId>
 
-            ./sdwan.py template_device --clone <templateID> <model>
+            ./sdwan.py template_device --clone <templateId> <model>
 
-            ./sdwan.py template_device --config <templateID>
+            ./sdwan.py template_device --config <templateId>
 
-            ./sdwan.py template_device --csv <templateID>
+            ./sdwan.py template_device --csv <templateId>
 
-            ./sdwan.py template_device --download <templateID> | all
+            ./sdwan.py template_device --download <templateId> | all
 
             ./sdwan.py template_device --upload <file>
 
-            ./sdwan.py template_device --tree <templateID>
+            ./sdwan.py template_device --tree <templateId>
 
-            ./sdwan.py template_device --variable <templateID>
+            ./sdwan.py template_device --variable <templateId>
 
     """
 
@@ -2140,12 +2140,13 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
 
 @click.command()
 @click.option("--attached", help="Template to display")
+@click.option("--clone", nargs=2, help="Clone Template to same or different Models")
 @click.option("--config", help="Template to display")
 @click.option("--download", help="Template to download")
 @click.option("--models", help="Device Models Eanbled for Template")
 @click.option("--model_update", nargs=2, help="Update Models Eanbled for Template")
 @click.option("--upload", help="File to Upload Template")
-def template_feature(attached, config, download, models, model_update, upload):
+def template_feature(attached, clone, config, download, models, model_update, upload):
     """Display, Download, and Upload Feature Templates.
 
           List templates to derive templateID for additional action
@@ -2154,15 +2155,17 @@ def template_feature(attached, config, download, models, model_update, upload):
 
             ./sdwan.py template_feature
 
-            ./sdwan.py template_feature --attached <templateID>
+            ./sdwan.py template_feature --attached <templateId>
 
-            ./sdwan.py template_feature --config <templateID>
+            ./sdwan.py template_feature --clone <templateId> <list_of_models>
 
-            ./sdwan.py template_feature --download <templateID> | all
+            ./sdwan.py template_feature --config <templateId>
 
-            ./sdwan.py template_feature --models <templateID>
+            ./sdwan.py template_feature --download <templateId> | all
 
-            ./sdwan.py template_feature --models <templateID> <list_of_models>
+            ./sdwan.py template_feature --models <templateId>
+
+            ./sdwan.py template_feature --models <templateId> <list_of_models>
 
             ./sdwan.py template_feature --upload <file>
 
@@ -2189,6 +2192,71 @@ def template_feature(attached, config, download, models, model_update, upload):
             click.echo(tabulate.tabulate(table, headers,
                                          tablefmt="grid"))
         return
+
+
+    if clone:
+        deviceId = clone[0]
+        models = list(clone[1].split(","))
+
+        # download feature template to get template class
+        response = json.loads(sdwanp.get_request('template/feature/object/' +
+                                      deviceId))
+        template_class = response['gTemplateClass']
+
+        print()
+        print('Cloning Feature Template: ' + deviceId)
+        print('  with device model list: ' + clone[1])
+        print()
+
+        # validate models in list
+        # grab all sdwan supported models
+        response = json.loads(sdwanp.get_request('device/models'))
+        items = response['data']
+        valid_models = []
+        for item in items:
+            if item['templateClass'] == template_class:
+                valid_models.append(item['name'])
+
+        # check to ensure all input models are in the supported model list
+        flag = 0
+        if (set(models).issubset(set(valid_models))):
+            flag = 1
+        if flag:
+            print('** Input model list is Validated')
+            print()
+        else :
+            print('ERROR - Input model list is not Supported')
+            print()
+            return
+
+        # download feature template
+        response = sdwanp.get_request('template/feature/object/' +
+                                      deviceId)
+        new_template = json.loads(response)
+
+        # swap content of feature tempate
+        new_template['templateName'] = ('Clone_' + new_template['templateName'])
+        new_template['templateDescription'] = ('CLONE - ' + new_template['templateDescription'])
+        new_template['deviceType'] = models
+
+        # upload new feature template
+        print('Please update Template Name and Description in vManage')
+        print()
+        print("Template File:", new_template['templateName'], "Attempting upload...")
+        print()
+        response = sdwanp.post_request('template/feature/',
+                                       new_template)
+        print('Template Name: ' + new_template['templateName'])
+        print('Template Description: ' + new_template['templateDescription'])
+        print('Template ID: ' + response['templateId'])
+        print()
+        print(response)
+        print()
+        print('** Clone Completed')
+        print()
+
+        return
+
 
     # print specific template to stdout
     if config:
@@ -2277,7 +2345,7 @@ def template_feature(attached, config, download, models, model_update, upload):
         print()
         return
 
-    # print specific models enabled on template
+    # update model list on feature template
     if model_update:
         deviceId = model_update[0]
         print()
@@ -2287,12 +2355,19 @@ def template_feature(attached, config, download, models, model_update, upload):
 
         models = list(model_update[1].split(","))
 
+        # download feature template to get template class
+        response = json.loads(sdwanp.get_request('template/feature/object/' +
+                                      deviceId))
+
+        template_class = response['gTemplateClass']
+
         # validate models in list are valid
         response = json.loads(sdwanp.get_request('device/models'))
         items = response['data']
         valid_models = []
         for item in items:
-            valid_models.append(item['name'])
+            if item['templateClass'] == template_class:
+                valid_models.append(item['name'])
         
         # check to ensure all input models are in the supported model list
         flag = 0
@@ -2417,13 +2492,13 @@ def policy_list(ltype, config, delete, download, update, upload):
 
             ./sdwan.py policy-list --ltype
 
-            ./sdwan.py policy-list --config <ListID>
+            ./sdwan.py policy-list --config <listId>
 
-            ./sdwan.py policy-list --delete <ListID>
+            ./sdwan.py policy-list --delete <listId>
 
-            ./sdwan.py policy-list --download <ListID> | all
+            ./sdwan.py policy-list --download <listId> | all
 
-            ./sdwan.py policy-list --update <ListID>
+            ./sdwan.py policy-list --update <listId>
 
             ./sdwan.py policy-list --upload <file>
 
@@ -2606,15 +2681,15 @@ def policy_central(config, download, upload, definition, tree):
 
             ./sdwan.py policy-central
 
-            ./sdwan.py policy-central --config PolicyID
+            ./sdwan.py policy-central --config <policyId>
 
-            ./sdwan.py policy-central --download PolicyID | all
+            ./sdwan.py policy-central --download <policyId> | all
 
             ./sdwan.py policy-central --upload <file>
 
-            ./sdwan.py policy-central --definition PolicyID
+            ./sdwan.py policy-central --definition <policyId>
 
-            ./sdwan.py policy-central --tree PolicyID
+            ./sdwan.py policy-central --tree <policyId>
 
     """
     # print specific policy to stdout
@@ -2785,15 +2860,15 @@ def policy_local(config, download, upload, definition, tree):
 
             ./sdwan.py policy-local
 
-            ./sdwan.py policy-local --config PolicyID
+            ./sdwan.py policy-local --config <policyId>
 
-            ./sdwan.py policy-local --download PolicyID | all
+            ./sdwan.py policy-local --download <policyId> | all
 
             ./sdwan.py policy-local --upload <file>
 
-            ./sdwan.py policy-local --definition PolicyID
+            ./sdwan.py policy-local --definition <policyId>
 
-            ./sdwan.py policy-local --tree PolicyID
+            ./sdwan.py policy-local --tree <policyId>
 
     """
 
@@ -3018,15 +3093,15 @@ def policy_security(config, download, upload, definition, tree):
 
             ./sdwan.py policy-security
 
-            ./sdwan.py policy-security --config PolicyID
+            ./sdwan.py policy-security --config <policyId>
 
-            ./sdwan.py policy-security --download PolicyID | all
+            ./sdwan.py policy-security --download <policyId> | all
 
             ./sdwan.py policy-security --upload <file>
 
-            ./sdwan.py policy-security --definition PolicyID
+            ./sdwan.py policy-security --definition <policyId>
 
-            ./sdwan.py policy-security --tree PolicyID
+            ./sdwan.py policy-security --tree <policyId>
 
     """
 
@@ -3234,9 +3309,9 @@ def policy_definition(config, download, upload):
 
             ./sdwan.py policy-definition
 
-            ./sdwan.py policy-definition --config DefinitionID
+            ./sdwan.py policy-definition --config <definitionId>
 
-            ./sdwan.py policy-definition --download DefinitionID | all
+            ./sdwan.py policy-definition --download <definitionId> | all
 
             ./sdwan.py policy-definition --upload <file>
 
@@ -3384,7 +3459,7 @@ def saas(status):
 
             ./sdwan.py saas
 
-            ./sdwan.py saas --status Application Name
+            ./sdwan.py saas --status <app_name>
 
     """
     if status:

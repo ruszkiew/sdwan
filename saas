@@ -8,7 +8,7 @@ Usage: sdwan.py saas [OPTIONS]
 
       ./sdwan.py saas
 
-      ./sdwan.py saas --status Application Name
+      ./sdwan.py saas --status <app_name>
 
 Options:
   --status TEXT  SaaS Application

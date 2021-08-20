@@ -8,21 +8,21 @@ Usage: sdwan.py template-device [OPTIONS]
 
       ./sdwan.py template_device
 
-      ./sdwan.py template_device --attached <templateID>
+      ./sdwan.py template_device --attached <templateId>
 
-      ./sdwan.py template_device --clone <templateID> <model>
+      ./sdwan.py template_device --clone <templateId> <model>
 
-      ./sdwan.py template_device --config <templateID>
+      ./sdwan.py template_device --config <templateId>
 
-      ./sdwan.py template_device --csv <templateID>
+      ./sdwan.py template_device --csv <templateId>
 
-      ./sdwan.py template_device --download <templateID> | all
+      ./sdwan.py template_device --download <templateId> | all
 
       ./sdwan.py template_device --upload <file>
 
-      ./sdwan.py template_device --tree <templateID>
+      ./sdwan.py template_device --tree <templateId>
 
-      ./sdwan.py template_device --variable <templateID>
+      ./sdwan.py template_device --variable <templateId>
 
 Options:
   --attached TEXT  Template to display attached devices

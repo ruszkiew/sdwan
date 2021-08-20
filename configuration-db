@@ -1,6 +1,6 @@
 Usage: sdwan.py configuration-db [OPTIONS]
 
-  Create Database Backup File and Download
+  Create Database Backup File and Download.
 
   Returns Zipped Tarball Database File
 

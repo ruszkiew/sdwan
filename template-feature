@@ -8,20 +8,23 @@ Usage: sdwan.py template-feature [OPTIONS]
 
       ./sdwan.py template_feature
 
-      ./sdwan.py template_feature --attached <templateID>
+      ./sdwan.py template_feature --attached <templateId>
 
-      ./sdwan.py template_feature --config <templateID>
+      ./sdwan.py template_feature --clone <templateId> <list_of_models>
 
-      ./sdwan.py template_feature --download <templateID> | all
+      ./sdwan.py template_feature --config <templateId>
 
-      ./sdwan.py template_feature --models <templateID>
+      ./sdwan.py template_feature --download <templateId> | all
 
-      ./sdwan.py template_feature --models <templateID> <list_of_models>
+      ./sdwan.py template_feature --models <templateId>
+
+      ./sdwan.py template_feature --models <templateId> <list_of_models>
 
       ./sdwan.py template_feature --upload <file>
 
 Options:
   --attached TEXT         Template to display
+  --clone TEXT...         Clone Template to same or different Models
   --config TEXT           Template to display
   --download TEXT         Template to download
   --models TEXT           Device Models Eanbled for Template
