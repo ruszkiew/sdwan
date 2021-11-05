@@ -1,2 +1,0 @@
-host 64.103.37.21
- ProxyCommand=nc -X 5 -x localhost:12345 %h %p
