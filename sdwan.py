@@ -17,6 +17,7 @@ Speedtest
 Traceroute
 Ping
 Display centralized policy configured
+NWP Trace
 
 """
 
