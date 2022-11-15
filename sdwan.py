@@ -9,6 +9,7 @@
 ###############################################################################
 
 """
+Add Tenant ENV_VAR - Enable Multi-tenant policy/templates
 NTP status check
 SDAVC status from router
 Grab tracker state
