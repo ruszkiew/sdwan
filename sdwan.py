@@ -9,7 +9,14 @@
 ###############################################################################
 
 """
-Clone a Feature Template - set new Models
+NTP status check
+SDAVC status from router
+Grab tracker state
+Display flow table
+Speedtest
+Traceroute
+Ping
+Display centralized policy configured
 
 """
 
@@ -563,6 +570,7 @@ def tasks(clear):
 @click.option("--invalid", help="Make Device Certificate Invalid")
 @click.option("--int", help="Display Interface Statistics and State")
 @click.option("--models", is_flag=True, help="Display Valid Device Models")
+@click.option("--ntp", help="Display Device NTP State") 
 @click.option("--omp", nargs=2, help="Display Device OMP Routes") 
 @click.option("--ospf", help="Display Device OSPF Information") 
 @click.option("--saas", help="Display SaaS OnRamp State")
@@ -575,7 +583,7 @@ def tasks(clear):
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--wan", help="Display Device WAN Interface")
 def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, download, events_hr, events_crit, int,
-             models, omp, ospf, set_var, csv, saas, sla, staging, template, invalid, valid, variable, vrrp, wan):
+             models, ntp, omp, ospf, set_var, csv, saas, sla, staging, template, invalid, valid, variable, vrrp, wan):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -615,6 +623,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             ./sdwan.py device --invalid <deviceId>
 
             ./sdwan.py device --models
+
+            ./sdwan.py device --ntp <deviceId>
 
             ./sdwan.py device --omp <deviceId> summary | <prefix>
 
@@ -1339,6 +1349,17 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
         return
 
+    if ntp:
+        print()
+        response = json.loads(sdwanp.get_request('device/ntp/status?deviceId=' + ntp))
+        items = response['data']
+        pprint(items)
+        print()
+        response = json.loads(sdwanp.get_request('device/ntp/associations?deviceId=' + ntp))
+        items = response['data']
+        pprint(items)
+        return
+
     if ospf:
         print()
         print('--------------')
@@ -1714,6 +1735,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
     response = json.loads(sdwanp.get_request('device'))
     items = response['data']
+    # pprint(items)
     headers = ["Device Name", "Device Type", "UUID", "System IP",
                "Device ID", "Site ID", "Version", "Device Model", "Cert"]
     table = list()
@@ -2201,7 +2223,8 @@ def template_feature(attached, clone, config, download, models, model_update, up
         # download feature template to get template class
         response = json.loads(sdwanp.get_request('template/feature/object/' +
                                       deviceId))
-        template_class = response['gTemplateClass']
+
+        #template_class = response['gTemplateClass']
 
         print()
         print('Cloning Feature Template: ' + deviceId)
@@ -2210,6 +2233,8 @@ def template_feature(attached, clone, config, download, models, model_update, up
 
         # validate models in list
         # grab all sdwan supported models
+
+        #
         response = json.loads(sdwanp.get_request('device/models'))
         items = response['data']
         valid_models = []
@@ -2218,7 +2243,7 @@ def template_feature(attached, clone, config, download, models, model_update, up
                 valid_models.append(item['name'])
 
         # check to ensure all input models are in the supported model list
-        flag = 0
+        iflag = 0
         if (set(models).issubset(set(valid_models))):
             flag = 1
         if flag:
