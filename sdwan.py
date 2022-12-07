@@ -9,7 +9,6 @@
 ###############################################################################
 
 """
-Add Tenant ENV_VAR - Enable Multi-tenant policy/templates
 NTP status check
 SDAVC status from router
 Grab tracker state
@@ -19,6 +18,69 @@ Traceroute
 Ping
 Display centralized policy configured
 NWP Trace
+
+
+Add Tenant ENV_VAR - Enable Multi-tenant policy/templates
+
+ - Use a post to see if tenant exists and get a vsession id
+ - Add vsession id to session headers
+ - should just work after that
+
+class Rest:
+    def __init__(self, base_url: str, username: str, password: str, proxy: str, tenant_name: Optional[str] = None,
+                 timeout: int = 20, verify: bool = False):
+        self.base_url = base_url
+        self.timeout = timeout
+        self.verify = verify
+        self.session = None
+        self.server_facts = None
+        self.is_tenant_scope = False
+        self.proxies = proxy
+
+        ....
+
+    def login(self, username: str, password: str, tenant_name: Optional[str]) -> bool:
+        data = {
+            'j_username': username,
+            'j_password': password
+        }
+        session = requests.Session()
+        response = session.post(f'{self.base_url}/j_security_check',
+                                data=data, timeout=self.timeout, proxies=self.proxies, verify=self.verify)
+        response.raise_for_status()
+
+        # Multi-tenant vManage with a provider account, insert vsessionid
+        if tenant_name is not None:
+            if not self.is_multi_tenant or not self.is_provider:
+                raise BadTenantException('Tenant is only applicable to provider accounts in multi-tenant deployments')
+
+            tenant_list = self.get('tenant').get('data')
+            if tenant_list is None:
+                raise RestAPIException('Could not retrieve vManage tenant list')
+
+            for tenant in tenant_list:
+                if tenant_name == tenant['name']:
+                    session_id = self.post({}, 'tenant', tenant['tenantId'], 'vsessionid').get('VSessionId')
+                    self.session.headers['VSessionId'] = session_id
+                    self.is_tenant_scope = True
+                    break
+            else:
+                raise BadTenantException(f'Invalid tenant: {tenant_name}')
+
+        return True
+
+    def get(self, *path_entries: str, **params: Union[str, int]) -> Dict[str, Any]:
+        response = self.session.get(self._url(*path_entries),
+                                    params=params if params else None,
+                                    timeout=self.timeout, proxies=self.proxies, verify=self.verify)
+        raise_for_status(response)
+        return response.json()
+
+    @property
+    def is_multi_tenant(self) -> bool:
+        return self.server_facts.get('tenancyMode', '') == 'MultiTenant'
+
+
 
 """
 
@@ -1745,12 +1807,12 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         # check for site-id - 17.x vBond does not assign one
         if 'site-id' in item:
             tr = [item['host-name'], item['device-type'], item['uuid'],
-                  item['system-ip'], item['deviceId'], item['site-id'],
+                  item['local-system-ip'], item['deviceId'], item['site-id'],
                   item['version'], item['device-model'], item['validity']]
             table.append(tr)
         else:
             tr = [item['host-name'], item['device-type'], item['uuid'],
-                  item['system-ip'], item['deviceId'], '',
+                  item['local-system-ip'], item['deviceId'], '',
                   item['version'], item['device-model'], item['validity']]
             table.append(tr)
     try:
@@ -2189,7 +2251,7 @@ def template_feature(attached, clone, config, download, models, model_update, up
 
             ./sdwan.py template_feature --models <templateId>
 
-            ./sdwan.py template_feature --models <templateId> <list_of_models>
+            ./sdwan.py template_feature --model_update <templateId> <list_of_models>
 
             ./sdwan.py template_feature --upload <file>
 
