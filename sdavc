@@ -1,0 +1,16 @@
+Usage: sdwan.py sdavc [OPTIONS]
+
+  Display SDAVC Cloud Connector
+
+  Example Command:
+
+      ./sdwan.py sdavc --domain
+
+      ./sdwan.py sdavc --ip
+
+      ./sdwan.py sdavc
+
+Options:
+  --domain  SDAVC Applications by Domain
+  --ip      SDAVC Applications by IP
+  --help    Show this message and exit.

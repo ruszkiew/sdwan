@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 6.6 - Last Updated: Ed Ruszkiewicz
+#  Version 6.7 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
@@ -638,6 +638,7 @@ def tasks(clear):
 @click.option("--omp", nargs=2, help="Display Device OMP Routes") 
 @click.option("--ospf", help="Display Device OSPF Information") 
 @click.option("--saas", help="Display SaaS OnRamp State")
+@click.option("--sdavc", help="Display SD-AVC Status")
 @click.option("--set_var", nargs=3, help="Set Variable/Value for Device")
 @click.option("--staging", help="Make Device Certificate Staging")
 @click.option("--sla", help="Display Tunnel BFD SLA Statistics")
@@ -647,7 +648,7 @@ def tasks(clear):
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--wan", help="Display Device WAN Interface")
 def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, download, events_hr, events_crit, int,
-             models, ntp, omp, ospf, set_var, csv, saas, sla, staging, template, invalid, valid, variable, vrrp, wan):
+             models, ntp, omp, ospf, set_var, csv, saas,sdavc ,sla, staging, template, invalid, valid, variable, vrrp, wan):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -695,6 +696,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             ./sdwan.py device --ospf <deviceId>
 
             ./sdwan.py device --saas <deviceId>
+
+            ./sdwan.py device --sdavc <deviceId>
 
             ./sdwan.py device --set_var <deviceId> <object> <value>
 
@@ -1568,6 +1571,12 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         except UnicodeEncodeError:
             click.echo(tabulate.tabulate(table, headers,
                                      tablefmt="grid"))
+        print()
+        return
+
+    if sdavc:
+        print()
+        print('Working on SD-AVC Status Call')
         print()
         return
 
@@ -3542,8 +3551,6 @@ def policy_definition(config, download, upload):
 def saas(status):
     """Display SaaS OnRamp Status.
 
-          List Policy to derive PolicyID for additional actions
-
         Example Command:
 
             ./sdwan.py saas
@@ -3571,7 +3578,7 @@ def saas(status):
         print()
         return
 
-    # no parameter passed in - list active applications and site lists
+    # no parameter passed in 
     print()
     response = json.loads(sdwanp.get_request('template/cloudx/manage/apps'))
     items = response['data']
@@ -3624,6 +3631,73 @@ def saas(status):
 
     return
 
+##############################################################################
+
+# SDAVC
+
+@click.command()
+@click.option("--domain", is_flag=True, help="SDAVC Applications by Domain")
+@click.option("--ip", is_flag=True, help="SDAVC Applications by IP")
+def sdavc(domain,ip):
+    """Display SDAVC Cloud Connector
+
+        Example Command:
+
+            ./sdwan.py sdavc --domain
+
+            ./sdwan.py sdavc --ip
+
+            ./sdwan.py sdavc
+
+    """
+    if domain:
+        print()
+        response = json.loads(sdwanp.get_request('monitor/sdavccloudconnector/domain'))
+        items = response['data']
+        headers = ["Application", "Domain", "Optimize", "Allow", "Service"]
+        table = list()
+        for item in items:
+            tr = [item['appName'], item['domainName'], item['optimize'],
+                  item['allow'], item['serviceArea']]
+            table.append(tr)
+        try:
+            click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="fancy_grid"))
+        except UnicodeEncodeError:
+            click.echo(tabulate.tabulate(table, headers,
+                                    tablefmt="grid"))
+        print()
+        return
+
+    if ip:
+        print()
+        response = json.loads(sdwanp.get_request('monitor/sdavccloudconnector/ipaddress'))
+        items = response['data']
+        headers = ["Application", "IP", "Protocol", "Port", "Optimize", "Allow", "Service"]
+        table = list()
+        for item in items:
+            tr = [item['appName'], item['ipAddress'].replace('"',''), item['l4Protocol'], item['port'],
+                  item['optimize'], item['allow'], item['serviceArea']]
+            table.append(tr)
+        try:
+            click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="fancy_grid"))
+        except UnicodeEncodeError:
+            click.echo(tabulate.tabulate(table, headers,
+                                    tablefmt="grid"))
+        print()
+        return
+
+    # no parameter passed in - sdavc connector settings and status
+    print()
+    response = json.loads(sdwanp.get_request('sdavc/cloudconnector'))
+    pprint(response)
+    print()
+    response = json.loads(sdwanp.get_request('sdavc/cloudconnector/status'))
+    pprint(response)
+    print()
+    return
+
 ###############################################################################
 
 @click.group()
@@ -3643,6 +3717,7 @@ cli.add_command(policy_security)
 cli.add_command(device)
 cli.add_command(certificate)
 cli.add_command(saas)
+cli.add_command(sdavc)
 cli.add_command(tasks)
 cli.add_command(template_device)
 cli.add_command(template_feature)
