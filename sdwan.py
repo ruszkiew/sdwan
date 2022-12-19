@@ -10,77 +10,16 @@
 
 """
 NTP status check
-SDAVC status from router
+SDAVC status from router - no API - cannot Netmiki
 Grab tracker state
 Display flow table
+
 Speedtest
 Traceroute
 Ping
+
 Display centralized policy configured
 NWP Trace
-
-
-Add Tenant ENV_VAR - Enable Multi-tenant policy/templates
-
- - Use a post to see if tenant exists and get a vsession id
- - Add vsession id to session headers
- - should just work after that
-
-class Rest:
-    def __init__(self, base_url: str, username: str, password: str, proxy: str, tenant_name: Optional[str] = None,
-                 timeout: int = 20, verify: bool = False):
-        self.base_url = base_url
-        self.timeout = timeout
-        self.verify = verify
-        self.session = None
-        self.server_facts = None
-        self.is_tenant_scope = False
-        self.proxies = proxy
-
-        ....
-
-    def login(self, username: str, password: str, tenant_name: Optional[str]) -> bool:
-        data = {
-            'j_username': username,
-            'j_password': password
-        }
-        session = requests.Session()
-        response = session.post(f'{self.base_url}/j_security_check',
-                                data=data, timeout=self.timeout, proxies=self.proxies, verify=self.verify)
-        response.raise_for_status()
-
-        # Multi-tenant vManage with a provider account, insert vsessionid
-        if tenant_name is not None:
-            if not self.is_multi_tenant or not self.is_provider:
-                raise BadTenantException('Tenant is only applicable to provider accounts in multi-tenant deployments')
-
-            tenant_list = self.get('tenant').get('data')
-            if tenant_list is None:
-                raise RestAPIException('Could not retrieve vManage tenant list')
-
-            for tenant in tenant_list:
-                if tenant_name == tenant['name']:
-                    session_id = self.post({}, 'tenant', tenant['tenantId'], 'vsessionid').get('VSessionId')
-                    self.session.headers['VSessionId'] = session_id
-                    self.is_tenant_scope = True
-                    break
-            else:
-                raise BadTenantException(f'Invalid tenant: {tenant_name}')
-
-        return True
-
-    def get(self, *path_entries: str, **params: Union[str, int]) -> Dict[str, Any]:
-        response = self.session.get(self._url(*path_entries),
-                                    params=params if params else None,
-                                    timeout=self.timeout, proxies=self.proxies, verify=self.verify)
-        raise_for_status(response)
-        return response.json()
-
-    @property
-    def is_multi_tenant(self) -> bool:
-        return self.server_facts.get('tenancyMode', '') == 'MultiTenant'
-
-
 
 """
 
@@ -637,6 +576,7 @@ def tasks(clear):
 @click.option("--ntp", help="Display Device NTP State") 
 @click.option("--omp", nargs=2, help="Display Device OMP Routes") 
 @click.option("--ospf", help="Display Device OSPF Information") 
+@click.option("--ping", nargs=4, help="Ping by VPN, SRC_IP, DST_IP")
 @click.option("--saas", help="Display SaaS OnRamp State")
 @click.option("--sdavc", help="Display SD-AVC Status")
 @click.option("--set_var", nargs=3, help="Set Variable/Value for Device")
@@ -648,7 +588,7 @@ def tasks(clear):
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--wan", help="Display Device WAN Interface")
 def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, download, events_hr, events_crit, int,
-             models, ntp, omp, ospf, set_var, csv, saas,sdavc ,sla, staging, template, invalid, valid, variable, vrrp, wan):
+             models, ntp, omp, ospf, ping, set_var, csv, saas,sdavc ,sla, staging, template, invalid, valid, variable, vrrp, wan):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -694,6 +634,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             ./sdwan.py device --omp <deviceId> summary | <prefix>
 
             ./sdwan.py device --ospf <deviceId>
+
+            ./sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
 
             ./sdwan.py device --saas <deviceId>
 
@@ -1486,6 +1428,23 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
         return
 
+    if ping:
+        # get arguements
+        deviceIP = ping[0]
+        _vpn = ping[1]
+        _src_ip = ping[2]
+        _dst_ip = ping[3]
+
+        payload = {"host": _dst_ip, "vpn": _vpn,
+                       "source": _src_ip, "probeType": "icmp"}
+
+        response = sdwanp.post_request('device/tools/nping/' + deviceIP ,
+                                       payload)
+
+        print()
+        pprint(response['rawOutput'])
+        print()
+        return
 
     if set_var:
         # get arguements
@@ -1576,7 +1535,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
     if sdavc:
         print()
-        print('Working on SD-AVC Status Call')
+        print('Waiting on SD-AVC API Call...')
         print()
         return
 
