@@ -16,7 +16,6 @@ Display flow table
 
 Speedtest
 Traceroute
-Ping
 
 Display centralized policy configured
 NWP Trace
@@ -981,15 +980,14 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         items = response['data']
         for item in items:
             try:
-                deviceId = item['system-ip']
-                if deviceId == variable:
+                if variable == item['system-ip']:
+                    deviceId = item['system-ip']
                     templateId = item['templateId']
                     hostName = item['host-name']
                     deviceModel = item['deviceModel']
                     uuid = item['uuid']
             except KeyError:
                 pass
-        print()
         print("Variables for " + deviceModel + ": " + hostName + " -- deviceID: " + deviceId + "\n")
         print("  Attached to Device Template: " + templateId)
         print()
