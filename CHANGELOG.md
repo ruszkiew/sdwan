@@ -121,3 +121,5 @@ v6.8 - Display SD-AVC Learned Applications and Status
 v6.9 - Added Ping to Device
 
 v7.0 - Fixed Device Variable Output - Device ID
+
+v7.1 - Added Traceroute to Device

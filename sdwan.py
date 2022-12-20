@@ -582,12 +582,13 @@ def tasks(clear):
 @click.option("--staging", help="Make Device Certificate Staging")
 @click.option("--sla", help="Display Tunnel BFD SLA Statistics")
 @click.option("--template", help="Display Device Template")
+@click.option("--trace", nargs=4, help="Traceroute by VPN, SRC_IP, DST_IP")
 @click.option("--valid", help="Make Device Certificate Valid")
 @click.option("--variable", help="Display Device Variable and Values")
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--wan", help="Display Device WAN Interface")
 def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, download, events_hr, events_crit, int,
-             models, ntp, omp, ospf, ping, set_var, csv, saas,sdavc ,sla, staging, template, invalid, valid, variable, vrrp, wan):
+             models, ntp, omp, ospf, ping, set_var, csv, saas,sdavc ,sla, staging, template, trace, invalid, valid, variable, vrrp, wan):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -647,6 +648,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             ./sdwan.py device --sla <deviceId>
 
             ./sdwan.py device --template <deviceId>
+
+            ./sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
 
             ./sdwan.py device --valid <deviceId>
 
@@ -1615,6 +1618,24 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         print (response)
         print()
 
+        return
+
+    if trace:
+        # get arguements
+        deviceIP = trace[0]
+        _vpn = trace[1]
+        _src_ip = trace[2]
+        _dst_ip = trace[3]
+
+        payload = {"host": _dst_ip, "vpn": _vpn,
+                       "interface": _src_ip, "deviceIp": deviceIP}
+
+        response = sdwanp.post_request('device/tools/traceroute/' + deviceIP ,
+                                       payload)
+
+        print()
+        pprint(response['rawOutput'])
+        print()
         return
 
     if vrrp:
