@@ -113,3 +113,11 @@ v6.4 - Added ability to change Device Models in Feature Template
 v6.5 - Clone a Device Template to a different same Device Model
 
 v6.6 - Clone a Feature Template allowing to set Device Model
+
+v6.7 - Added NTP Status
+
+v6.8 - Display SD-AVC Learned Applications and Status
+
+v6.9 - Added Ping to Device
+
+v7.0 - Fixed Device Variable Output - Device ID
