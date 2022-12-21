@@ -8,9 +8,9 @@
 
 """
 
-Automated Remote Site Test Script - Site Type XX - Layer 3 Switch
+Automated Remote Site Test Script - Site Type 11 - Layer 3
 
-USAGE: pytest --disable-warnings -v test_site.py --deviceId A.A.A.A
+USAGE: pytest --disable-warnings -v test_1.py --deviceId 100.113.1.1
 
 """
 
@@ -26,13 +26,6 @@ from sdwan import device
 ###################################################################################
 
 runner = CliRunner()
-
-###################################################################################
-
-@pytest.fixture(scope="session")
-
-def deviceId(pytestconfig):
-    return pytestconfig.getoption("deviceId")
 
 ###################################################################################
 

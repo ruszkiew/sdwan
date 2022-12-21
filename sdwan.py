@@ -9,17 +9,15 @@
 ###############################################################################
 
 """
-NTP status check
-SDAVC status from router - no API - cannot Netmiki
+Update NTP status Output
 Grab tracker state
-Display flow table
-
 Speedtest
-Traceroute
-
-Display centralized policy configured
-NWP Trace
-
+Display centralized policy learned from vsmart - device
+    ./sdwan.py rest --get 'device/policy/vsmart?deviceId=100.102.6.1'
+        Only seems to be AAR - What about Traffic Data
+Display summary of centralized policy application - policy-central
+SDAVC status from router - no API - cannot Netmiki
+Display flow table
 """
 
 ###############################################################################
