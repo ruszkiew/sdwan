@@ -81,6 +81,7 @@ Script Usage
       policy-security    Display, Download, and Upload Security Policy.
       rest               Execute raw REST GET request.
       saas               Display SaaS OnRamp Status.
+      sdavc              Display SDAVC Cloud Connector
       tasks              Retrieve and/or Clear vManage Active Tasks.
       template-device    Display, Download, and Upload Device Templates.
       template-feature   Display, Download, and Upload Feature Templates.

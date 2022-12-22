@@ -40,11 +40,17 @@ Usage: sdwan.py device [OPTIONS]
 
       ./sdwan.py device --models
 
+      ./sdwan.py device --ntp <deviceId>
+
       ./sdwan.py device --omp <deviceId> summary | <prefix>
 
       ./sdwan.py device --ospf <deviceId>
 
+      ./sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
+
       ./sdwan.py device --saas <deviceId>
+
+      ./sdwan.py device --sdavc <deviceId>
 
       ./sdwan.py device --set_var <deviceId> <object> <value>
 
@@ -53,6 +59,8 @@ Usage: sdwan.py device [OPTIONS]
       ./sdwan.py device --sla <deviceId>
 
       ./sdwan.py device --template <deviceId>
+
+      ./sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
 
       ./sdwan.py device --valid <deviceId>
 
@@ -79,13 +87,17 @@ Options:
   --invalid TEXT      Make Device Certificate Invalid
   --int TEXT          Display Interface Statistics and State
   --models            Display Valid Device Models
+  --ntp TEXT          Display Device NTP State
   --omp TEXT...       Display Device OMP Routes
   --ospf TEXT         Display Device OSPF Information
+  --ping TEXT...      Ping by VPN, SRC_IP, DST_IP
   --saas TEXT         Display SaaS OnRamp State
+  --sdavc TEXT        Display SD-AVC Status
   --set_var TEXT...   Set Variable/Value for Device
   --staging TEXT      Make Device Certificate Staging
   --sla TEXT          Display Tunnel BFD SLA Statistics
   --template TEXT     Display Device Template
+  --trace TEXT...     Traceroute by VPN, SRC_IP, DST_IP
   --valid TEXT        Make Device Certificate Valid
   --variable TEXT     Display Device Variable and Values
   --vrrp TEXT         Display Device VRRP Status
