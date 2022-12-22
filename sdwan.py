@@ -1360,12 +1360,32 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
     if ntp:
         print()
         response = json.loads(sdwanp.get_request('device/ntp/status?deviceId=' + ntp))
-        items = response['data']
-        pprint(items)
+        item = response['data'][0]
+        print(item['vdevice-host-name'] + ' - ' + item['vdevice-name']) 
         print()
+
         response = json.loads(sdwanp.get_request('device/ntp/associations?deviceId=' + ntp))
         items = response['data']
-        pprint(items)
+
+        headers = ["IP", "VPN", "STRATUM", "REF_TIME", "POLL",
+                   "REACH", "OFFSET", "DELAY", "JITTER", "STATE"]
+        table = list()
+
+        for item in items:
+            # ntp is considered sync if reach is 255
+            if item['peer-reach'] == '255':
+                state = 'SYNC_'
+            else:
+                state = 'NO_SYNC'
+            tr = [item['ip-addr'], item['vrf-name'], item['peer-stratum'],
+                  item['reftime'], item['poll'],item['peer-reach'], item['offset'],
+                  item['delay'], item['jitter'], state]
+            table.append(tr)
+
+        click.echo(tabulate.tabulate(table, headers,
+                                     tablefmt="simple"))
+        print()
+
         return
 
     if ospf:

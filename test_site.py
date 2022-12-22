@@ -58,10 +58,25 @@ def test_bfd(deviceId):
 
 ###################################################################################
 
+def test_ntp(deviceId):
+    response = runner.invoke(device, ['--ntp', deviceId])
+    assert response.exit_code == 0
+    assert 'SYNC_' in response.output, 'NTP is Unsynchronized'
+
+###################################################################################
+
 def test_sla_stats(deviceId):
     response = runner.invoke(device, ['--sla', deviceId])
     assert response.exit_code == 0
     assert (re.search('\d,\d,\d\s+\d+\s+\d\d+\s+\d+', response.output)),'No BFD SLA Statistics'
+
+##################################################################################
+
+def test_omp_learned_route(deviceId):
+    response = runner.invoke(device, ['--omp', deviceId, 'summary' ])
+    assert response.exit_code == 0
+    assert '0.0.0.0/0' in response.output, 'No Default Route'
+    assert '10.0.0.0/8' in response.output, 'No Summary Route'
 
 ##################################################################################
 
@@ -78,7 +93,6 @@ def test_ospf_lan(deviceId):
 IDEAS
 
 ntp status
-sdavc connector status - presense of custom app
 policy from vsmart
 
 EXAMPLES
