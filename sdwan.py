@@ -2273,7 +2273,7 @@ def template_feature(attached, clone, config, download, models, model_update, up
         response = json.loads(sdwanp.get_request('template/feature/object/' +
                                       deviceId))
 
-        #template_class = response['gTemplateClass']
+        template_class = response['gTemplateClass']
 
         print()
         print('Cloning Feature Template: ' + deviceId)
