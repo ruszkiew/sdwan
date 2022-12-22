@@ -1378,20 +1378,22 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         response = json.loads(sdwanp.get_request('device/ospf/interface?deviceId=' + ospf))
         items = response['data']
 
-        headers = ["AREA", "INTERFACE", "COST", "PRIORITY",
+        headers = ["AREA", "INTERFACE", "COST",
                    "TYPE", "HELLO", "DR", "STATE"]
         table = list()
 
         for item in items:
+            # identifies vedge
             if 'area-addr' in item:
                 tr = [item['area-addr'], item['if-name'], item['cost'],
-                      item['priority'], item['if-type'], item['hello-timer'],
+                      item['if-type'], item['hello-timer'],
                       item['designated-router-id'], item['ospf-if-state']]
                 table.append(tr)
+            # identifies cedge
             else:
                 tr = [item['area-id'], item['name'], item['cost'],
-                      item['priority'], item['network-type'], item['hello-interval'],
-                      item['dr'], item['state']]
+                      item['network-type'], item['hello-interval'],
+                      item['dr-ip'], item['state']]
                 table.append(tr)
 
         click.echo(tabulate.tabulate(table, headers,
@@ -1406,7 +1408,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         response = json.loads(sdwanp.get_request('device/ospf/neighbor?deviceId=' + ospf))
         items = response['data']
 
-        headers = ["AREA", "INTERFACE", "NEIGHBOR ID", "STATE"]
+        headers = ["AREA", "INTERFACE", "NEIGHBOR", "STATE"]
         table = list()
 
         for item in items:
@@ -1415,8 +1417,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
                       item['neighbor-state']]
                 table.append(tr)
             else:
-                if 'neighbor-id' in item:
-                    tr = [item['area-id'], item['name'], item['neighbor-id'],
+                if 'address' in item:
+                    tr = [item['area-id'], item['name'], item['address'],
                           item['state']]
                     table.append(tr)
 

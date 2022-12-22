@@ -10,7 +10,7 @@
 
 Automated Remote Site Test Script
 
-USAGE: pytest --disable-warnings -v test_site.py --deviceId A.A.A.A
+USAGE: pytest -v test_site.py --deviceId A.A.A.A
 
 """
 
@@ -64,6 +64,14 @@ def test_sla_stats(deviceId):
     assert (re.search('\d,\d,\d\s+\d+\s+\d\d+\s+\d+', response.output)),'No BFD SLA Statistics'
 
 ##################################################################################
+
+def test_ospf_lan(deviceId):
+    response = runner.invoke(device, ['--ospf', deviceId])
+    assert response.exit_code == 0
+    assert (re.search('GigabitEthernet0\/0\/0.*full', response.output)),'No OSPF Neighbor LAN'
+
+##################################################################################
+
 
 '''
 

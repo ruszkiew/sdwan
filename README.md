@@ -213,6 +213,8 @@ CiscoDevNet/[SASTRE](https://github.com/CiscoDevNet/sastre) is a much better scr
     ./sdwan.py device --events_hr 100.65.30.11
     ./sdwan.py device --events_crit 100.65.30.11
     ./sdwan.py device --models
+    ./sdwan.py device --ping 100.65.30.11 0 24.48.58.1 8.8.8.8
+    ./sdwan.py device --trace 100.65.30.11 0 24.48.58.1 8.8.8.8
     ./sdwan.py env
     ./sdwan.py tasks
     ./sdwan.py policy-definition
@@ -231,6 +233,7 @@ CiscoDevNet/[SASTRE](https://github.com/CiscoDevNet/sastre) is a much better scr
     ./sdwan.py policy-security
     ./sdwan.py rest --get <api_object>
     ./sdwan.py saas
+    ./sdwan.py sdavc
     ./sdwan.py template-device --clone 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9 vedge-1000
     ./sdwan.py template-device --tree 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
     ./sdwan.py template-device --variable 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
@@ -247,6 +250,18 @@ CiscoDevNet/[SASTRE](https://github.com/CiscoDevNet/sastre) is a much better scr
 Use pytest along with sdwan to automate validation.  See linked file for an example.
 
 [EXAMPLE VALIDATION SCRIPT](https://github.com/ruszkiew/sdwan/blob/master/test_site.py)
+
+This test script can be run in the following form.
+
+    pytest -v test_site.py --deviceId 100.65.30.11
+
+You can run all test scripts (python script with prefixed with 'test' in the directory
+
+    pytest -v --deviceId 100.65.30.11
+
+One could put many tests in a single script or have a script per test case.
+
+The 'pytest.ini' file was included to ignore Warning Messages.
 
 ## TODO
 See the GitHub 'Issues' tracker for a list of planned features/fixes.
