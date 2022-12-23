@@ -125,3 +125,5 @@ v7.0 - Fixed Device Variable Output - Device ID
 v7.1 - Added Traceroute to Device
 
 v7.2 - Display vManage Device Groups
+
+v7.3 - Endpoint Tracker Display

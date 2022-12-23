@@ -4,14 +4,11 @@
 
 #  SDWAN CLI Tool
 
-#  Version 7.2 - Last Updated: Ed Ruszkiewicz
+#  Version 7.3 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
 """
-Grab tracker state - 
-
-Display Devices based on Device Group - Device Group passed in general 'device' listing
 
 Display centralized policy learned from vsmart - device
     ./sdwan.py rest --get 'device/policy/vsmart?deviceId=100.102.6.1'
@@ -22,9 +19,9 @@ Future
  - SDAVC Connector Status from Router
     No direct API Call
     No way to see Custom Apps on Router
-    Tried to grab DPI statistics but just return on Data for App if no Traffic
+    Tried to grab DPI statistics but just return no data for app if no traffic
  - Flow Details - No direct API Call - GUI is not RealTime
- - Speedtest - Not sure worth the Effort - Leave in GUI
+ - Speedtest - Not sure worth the Effort - Use GUI
 
 """
 
@@ -590,12 +587,13 @@ def tasks(clear):
 @click.option("--sla", help="Display Tunnel BFD SLA Statistics")
 @click.option("--template", help="Display Device Template")
 @click.option("--trace", nargs=4, help="Traceroute by VPN, SRC_IP, DST_IP")
+@click.option("--tracker", help="Display Endpoint Tracker")
 @click.option("--valid", help="Make Device Certificate Valid")
 @click.option("--variable", help="Display Device Variable and Values")
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--wan", help="Display Device WAN Interface")
 def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, download, events_hr, events_crit, groups, int,
-             models, ntp, omp, ospf, ping, set_var, csv, saas,sdavc ,sla, staging, template, trace, invalid, valid, variable, vrrp, wan):
+             models, ntp, omp, ospf, ping, set_var, csv, saas, sdavc,sla, staging, template, trace, tracker, invalid, valid, variable, vrrp, wan):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -657,6 +655,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             ./sdwan.py device --sla <deviceId>
 
             ./sdwan.py device --template <deviceId>
+
+            ./sdwan.py device --tracker <deviceId>
 
             ./sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
 
@@ -1678,6 +1678,24 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
         print()
         pprint(response['rawOutput'])
+        print()
+        return
+
+    if tracker:
+        print()
+        response = json.loads(sdwanp.get_request('device/endpointTracker?deviceId=' + tracker))
+        items = response['data']
+
+        headers = ["NAME", "INTERFACE", "STATE", "DELAY","DATA_KEY"]
+        table = list()
+
+        for item in items:
+            tr = [item['record-name'], item['if-name'], item['state'],
+                  item['actual-delay'], item['vdevice-dataKey']]
+            table.append(tr)
+
+        click.echo(tabulate.tabulate(table, headers,
+                                             tablefmt="simple"))
         print()
         return
 

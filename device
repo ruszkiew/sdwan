@@ -106,3 +106,114 @@ Options:
   --vrrp TEXT         Display Device VRRP Status
   --wan TEXT          Display Device WAN Interface
   --help              Show this message and exit.
+Usage: sdwan.py device [OPTIONS]
+
+  Display, Download, and View CLI Config for Devices.
+
+  Returns information about each device that is part of the fabric.
+
+  Example Command:
+
+      ./sdwan.py device
+
+      ./sdwan.py device --arp <deviceId>
+
+      ./sdwan.py device --attach <templateId> --csv <csv_file>
+
+      ./sdwan.py device --bfd <deviceId>
+
+      ./sdwan.py device --bgp <deviceId>
+
+      ./sdwan.py device --config <deviceId>
+
+      ./sdwan.py device --control <deviceId>
+
+      ./sdwan.py device --count_aar <deviceId>
+
+      ./sdwan.py device --count_dp <deviceId>
+
+      ./sdwan.py device --csv <deviceId> | all
+
+      ./sdwan.py device --detach <deviceId>
+
+      ./sdwan.py device --download <deviceId> | all
+
+      ./sdwan.py device --events_hr <deviceId>
+
+      ./sdwan.py device --events_crit <deviceId>
+
+      ./sdwan.py device --models
+
+      ./sdwan.py device --int <deviceId>
+
+      ./sdwan.py device --invalid <deviceId>
+
+      ./sdwan.py device --models
+
+      ./sdwan.py device --ntp <deviceId>
+
+      ./sdwan.py device --omp <deviceId> summary | <prefix>
+
+      ./sdwan.py device --ospf <deviceId>
+
+      ./sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
+
+      ./sdwan.py device --saas <deviceId>
+
+      ./sdwan.py device --sdavc <deviceId>
+
+      ./sdwan.py device --set_var <deviceId> <object> <value>
+
+      ./sdwan.py device --staging <deviceId>
+
+      ./sdwan.py device --sla <deviceId>
+
+      ./sdwan.py device --template <deviceId>
+
+      ./sdwan.py device --tracker <deviceId>
+
+      ./sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
+
+      ./sdwan.py device --valid <deviceId>
+
+      ./sdwan.py device --variable <deviceId>
+
+      ./sdwan.py device --vrrp <deviceId>
+
+      ./sdwan.py device --wan <deviceId>
+
+Options:
+  --arp TEXT          Display Device ARP Cache
+  --attach TEXT       Attach Device Template
+  --bfd TEXT          Display Device BFD Sessions
+  --bgp TEXT          Display Device BGP Information
+  --config TEXT       Print Device CLI Configuration
+  --control TEXT      Display Device Control Connections
+  --count_aar TEXT    Display AAR Policy Counters
+  --count_dp TEXT     Display Traffic Data Policy Counters
+  --csv TEXT          Output Device Variables to CSV
+  --detach TEXT       Detach Device from Device Template
+  --download TEXT     Download Device CLI Configuration
+  --events_hr TEXT    Display 1 Hour All Events
+  --events_crit TEXT  Display 7 Days Critical Events
+  --groups            Display Device Groups
+  --invalid TEXT      Make Device Certificate Invalid
+  --int TEXT          Display Interface Statistics and State
+  --models            Display Valid Device Models
+  --ntp TEXT          Display Device NTP State
+  --omp TEXT...       Display Device OMP Routes
+  --ospf TEXT         Display Device OSPF Information
+  --ping TEXT...      Ping by VPN, SRC_IP, DST_IP
+  --saas TEXT         Display SaaS OnRamp State
+  --sdavc TEXT        Display SD-AVC Status
+  --set_var TEXT...   Set Variable/Value for Device
+  --staging TEXT      Make Device Certificate Staging
+  --sla TEXT          Display Tunnel BFD SLA Statistics
+  --template TEXT     Display Device Template
+  --trace TEXT...     Traceroute by VPN, SRC_IP, DST_IP
+  --tracker TEXT      Display Endpoint Tracker
+  --valid TEXT        Make Device Certificate Valid
+  --variable TEXT     Display Device Variable and Values
+  --vrrp TEXT         Display Device VRRP Status
+  --wan TEXT          Display Device WAN Interface
+  --help              Show this message and exit.
