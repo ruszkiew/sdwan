@@ -4,20 +4,28 @@
 
 #  SDWAN CLI Tool
 
-#  Version 7.0 - Last Updated: Ed Ruszkiewicz
+#  Version 7.2 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
 """
-Update NTP status Output
-Grab tracker state
-Speedtest
+Grab tracker state - 
+
+Display Devices based on Device Group - Device Group passed in general 'device' listing
+
 Display centralized policy learned from vsmart - device
     ./sdwan.py rest --get 'device/policy/vsmart?deviceId=100.102.6.1'
         Only seems to be AAR - What about Traffic Data
 Display summary of centralized policy application - policy-central
-SDAVC status from router - no API - cannot Netmiki
-Display flow table
+
+Future
+ - SDAVC Connector Status from Router
+    No direct API Call
+    No way to see Custom Apps on Router
+    Tried to grab DPI statistics but just return on Data for App if no Traffic
+ - Flow Details - No direct API Call - GUI is not RealTime
+ - Speedtest - Not sure worth the Effort - Leave in GUI
+
 """
 
 ###############################################################################
@@ -567,6 +575,7 @@ def tasks(clear):
 @click.option("--download", help="Download Device CLI Configuration")
 @click.option("--events_hr", help="Display 1 Hour All Events")
 @click.option("--events_crit", help="Display 7 Days Critical Events")
+@click.option("--groups", is_flag=True, help="Display Device Groups")
 @click.option("--invalid", help="Make Device Certificate Invalid")
 @click.option("--int", help="Display Interface Statistics and State")
 @click.option("--models", is_flag=True, help="Display Valid Device Models")
@@ -585,7 +594,7 @@ def tasks(clear):
 @click.option("--variable", help="Display Device Variable and Values")
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--wan", help="Display Device WAN Interface")
-def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, download, events_hr, events_crit, int,
+def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, download, events_hr, events_crit, groups, int,
              models, ntp, omp, ospf, ping, set_var, csv, saas,sdavc ,sla, staging, template, trace, invalid, valid, variable, vrrp, wan):
     """Display, Download, and View CLI Config for Devices.
 
@@ -620,6 +629,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             ./sdwan.py device --events_hr <deviceId>
 
             ./sdwan.py device --events_crit <deviceId>
+
+            ./sdwan.py device --models
 
             ./sdwan.py device --int <deviceId>
 
@@ -1125,6 +1136,18 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             print(item['event'])
         print()
         return 
+
+    if groups:
+        print()
+        response = json.loads(sdwanp.get_request('group'))
+        items = response['data']
+
+        print ('Device Groups')
+        print ('-------------')
+        for item in items:
+            print(item['groupName'])
+        print()
+        return
 
     if template:
         response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + template))
@@ -1808,19 +1831,19 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
     items = response['data']
     # pprint(items)
     headers = ["Device Name", "Device Type", "UUID", "System IP",
-               "Device ID", "Site ID", "Version", "Device Model", "Cert"]
+               "Device ID", "Site ID", "Version", "Device Model", "Cert", "Group"]
     table = list()
     for item in items:
         # check for site-id - 17.x vBond does not assign one
         if 'site-id' in item:
             tr = [item['host-name'], item['device-type'], item['uuid'],
                   item['local-system-ip'], item['deviceId'], item['site-id'],
-                  item['version'], item['device-model'], item['validity']]
+                  item['version'], item['device-model'], item['validity'], str(item['device-groups']).replace("'",'')]
             table.append(tr)
         else:
             tr = [item['host-name'], item['device-type'], item['uuid'],
                   item['local-system-ip'], item['deviceId'], '',
-                  item['version'], item['device-model'], item['validity']]
+                  item['version'], item['device-model'], item['validity'], str(item['device-groups']).replace("'",'')]
             table.append(tr)
     try:
         click.echo(tabulate.tabulate(table, headers,

@@ -34,6 +34,8 @@ Usage: sdwan.py device [OPTIONS]
 
       ./sdwan.py device --events_crit <deviceId>
 
+      ./sdwan.py device --models
+
       ./sdwan.py device --int <deviceId>
 
       ./sdwan.py device --invalid <deviceId>
@@ -84,6 +86,7 @@ Options:
   --download TEXT     Download Device CLI Configuration
   --events_hr TEXT    Display 1 Hour All Events
   --events_crit TEXT  Display 7 Days Critical Events
+  --groups            Display Device Groups
   --invalid TEXT      Make Device Certificate Invalid
   --int TEXT          Display Interface Statistics and State
   --models            Display Valid Device Models

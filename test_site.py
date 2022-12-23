@@ -10,7 +10,7 @@
 
 Automated Remote Site Test Script
 
-USAGE: pytest -v test_site.py --deviceId A.A.A.A
+USAGE: pytest test_site.py --deviceId A.A.A.A
 
 """
 
@@ -92,7 +92,6 @@ def test_ospf_lan(deviceId):
 
 IDEAS
 
-ntp status
 policy from vsmart
 
 EXAMPLES
