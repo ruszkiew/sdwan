@@ -11,8 +11,7 @@
 """
 
 Display centralized policy learned from vsmart - device
-    ./sdwan.py rest --get 'device/policy/vsmart?deviceId=100.102.6.1'
-        Only seems to be AAR - What about Traffic Data
+  - can only see AAR - left in raw format for now - not sure of use
 
 Future
  - SDAVC Connector Status from Router
@@ -590,9 +589,10 @@ def tasks(clear):
 @click.option("--valid", help="Make Device Certificate Valid")
 @click.option("--variable", help="Display Device Variable and Values")
 @click.option("--vrrp", help="Display Device VRRP Status")
+@click.option("--vsmart", help="Display Policy learned from vSmart")
 @click.option("--wan", help="Display Device WAN Interface")
 def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, download, events_hr, events_crit, groups, int,
-             models, ntp, omp, ospf, ping, set_var, csv, saas, sdavc,sla, staging, template, trace, tracker, invalid, valid, variable, vrrp, wan):
+             models, ntp, omp, ospf, ping, set_var, csv, saas, sdavc,sla, staging, template, trace, tracker, invalid, valid, variable, vrrp, vsmart, wan):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -664,6 +664,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             ./sdwan.py device --variable <deviceId>
 
             ./sdwan.py device --vrrp <deviceId>
+
+            ./sdwan.py device --vsmart <deviceId>
 
             ./sdwan.py device --wan <deviceId>
 
@@ -1716,7 +1718,14 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
                                              tablefmt="simple"))
 
         print()
+        return
 
+    if vsmart:
+        print()
+        response = json.loads(sdwanp.get_request('device/policy/vsmart?deviceId=' + vsmart))
+        items = response['data']
+        pprint(items)
+        print()
         return
 
     if wan:
