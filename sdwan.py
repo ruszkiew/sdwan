@@ -10,10 +10,10 @@
 
 """
 
-Grab last hour traffic by app across entire fabric
-Grab last hour top 20 apps by router
-Grab last hour traffic by app by router
-Grab AAR/TD ACL Matches
+App Data
+  last hour traffic by app across entire fabric
+  last hour top 20 apps by router
+  last hour traffic by app by router
 
 """
 
@@ -563,7 +563,6 @@ def tasks(clear):
 @click.option("--detach", help="Detach Device from Device Template")
 @click.option("--download", help="Download Device CLI Configuration")
 @click.option("--events_hr", help="Display 1 Hour All Events")
-@click.option("--events_crit", help="Display 7 Days Critical Events")
 @click.option("--groups", is_flag=True, help="Display Device Groups")
 @click.option("--invalid", help="Make Device Certificate Invalid")
 @click.option("--intf", help="Display Interface Statistics and State")
@@ -585,7 +584,7 @@ def tasks(clear):
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--vsmart", help="Display Policy learned from vSmart")
 @click.option("--wan", help="Display Device WAN Interface")
-def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, download, events_hr, events_crit, groups, intf,
+def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, download, events_hr, groups, intf,
              models, ntp, omp, ospf, ping, set_var, csv, saas, sdavc,sla, staging, template, trace, tracker, invalid, valid, variable, vrrp, vsmart, wan):
     """Display, Download, and View CLI Config for Devices.
 
@@ -618,8 +617,6 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             ./sdwan.py device --download <deviceId> | all
 
             ./sdwan.py device --events_hr <deviceId>
-
-            ./sdwan.py device --events_crit <deviceId>
 
             ./sdwan.py device --models
 
