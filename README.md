@@ -213,6 +213,7 @@ CiscoDevNet/[SASTRE](https://github.com/CiscoDevNet/sastre) is a much better scr
     ./sdwan.py device --count_aar 100.65.30.11
     ./sdwan.py device --events_hr 100.65.30.11
     ./sdwan.py device --events_crit 100.65.30.11
+    ./sdwan.py device --vsmart 100.65.30.11
     ./sdwan.py device --models
     ./sdwan.py device --ping 100.65.30.11 0 24.48.58.1 8.8.8.8
     ./sdwan.py device --trace 100.65.30.11 0 24.48.58.1 8.8.8.8

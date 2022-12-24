@@ -4,22 +4,16 @@
 
 #  SDWAN CLI Tool
 
-#  Version 7.4 - Last Updated: Ed Ruszkiewicz
+#  Version 7.5 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
 """
 
-Display centralized policy learned from vsmart - device
-  - can only see AAR - left in raw format for now - not sure of use
-
-Future
- - SDAVC Connector Status from Router
-    No direct API Call
-    No way to see Custom Apps on Router
-    Tried to grab DPI statistics but just return no data for app if no traffic
- - Flow Details - No direct API Call - GUI is not RealTime
- - Speedtest - Not sure worth the Effort - Use GUI
+Grab last hour traffic by app across entire fabric
+Grab last hour top 20 apps by router
+Grab last hour traffic by app by router
+Grab AAR/TD ACL Matches
 
 """
 
@@ -572,7 +566,7 @@ def tasks(clear):
 @click.option("--events_crit", help="Display 7 Days Critical Events")
 @click.option("--groups", is_flag=True, help="Display Device Groups")
 @click.option("--invalid", help="Make Device Certificate Invalid")
-@click.option("--int", help="Display Interface Statistics and State")
+@click.option("--intf", help="Display Interface Statistics and State")
 @click.option("--models", is_flag=True, help="Display Valid Device Models")
 @click.option("--ntp", help="Display Device NTP State") 
 @click.option("--omp", nargs=2, help="Display Device OMP Routes") 
@@ -591,7 +585,7 @@ def tasks(clear):
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--vsmart", help="Display Policy learned from vSmart")
 @click.option("--wan", help="Display Device WAN Interface")
-def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, download, events_hr, events_crit, groups, int,
+def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, download, events_hr, events_crit, groups, intf,
              models, ntp, omp, ospf, ping, set_var, csv, saas, sdavc,sla, staging, template, trace, tracker, invalid, valid, variable, vrrp, vsmart, wan):
     """Display, Download, and View CLI Config for Devices.
 
@@ -629,7 +623,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
             ./sdwan.py device --models
 
-            ./sdwan.py device --int <deviceId>
+            ./sdwan.py device --intf <deviceId>
 
             ./sdwan.py device --invalid <deviceId>
 
@@ -1226,8 +1220,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
         return
 
-    if int:
-        response = json.loads(sdwanp.get_request('device/interface?deviceId=' + int))
+    if intf:
+        response = json.loads(sdwanp.get_request('device/interface?deviceId=' + intf))
         items = response['data']
 
         print()
@@ -1722,10 +1716,96 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
     if vsmart:
         print()
-        response = json.loads(sdwanp.get_request('device/policy/vsmart?deviceId=' + vsmart))
-        items = response['data']
-        pprint(items)
+        # get site-id
+        response = json.loads(sdwanp.get_request('device?deviceId=' + vsmart))
+        item = response['data'][0]
+        site_id = int(item['site-id'])
+        print(item['host-name'] + ' -- ' + item['deviceId'])
         print()
+        print('  site-id: ' + str(site_id)) 
+        print()
+
+        # get active centralized policy
+        response = json.loads(sdwanp.get_request('template/policy/vsmart'))
+        items = response['data']
+        for item in items:
+            if item['isPolicyActivated']:
+                policy_id = item['policyId']
+                print('Centralized Policy: ' + item['policyName'] + ' -- ' + policy_id)
+                print()
+                policy_active = True
+                break
+            else:
+                policy_active = False
+        if policy_active == False:
+            print('No Centralized Policy Active')
+            print()
+            return
+
+        # load all lists to a dict
+        response = json.loads(sdwanp.get_request('template/policy/list'))
+        items = response['data']
+        list_dict = {}
+        for item in items:
+            list_dict[item['listId']] = {}
+            list_dict[item['listId']]['type'] = item['type']
+            list_dict[item['listId']]['name'] = item['name']
+            list_dict[item['listId']]['entries'] = item['entries']
+
+        # get central policy definition/application
+        response = json.loads(sdwanp.get_request('template/policy/vsmart/definition/' +
+                                                 policy_id))
+        def_list = response['policyDefinition']['assembly']
+
+        # interate definitions looking for matches to device site-id
+        for def_ in def_list:
+            try:
+                for entry in def_['entries']:
+                    try:
+                        def_name = json.loads(sdwanp.get_request('template/policy/definition/' +
+                                            def_['type'].lower() + '/' + def_['definitionId']))['name']
+                    except:
+                        def_name = json.loads(sdwanp.get_request('template/policy/definition/' +
+                                            def_['type'] + '/' + def_['definitionId']))['name']
+                    if 'siteLists' in entry.keys():
+                        for site in entry['siteLists']:
+                            for lsite_id in list_dict[site]['entries']:
+                                site_range = lsite_id['siteId'].split('-')
+                                if len(site_range) == 1:
+                                    if site_id == int(site_range[0]):
+                                        print('  def: ' + def_['definitionId'] + ' ---------- '
+                                               + def_['type'] + ' ' + "-"*(25 - len(def_['type'])) + ' ' + def_name )
+                                        print('         site-list: ' + list_dict[site]['name'] + ' (' + site + ')')
+                                        print('         site-list-value: ' + lsite_id['siteId'])
+                                        if 'direction' in entry.keys():
+                                            print('         direction: ' + entry['direction'])
+                                        if 'vpnLists' in entry.keys():
+                                            for vpn in entry['vpnLists']:
+                                                print('         vpn-list:  ' + list_dict[vpn]['name'] + ' (' + vpn + ')')
+                                if len(site_range) == 2:
+                                    if int(site_range[0]) <= site_id <= int(site_range[1]):
+                                        print('  def: ' + def_['definitionId'] + ' ---------- '
+                                               + def_['type'] + ' ' + "-"*(25 - len(def_['type'])) + ' ' + def_name )
+                                        print('         site-list: ' + list_dict[site]['name'] + ' (' + site + ')')
+                                        print('         site-list-value: ' + lsite_id['siteId'])
+                                        if 'direction' in entry.keys():
+                                            print('         direction: ' + entry['direction'])
+                                        if 'vpnLists' in entry.keys():
+                                            for vpn in entry['vpnLists']:
+                                                print('         vpn-list:  ' + list_dict[vpn]['name'] + ' (' + vpn + ')')
+            except:
+                print()
+
+        # determine if aar learned from vsmart
+        response = json.loads(sdwanp.get_request('device/policy/vsmart?deviceId=' + vsmart))
+        item = response['data'][0]
+        print()
+        if 'name' in item:
+            print('AAR learned from-vsmart: YES  -- ' + item['name']) 
+        else:
+            print('AAR learned from-vsmart: NO') 
+        print()
+
         return
 
     if wan:

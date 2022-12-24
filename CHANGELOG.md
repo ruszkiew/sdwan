@@ -128,4 +128,6 @@ v7.2 - Display vManage Device Groups
 
 v7.3 - Endpoint Tracker Display
 
-v7.4 - Application content to Central Policy Tree
+v7.4 - Application specifics to Central Policy Tree
+
+v7.5 - Display Central Policy Lists in play to a Device based on Site ID
