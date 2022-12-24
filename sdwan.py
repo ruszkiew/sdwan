@@ -13,7 +13,6 @@
 Display centralized policy learned from vsmart - device
     ./sdwan.py rest --get 'device/policy/vsmart?deviceId=100.102.6.1'
         Only seems to be AAR - What about Traffic Data
-Display summary of centralized policy application - policy-central
 
 Future
  - SDAVC Connector Status from Router
@@ -2934,6 +2933,11 @@ def policy_central(config, download, upload, definition, tree):
             list_dict[item['listId']]['type'] = item['type']
             list_dict[item['listId']]['name'] = item['name']
 
+        # load the policy application entities
+        response = json.loads(sdwanp.get_request('template/policy/vsmart/definition/' +
+                                                 tree))
+        apply_list = response['policyDefinition']['assembly']
+
         # identify referenced definitions
         response = json.loads(sdwanp.get_request('template/policy/vsmart/definition/' +
                                                  tree))
@@ -2943,7 +2947,7 @@ def policy_central(config, download, upload, definition, tree):
         print('  ' + tree)
         print()
         print('  *** Definitions and Lists ***')
-        print()
+
         # identify definitions
         defs = {}
         assembly = response['policyDefinition']
@@ -2955,8 +2959,27 @@ def policy_central(config, download, upload, definition, tree):
             except:
                 response = json.loads(sdwanp.get_request('template/policy/definition/' +
                                       def1['type'] + '/' + def1['definitionId']))
+            print()
             print('  def: ' + response['definitionId'] + ' ---------- ' + response['type'] + ' ' +
                   "-"*(25 - len(response['type'])) + ' ' + response['name'])
+
+            print('    applied: ' )
+            for def2 in apply_list:
+                if def2['definitionId'] == def1['definitionId']:
+                    try:
+                        entries = def2['entries']
+                        for entry in entries:
+                            if 'direction' in entry.keys():
+                                print('         direction: ' + entry['direction'])
+                            if 'siteLists' in entry.keys():
+                                for site in entry['siteLists']:
+                                    print('         site-list: ' + list_dict[site]['name'] + ' (' + site + ')')
+                            if 'vpnLists' in entry.keys():
+                                for vpn in entry['vpnLists']:
+                                    print('         vpn-list:  ' + list_dict[vpn]['name'] + ' (' + vpn + ')')
+                    except:
+                        print()
+            print('    contains: ' )
             list_find(response, list_dict)
         print()
         print()
