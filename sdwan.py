@@ -4,7 +4,7 @@
 
 #  SDWAN CLI Tool
 
-#  Version 7.3 - Last Updated: Ed Ruszkiewicz
+#  Version 7.4 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 

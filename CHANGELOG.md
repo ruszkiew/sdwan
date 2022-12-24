@@ -127,3 +127,5 @@ v7.1 - Added Traceroute to Device
 v7.2 - Display vManage Device Groups
 
 v7.3 - Endpoint Tracker Display
+
+v7.4 - Application content to Central Policy Tree
