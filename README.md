@@ -26,8 +26,9 @@ These are the functional items the script provides that cannot be done in vManag
  * Clear Tasks.
  * Database Backup.
  * Change Device Models in Feature Template.
- * Clone Device Template to different Model.
+ * Clone Feature/Device Template to different Model.
  * Audit Bandwidth consumption to Licensing.
+ * Identify Central Policy Applied to a Device
  * Automate Validation.
 
 ## INSTALLATION
