@@ -28,11 +28,11 @@ Usage: sdwan.py device [OPTIONS]
 
       ./sdwan.py device --detach <deviceId>
 
+      ./sdwan.py device --detail <deviceId>
+
       ./sdwan.py device --download <deviceId> | all
 
       ./sdwan.py device --events_hr <deviceId>
-
-      ./sdwan.py device --events_crit <deviceId>
 
       ./sdwan.py device --models
 
@@ -60,8 +60,6 @@ Usage: sdwan.py device [OPTIONS]
 
       ./sdwan.py device --sla <deviceId>
 
-      ./sdwan.py device --template <deviceId>
-
       ./sdwan.py device --tracker <deviceId>
 
       ./sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
@@ -77,38 +75,37 @@ Usage: sdwan.py device [OPTIONS]
       ./sdwan.py device --wan <deviceId>
 
 Options:
-  --arp TEXT          Display Device ARP Cache
-  --attach TEXT       Attach Device Template
-  --bfd TEXT          Display Device BFD Sessions
-  --bgp TEXT          Display Device BGP Information
-  --config TEXT       Print Device CLI Configuration
-  --control TEXT      Display Device Control Connections
-  --count_aar TEXT    Display AAR Policy Counters
-  --count_dp TEXT     Display Traffic Data Policy Counters
-  --csv TEXT          Output Device Variables to CSV
-  --detach TEXT       Detach Device from Device Template
-  --download TEXT     Download Device CLI Configuration
-  --events_hr TEXT    Display 1 Hour All Events
-  --events_crit TEXT  Display 7 Days Critical Events
-  --groups            Display Device Groups
-  --invalid TEXT      Make Device Certificate Invalid
-  --intf TEXT         Display Interface Statistics and State
-  --models            Display Valid Device Models
-  --ntp TEXT          Display Device NTP State
-  --omp TEXT...       Display Device OMP Routes
-  --ospf TEXT         Display Device OSPF Information
-  --ping TEXT...      Ping by VPN, SRC_IP, DST_IP
-  --saas TEXT         Display SaaS OnRamp State
-  --sdavc TEXT        Display SD-AVC Status
-  --set_var TEXT...   Set Variable/Value for Device
-  --staging TEXT      Make Device Certificate Staging
-  --sla TEXT          Display Tunnel BFD SLA Statistics
-  --template TEXT     Display Device Template
-  --trace TEXT...     Traceroute by VPN, SRC_IP, DST_IP
-  --tracker TEXT      Display Endpoint Tracker
-  --valid TEXT        Make Device Certificate Valid
-  --variable TEXT     Display Device Variable and Values
-  --vrrp TEXT         Display Device VRRP Status
-  --vsmart TEXT       Display Policy learned from vSmart
-  --wan TEXT          Display Device WAN Interface
-  --help              Show this message and exit.
+  --arp TEXT         Display Device ARP Cache
+  --attach TEXT      Attach Device Template
+  --bfd TEXT         Display Device BFD Sessions
+  --bgp TEXT         Display Device BGP Information
+  --config TEXT      Print Device CLI Configuration
+  --control TEXT     Display Device Control Connections
+  --count_aar TEXT   Display AAR Policy Counters
+  --count_dp TEXT    Display Traffic Data Policy Counters
+  --csv TEXT         Output Device Variables to CSV
+  --detach TEXT      Detach Device from Device Template
+  --detail TEXT      Display Device Details
+  --download TEXT    Download Device CLI Configuration
+  --events_hr TEXT   Display 1 Hour All Events
+  --groups           Display Device Groups
+  --invalid TEXT     Make Device Certificate Invalid
+  --intf TEXT        Display Interface Statistics and State
+  --models           Display Valid Device Models
+  --ntp TEXT         Display Device NTP State
+  --omp TEXT...      Display Device OMP Routes
+  --ospf TEXT        Display Device OSPF Information
+  --ping TEXT...     Ping by VPN, SRC_IP, DST_IP
+  --saas TEXT        Display SaaS OnRamp State
+  --sdavc TEXT       Display SD-AVC Status
+  --set_var TEXT...  Set Variable/Value for Device
+  --staging TEXT     Make Device Certificate Staging
+  --sla TEXT         Display Tunnel BFD SLA Statistics
+  --trace TEXT...    Traceroute by VPN, SRC_IP, DST_IP
+  --tracker TEXT     Display Endpoint Tracker
+  --valid TEXT       Make Device Certificate Valid
+  --variable TEXT    Display Device Variable and Values
+  --vrrp TEXT        Display Device VRRP Status
+  --vsmart TEXT      Display Policy learned from vSmart
+  --wan TEXT         Display Device WAN Interface
+  --help             Show this message and exit.

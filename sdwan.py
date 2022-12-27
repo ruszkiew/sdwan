@@ -561,6 +561,7 @@ def tasks(clear):
 @click.option("--count_dp", help="Display Traffic Data Policy Counters")
 @click.option("--csv", help="Output Device Variables to CSV")
 @click.option("--detach", help="Detach Device from Device Template")
+@click.option("--detail", help="Display Device Details")
 @click.option("--download", help="Download Device CLI Configuration")
 @click.option("--events_hr", help="Display 1 Hour All Events")
 @click.option("--groups", is_flag=True, help="Display Device Groups")
@@ -576,7 +577,6 @@ def tasks(clear):
 @click.option("--set_var", nargs=3, help="Set Variable/Value for Device")
 @click.option("--staging", help="Make Device Certificate Staging")
 @click.option("--sla", help="Display Tunnel BFD SLA Statistics")
-@click.option("--template", help="Display Device Template")
 @click.option("--trace", nargs=4, help="Traceroute by VPN, SRC_IP, DST_IP")
 @click.option("--tracker", help="Display Endpoint Tracker")
 @click.option("--valid", help="Make Device Certificate Valid")
@@ -584,8 +584,8 @@ def tasks(clear):
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--vsmart", help="Display Policy learned from vSmart")
 @click.option("--wan", help="Display Device WAN Interface")
-def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, download, events_hr, groups, intf,
-             models, ntp, omp, ospf, ping, set_var, csv, saas, sdavc,sla, staging, template, trace, tracker, invalid, valid, variable, vrrp, vsmart, wan):
+def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, detail, download, events_hr, groups, intf,
+             models, ntp, omp, ospf, ping, set_var, csv, saas, sdavc,sla, staging, trace, tracker, invalid, valid, variable, vrrp, vsmart, wan):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -613,6 +613,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             ./sdwan.py device --csv <deviceId> | all
 
             ./sdwan.py device --detach <deviceId>
+
+            ./sdwan.py device --detail <deviceId>
 
             ./sdwan.py device --download <deviceId> | all
 
@@ -643,8 +645,6 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             ./sdwan.py device --staging <deviceId>
 
             ./sdwan.py device --sla <deviceId>
-
-            ./sdwan.py device --template <deviceId>
 
             ./sdwan.py device --tracker <deviceId>
 
@@ -1141,37 +1141,41 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         print()
         return
 
-    if template:
-        response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + template))
+    if detail:
+        response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + detail))
         items = response['data']
 
         for item in items:
             try:
                 deviceIP = item['deviceIP']
-                if deviceIP == template:
+                if deviceIP == detail:
                     hostName = item['host-name']
                     deviceModel = item['deviceModel']
+                    version = item['version']
                     uuid = item['uuid']
                     serialNumber = item['serialNumber']
                     valid = item['validity']
                     template = item['template']
                     templateId = item['templateId']
+                    sync_state = item['configStatusMessage']
             except KeyError:
                 print()
                 print("** Device not Attached to a Template **")
                 print()
                 return
         print()
-        print("Device and Template Details")
+        print("Device Details")
         print()
         print(" ** hostname       ", hostName)
         print(" ** system-ip      ", deviceIP)
         print(" ** device-model   ", deviceModel)
+        print(" ** version        ", version)
         print(" ** certificate    ", valid)
         print(" ** chassis-id     ", uuid)
         print(" ** serial_num     ", serialNumber)
         print(" ** template       ", template)
         print(" ** template-id    ", templateId)
+        print(" ** template sync  ", sync_state)
         print()
         print()
         

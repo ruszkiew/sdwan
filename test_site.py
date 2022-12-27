@@ -58,6 +58,20 @@ def test_bfd(deviceId):
 
 ###################################################################################
 
+def test_version(deviceId):
+    response = runner.invoke(device, ['--detail', deviceId])
+    assert response.exit_code == 0
+    assert '17.03.02' in response.output, 'Not the desired Software Version'
+
+###################################################################################
+
+def test_template_sync(deviceId):
+    response = runner.invoke(device, ['--detail', deviceId])
+    assert response.exit_code == 0
+    assert 'In Sync' in response.output, 'Router not in Sync with Device Template'
+
+###################################################################################
+
 def test_ntp(deviceId):
     response = runner.invoke(device, ['--ntp', deviceId])
     assert response.exit_code == 0
@@ -80,10 +94,27 @@ def test_omp_learned_route(deviceId):
 
 ##################################################################################
 
+def test_vsmart(deviceId):
+    response = runner.invoke(device, ['--vsmart', deviceId])
+    assert response.exit_code == 0
+    assert '-- data --' in response.output, 'No Traffic Data Definition Applied to Router'
+    assert '-- control --' in response.output, 'No Topology Definition Applied to Router'
+    assert '-- appRoute --' in response.output, 'No AAR Definition Applied to Router'
+    assert 'AAR learned from-vsmart: YES' in response.output, 'No AAR Definition learned from vSmart'
+
+##################################################################################
+
 def test_ospf_lan(deviceId):
     response = runner.invoke(device, ['--ospf', deviceId])
     assert response.exit_code == 0
     assert (re.search('GigabitEthernet0\/0\/0.*full', response.output)),'No OSPF Neighbor LAN'
+
+##################################################################################
+
+def test_tracker(deviceId):
+    response = runner.invoke(device, ['--tracker', deviceId])
+    assert response.exit_code == 0
+    assert 'tracker-if-state-up' in response.output, 'No Tracker or Tracker Down'
 
 ##################################################################################
 
@@ -92,32 +123,22 @@ def test_ospf_lan(deviceId):
 
 IDEAS
 
-policy from vsmart
+SaaS onRamp
+Definition Hits
 
 EXAMPLES
 
-def test_omp_route(deviceId):
-    response = runner.invoke(device, ['--omp', deviceId, 'summary' ])
-    assert response.exit_code == 0
-    assert '0.0.0.0/0' in response.output, 'No Default Route'
-    assert '10.0.0.0/8' in response.output, 'No Summary Route'
-
-def test_int_wan(deviceId):
-    response = runner.invoke(device, ['--int', deviceId])
+def test_intf_wan(deviceId):
+    response = runner.invoke(device, ['--intf', deviceId])
     assert response.exit_code == 0
     assert (re.search('GigabitEthernet0\/1\/1.*if-state-up\s+if-oper-state-ready', response.output)),'MPLS WAN Interface is DOWN'
     assert (re.search('GigabitEthernet0\/1\/1.*if-state-up\s+if-oper-state-ready\s+\d\d+', response.output)),'MPLS WAN Interface NO Traffic'
 
-def test_int_lan(deviceId):
-    response = runner.invoke(device, ['--int', deviceId])
+def test_intf_lan(deviceId):
+    response = runner.invoke(device, ['--intf', deviceId])
     assert response.exit_code == 0
     assert (re.search('GigabitEthernet0\/0\/0.*if-state-up\s+if-oper-state-ready', response.output)),'LAN Interface is DOWN'
     assert (re.search('GigabitEthernet0\/0\/0.*if-state-up\s+if-oper-state-ready\s+\d\d+', response.output)),'LAN Interface NO Traffic'
-
-def test_ospf_lan(deviceId):
-    response = runner.invoke(device, ['--ospf', deviceId])
-    assert response.exit_code == 0
-    assert (re.search('GigabitEthernet0\/0\/0.*full', response.output)),'No OSPF Neighbor LAN'
 
 def test_vrrp_lan(deviceId):
     response = runner.invoke(device, ['--vrrp', deviceId])
