@@ -198,7 +198,7 @@ CiscoDevNet/[SASTRE](https://github.com/CiscoDevNet/sastre) is a much better scr
     ./sdwan.py device --attach 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9 router_var.csv
     ./sdwan.py device --template 100.65.30.11
     ./sdwan.py device --set_var 100.65.30.11 '//system/gps-location/latitude' 44.9764 
-    ./sdwan.py device --template 100.65.30.11
+    ./sdwan.py device --detail 100.65.30.11
     ./sdwan.py device --detach 100.65.30.11
     ./sdwan.py device --csv 100.65.30.11
     ./sdwan.py device --download 100.65.30.11
@@ -254,15 +254,15 @@ Use pytest along with sdwan to automate validation.  See linked file for an exam
 
 This test script can be run in the following form.
 
-    pytest -v test_site.py --deviceId 100.65.30.11
+    pytest test_site.py --deviceId 100.65.30.11
 
 You can run all test scripts (python script with prefixed with 'test' in the directory
 
-    pytest -v --deviceId 100.65.30.11
+    pytest --deviceId 100.65.30.11
 
 One could put many tests in a single script or have a script per test case.
 
-The 'pytest.ini' file was included to ignore Warning Messages.
+The 'pytest.ini' file was included to ignore Warning Messages and output Verbose.
 
 ## TODO
 See the GitHub 'Issues' tracker for a list of planned features/fixes.

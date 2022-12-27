@@ -94,7 +94,7 @@ def test_omp_learned_route(deviceId):
 
 ##################################################################################
 
-def test_vsmart(deviceId):
+def test_from_vsmart(deviceId):
     response = runner.invoke(device, ['--vsmart', deviceId])
     assert response.exit_code == 0
     assert '-- data --' in response.output, 'No Traffic Data Definition Applied to Router'
@@ -126,7 +126,7 @@ IDEAS
 SaaS onRamp
 Definition Hits
 
-EXAMPLES
+OTHER EXAMPLES
 
 def test_intf_wan(deviceId):
     response = runner.invoke(device, ['--intf', deviceId])
