@@ -6,9 +6,9 @@ Usage: sdwan.py tasks [OPTIONS]
 
   Example Command:
 
-      ./sdwan.py tasks
+      sdwan.py tasks
 
-      ./sdwan.py tasks --clear <processId>
+      sdwan.py tasks --clear <processId>
 
 Options:
   --clear TEXT  ProcessID.

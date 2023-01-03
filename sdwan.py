@@ -10,6 +10,10 @@
 
 """
 
+List, Display, Download, Upload - Custom Apps
+    GET/POST -  /template/policy/customapp
+    GET/PUT/DELETE - /template/policy/customapp/{id}
+
 App Data
   last hour traffic by app across entire fabric
   last hour top 20 apps by router
@@ -396,7 +400,7 @@ def configuration_db(backup):
 
         Example Command:
 
-            ./sdwan.py configuration-db --backup <file_name>
+            sdwan.py configuration-db --backup <file_name>
 
     """
 
@@ -453,7 +457,7 @@ def certificate():
 
         Example Command:
 
-            ./sdwan.py certificate
+            sdwan.py certificate
 
     """
 
@@ -490,7 +494,7 @@ def rest(get):
 
         Example Command:
 
-            ./sdwan.py rest --get <rest_object>
+            sdwan.py rest --get <rest_object>
 
     """
 
@@ -512,9 +516,9 @@ def tasks(clear):
 
         Example Command:
 
-            ./sdwan.py tasks
+            sdwan.py tasks
 
-            ./sdwan.py tasks --clear <processId>
+            sdwan.py tasks --clear <processId>
 
     """
     if clear:
@@ -592,73 +596,73 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
         Example Command:
 
-            ./sdwan.py device
+            sdwan.py device
 
-            ./sdwan.py device --arp <deviceId>
+            sdwan.py device --arp <deviceId>
 
-            ./sdwan.py device --attach <templateId> --csv <csv_file>
+            sdwan.py device --attach <templateId> --csv <csv_file>
 
-            ./sdwan.py device --bfd <deviceId>
+            sdwan.py device --bfd <deviceId>
 
-            ./sdwan.py device --bgp <deviceId>
+            sdwan.py device --bgp <deviceId>
 
-            ./sdwan.py device --config <deviceId>
+            sdwan.py device --config <deviceId>
 
-            ./sdwan.py device --control <deviceId>
+            sdwan.py device --control <deviceId>
 
-            ./sdwan.py device --count_aar <deviceId>
+            sdwan.py device --count_aar <deviceId>
 
-            ./sdwan.py device --count_dp <deviceId>
+            sdwan.py device --count_dp <deviceId>
 
-            ./sdwan.py device --csv <deviceId> | all
+            sdwan.py device --csv <deviceId> | all
 
-            ./sdwan.py device --detach <deviceId>
+            sdwan.py device --detach <deviceId>
 
-            ./sdwan.py device --detail <deviceId>
+            sdwan.py device --detail <deviceId>
 
-            ./sdwan.py device --download <deviceId> | all
+            sdwan.py device --download <deviceId> | all
 
-            ./sdwan.py device --events_hr <deviceId>
+            sdwan.py device --events_hr <deviceId>
 
-            ./sdwan.py device --models
+            sdwan.py device --models
 
-            ./sdwan.py device --intf <deviceId>
+            sdwan.py device --intf <deviceId>
 
-            ./sdwan.py device --invalid <deviceId>
+            sdwan.py device --invalid <deviceId>
 
-            ./sdwan.py device --models
+            sdwan.py device --models
 
-            ./sdwan.py device --ntp <deviceId>
+            sdwan.py device --ntp <deviceId>
 
-            ./sdwan.py device --omp <deviceId> summary | <prefix>
+            sdwan.py device --omp <deviceId> summary | <prefix>
 
-            ./sdwan.py device --ospf <deviceId>
+            sdwan.py device --ospf <deviceId>
 
-            ./sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
+            sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
 
-            ./sdwan.py device --saas <deviceId>
+            sdwan.py device --saas <deviceId>
 
-            ./sdwan.py device --sdavc <deviceId>
+            sdwan.py device --sdavc <deviceId>
 
-            ./sdwan.py device --set_var <deviceId> <object> <value>
+            sdwan.py device --set_var <deviceId> <object> <value>
 
-            ./sdwan.py device --staging <deviceId>
+            sdwan.py device --staging <deviceId>
 
-            ./sdwan.py device --sla <deviceId>
+            sdwan.py device --sla <deviceId>
 
-            ./sdwan.py device --tracker <deviceId>
+            sdwan.py device --tracker <deviceId>
 
-            ./sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
+            sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
 
-            ./sdwan.py device --valid <deviceId>
+            sdwan.py device --valid <deviceId>
 
-            ./sdwan.py device --variable <deviceId>
+            sdwan.py device --variable <deviceId>
 
-            ./sdwan.py device --vrrp <deviceId>
+            sdwan.py device --vrrp <deviceId>
 
-            ./sdwan.py device --vsmart <deviceId>
+            sdwan.py device --vsmart <deviceId>
 
-            ./sdwan.py device --wan <deviceId>
+            sdwan.py device --wan <deviceId>
 
     """
 
@@ -1998,23 +2002,23 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
 
         Example Command:
 
-            ./sdwan.py template_device
+            sdwan.py template-device
 
-            ./sdwan.py template_device --attached <templateId>
+            sdwan.py template-device --attached <templateId>
 
-            ./sdwan.py template_device --clone <templateId> <model>
+            sdwan.py template-device --clone <templateId> <model>
 
-            ./sdwan.py template_device --config <templateId>
+            sdwan.py template-device --config <templateId>
 
-            ./sdwan.py template_device --csv <templateId>
+            sdwan.py template-device --csv <templateId>
 
-            ./sdwan.py template_device --download <templateId> | all
+            sdwan.py template-device --download <templateId> | all
 
-            ./sdwan.py template_device --upload <file>
+            sdwan.py template-device --upload <file>
 
-            ./sdwan.py template_device --tree <templateId>
+            sdwan.py template-device --tree <templateId>
 
-            ./sdwan.py template_device --variable <templateId>
+            sdwan.py template-device --variable <templateId>
 
     """
 
@@ -2376,21 +2380,21 @@ def template_feature(attached, clone, config, download, models, model_update, up
 
         Example Command:
 
-            ./sdwan.py template_feature
+            sdwan.py template-feature
 
-            ./sdwan.py template_feature --attached <templateId>
+            sdwan.py template-feature --attached <templateId>
 
-            ./sdwan.py template_feature --clone <templateId> <list_of_models>
+            sdwan.py template-feature --clone <templateId> <list_of_models>
 
-            ./sdwan.py template_feature --config <templateId>
+            sdwan.py template-feature --config <templateId>
 
-            ./sdwan.py template_feature --download <templateId> | all
+            sdwan.py template-feature --download <templateId> | all
 
-            ./sdwan.py template_feature --models <templateId>
+            sdwan.py template-feature --models <templateId>
 
-            ./sdwan.py template_feature --model_update <templateId> <list_of_models>
+            sdwan.py template-feature --model_update <templateId> <list_of_models>
 
-            ./sdwan.py template_feature --upload <file>
+            sdwan.py template-feature --upload <file>
 
 
     """
@@ -2714,19 +2718,19 @@ def policy_list(ltype, config, delete, download, update, upload):
 
         Example Command:
 
-            ./sdwan.py policy-list
+            sdwan.py policy-list
 
-            ./sdwan.py policy-list --ltype
+            sdwan.py policy-list --ltype
 
-            ./sdwan.py policy-list --config <listId>
+            sdwan.py policy-list --config <listId>
 
-            ./sdwan.py policy-list --delete <listId>
+            sdwan.py policy-list --delete <listId>
 
-            ./sdwan.py policy-list --download <listId> | all
+            sdwan.py policy-list --download <listId> | all
 
-            ./sdwan.py policy-list --update <listId>
+            sdwan.py policy-list --update <listId>
 
-            ./sdwan.py policy-list --upload <file>
+            sdwan.py policy-list --upload <file>
 
     """
 
@@ -2905,17 +2909,17 @@ def policy_central(config, download, upload, definition, tree):
 
         Example Command:
 
-            ./sdwan.py policy-central
+            sdwan.py policy-central
 
-            ./sdwan.py policy-central --config <policyId>
+            sdwan.py policy-central --config <policyId>
 
-            ./sdwan.py policy-central --download <policyId> | all
+            sdwan.py policy-central --download <policyId> | all
 
-            ./sdwan.py policy-central --upload <file>
+            sdwan.py policy-central --upload <file>
 
-            ./sdwan.py policy-central --definition <policyId>
+            sdwan.py policy-central --definition <policyId>
 
-            ./sdwan.py policy-central --tree <policyId>
+            sdwan.py policy-central --tree <policyId>
 
     """
     # print specific policy to stdout
@@ -3108,17 +3112,17 @@ def policy_local(config, download, upload, definition, tree):
 
         Example Command:
 
-            ./sdwan.py policy-local
+            sdwan.py policy-local
 
-            ./sdwan.py policy-local --config <policyId>
+            sdwan.py policy-local --config <policyId>
 
-            ./sdwan.py policy-local --download <policyId> | all
+            sdwan.py policy-local --download <policyId> | all
 
-            ./sdwan.py policy-local --upload <file>
+            sdwan.py policy-local --upload <file>
 
-            ./sdwan.py policy-local --definition <policyId>
+            sdwan.py policy-local --definition <policyId>
 
-            ./sdwan.py policy-local --tree <policyId>
+            sdwan.py policy-local --tree <policyId>
 
     """
 
@@ -3341,17 +3345,17 @@ def policy_security(config, download, upload, definition, tree):
 
         Example Command:
 
-            ./sdwan.py policy-security
+            sdwan.py policy-security
 
-            ./sdwan.py policy-security --config <policyId>
+            sdwan.py policy-security --config <policyId>
 
-            ./sdwan.py policy-security --download <policyId> | all
+            sdwan.py policy-security --download <policyId> | all
 
-            ./sdwan.py policy-security --upload <file>
+            sdwan.py policy-security --upload <file>
 
-            ./sdwan.py policy-security --definition <policyId>
+            sdwan.py policy-security --definition <policyId>
 
-            ./sdwan.py policy-security --tree <policyId>
+            sdwan.py policy-security --tree <policyId>
 
     """
 
@@ -3557,13 +3561,13 @@ def policy_definition(config, download, upload):
 
         Example Command:
 
-            ./sdwan.py policy-definition
+            sdwan.py policy-definition
 
-            ./sdwan.py policy-definition --config <definitionId>
+            sdwan.py policy-definition --config <definitionId>
 
-            ./sdwan.py policy-definition --download <definitionId> | all
+            sdwan.py policy-definition --download <definitionId> | all
 
-            ./sdwan.py policy-definition --upload <file>
+            sdwan.py policy-definition --upload <file>
 
     """
 
@@ -3705,9 +3709,9 @@ def saas(status):
 
         Example Command:
 
-            ./sdwan.py saas
+            sdwan.py saas
 
-            ./sdwan.py saas --status <app_name>
+            sdwan.py saas --status <app_name>
 
     """
     if status:
@@ -3795,11 +3799,11 @@ def sdavc(domain,ip):
 
         Example Command:
 
-            ./sdwan.py sdavc --domain
+            sdwan.py sdavc --domain
 
-            ./sdwan.py sdavc --ip
+            sdwan.py sdavc --ip
 
-            ./sdwan.py sdavc
+            sdwan.py sdavc
 
     """
     if domain:

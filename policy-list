@@ -6,19 +6,19 @@ Usage: sdwan.py policy-list [OPTIONS]
 
   Example Command:
 
-      ./sdwan.py policy-list
+      sdwan.py policy-list
 
-      ./sdwan.py policy-list --ltype
+      sdwan.py policy-list --ltype
 
-      ./sdwan.py policy-list --config <listId>
+      sdwan.py policy-list --config <listId>
 
-      ./sdwan.py policy-list --delete <listId>
+      sdwan.py policy-list --delete <listId>
 
-      ./sdwan.py policy-list --download <listId> | all
+      sdwan.py policy-list --download <listId> | all
 
-      ./sdwan.py policy-list --update <listId>
+      sdwan.py policy-list --update <listId>
 
-      ./sdwan.py policy-list --upload <file>
+      sdwan.py policy-list --upload <file>
 
 Options:
   --ltype TEXT     Type of List

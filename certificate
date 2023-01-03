@@ -4,7 +4,7 @@ Usage: sdwan.py certificate [OPTIONS]
 
   Example Command:
 
-      ./sdwan.py certificate
+      sdwan.py certificate
 
 Options:
   --help  Show this message and exit.

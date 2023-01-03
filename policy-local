@@ -6,17 +6,17 @@ Usage: sdwan.py policy-local [OPTIONS]
 
   Example Command:
 
-      ./sdwan.py policy-local
+      sdwan.py policy-local
 
-      ./sdwan.py policy-local --config <policyId>
+      sdwan.py policy-local --config <policyId>
 
-      ./sdwan.py policy-local --download <policyId> | all
+      sdwan.py policy-local --download <policyId> | all
 
-      ./sdwan.py policy-local --upload <file>
+      sdwan.py policy-local --upload <file>
 
-      ./sdwan.py policy-local --definition <policyId>
+      sdwan.py policy-local --definition <policyId>
 
-      ./sdwan.py policy-local --tree <policyId>
+      sdwan.py policy-local --tree <policyId>
 
 Options:
   --config TEXT      Print Policy Contents

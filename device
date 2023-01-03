@@ -6,73 +6,73 @@ Usage: sdwan.py device [OPTIONS]
 
   Example Command:
 
-      ./sdwan.py device
+      sdwan.py device
 
-      ./sdwan.py device --arp <deviceId>
+      sdwan.py device --arp <deviceId>
 
-      ./sdwan.py device --attach <templateId> --csv <csv_file>
+      sdwan.py device --attach <templateId> --csv <csv_file>
 
-      ./sdwan.py device --bfd <deviceId>
+      sdwan.py device --bfd <deviceId>
 
-      ./sdwan.py device --bgp <deviceId>
+      sdwan.py device --bgp <deviceId>
 
-      ./sdwan.py device --config <deviceId>
+      sdwan.py device --config <deviceId>
 
-      ./sdwan.py device --control <deviceId>
+      sdwan.py device --control <deviceId>
 
-      ./sdwan.py device --count_aar <deviceId>
+      sdwan.py device --count_aar <deviceId>
 
-      ./sdwan.py device --count_dp <deviceId>
+      sdwan.py device --count_dp <deviceId>
 
-      ./sdwan.py device --csv <deviceId> | all
+      sdwan.py device --csv <deviceId> | all
 
-      ./sdwan.py device --detach <deviceId>
+      sdwan.py device --detach <deviceId>
 
-      ./sdwan.py device --detail <deviceId>
+      sdwan.py device --detail <deviceId>
 
-      ./sdwan.py device --download <deviceId> | all
+      sdwan.py device --download <deviceId> | all
 
-      ./sdwan.py device --events_hr <deviceId>
+      sdwan.py device --events_hr <deviceId>
 
-      ./sdwan.py device --models
+      sdwan.py device --models
 
-      ./sdwan.py device --intf <deviceId>
+      sdwan.py device --intf <deviceId>
 
-      ./sdwan.py device --invalid <deviceId>
+      sdwan.py device --invalid <deviceId>
 
-      ./sdwan.py device --models
+      sdwan.py device --models
 
-      ./sdwan.py device --ntp <deviceId>
+      sdwan.py device --ntp <deviceId>
 
-      ./sdwan.py device --omp <deviceId> summary | <prefix>
+      sdwan.py device --omp <deviceId> summary | <prefix>
 
-      ./sdwan.py device --ospf <deviceId>
+      sdwan.py device --ospf <deviceId>
 
-      ./sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
+      sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
 
-      ./sdwan.py device --saas <deviceId>
+      sdwan.py device --saas <deviceId>
 
-      ./sdwan.py device --sdavc <deviceId>
+      sdwan.py device --sdavc <deviceId>
 
-      ./sdwan.py device --set_var <deviceId> <object> <value>
+      sdwan.py device --set_var <deviceId> <object> <value>
 
-      ./sdwan.py device --staging <deviceId>
+      sdwan.py device --staging <deviceId>
 
-      ./sdwan.py device --sla <deviceId>
+      sdwan.py device --sla <deviceId>
 
-      ./sdwan.py device --tracker <deviceId>
+      sdwan.py device --tracker <deviceId>
 
-      ./sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
+      sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
 
-      ./sdwan.py device --valid <deviceId>
+      sdwan.py device --valid <deviceId>
 
-      ./sdwan.py device --variable <deviceId>
+      sdwan.py device --variable <deviceId>
 
-      ./sdwan.py device --vrrp <deviceId>
+      sdwan.py device --vrrp <deviceId>
 
-      ./sdwan.py device --vsmart <deviceId>
+      sdwan.py device --vsmart <deviceId>
 
-      ./sdwan.py device --wan <deviceId>
+      sdwan.py device --wan <deviceId>
 
 Options:
   --arp TEXT         Display Device ARP Cache

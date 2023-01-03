@@ -6,7 +6,7 @@ Usage: sdwan.py rest [OPTIONS]
 
   Example Command:
 
-      ./sdwan.py rest --get <rest_object>
+      sdwan.py rest --get <rest_object>
 
 Options:
   --get TEXT  URL Object.

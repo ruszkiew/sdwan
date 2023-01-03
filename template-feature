@@ -6,21 +6,21 @@ Usage: sdwan.py template-feature [OPTIONS]
 
   Example Command:
 
-      ./sdwan.py template_feature
+      sdwan.py template-feature
 
-      ./sdwan.py template_feature --attached <templateId>
+      sdwan.py template-feature --attached <templateId>
 
-      ./sdwan.py template_feature --clone <templateId> <list_of_models>
+      sdwan.py template-feature --clone <templateId> <list_of_models>
 
-      ./sdwan.py template_feature --config <templateId>
+      sdwan.py template-feature --config <templateId>
 
-      ./sdwan.py template_feature --download <templateId> | all
+      sdwan.py template-feature --download <templateId> | all
 
-      ./sdwan.py template_feature --models <templateId>
+      sdwan.py template-feature --models <templateId>
 
-      ./sdwan.py template_feature --models <templateId> <list_of_models>
+      sdwan.py template-feature --model_update <templateId> <list_of_models>
 
-      ./sdwan.py template_feature --upload <file>
+      sdwan.py template-feature --upload <file>
 
 Options:
   --attached TEXT         Template to display

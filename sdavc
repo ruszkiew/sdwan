@@ -4,11 +4,11 @@ Usage: sdwan.py sdavc [OPTIONS]
 
   Example Command:
 
-      ./sdwan.py sdavc --domain
+      sdwan.py sdavc --domain
 
-      ./sdwan.py sdavc --ip
+      sdwan.py sdavc --ip
 
-      ./sdwan.py sdavc
+      sdwan.py sdavc
 
 Options:
   --domain  SDAVC Applications by Domain

@@ -6,7 +6,7 @@ Usage: sdwan.py configuration-db [OPTIONS]
 
   Example Command:
 
-      ./sdwan.py configuration-db --backup <file_name>
+      sdwan.py configuration-db --backup <file_name>
 
 Options:
   --backup TEXT  File Name to Backup

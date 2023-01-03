@@ -6,17 +6,17 @@ Usage: sdwan.py policy-security [OPTIONS]
 
   Example Command:
 
-      ./sdwan.py policy-security
+      sdwan.py policy-security
 
-      ./sdwan.py policy-security --config <policyId>
+      sdwan.py policy-security --config <policyId>
 
-      ./sdwan.py policy-security --download <policyId> | all
+      sdwan.py policy-security --download <policyId> | all
 
-      ./sdwan.py policy-security --upload <file>
+      sdwan.py policy-security --upload <file>
 
-      ./sdwan.py policy-security --definition <policyId>
+      sdwan.py policy-security --definition <policyId>
 
-      ./sdwan.py policy-security --tree <policyId>
+      sdwan.py policy-security --tree <policyId>
 
 Options:
   --config TEXT      Print Policy Contents

@@ -6,13 +6,13 @@ Usage: sdwan.py policy-definition [OPTIONS]
 
   Example Command:
 
-      ./sdwan.py policy-definition
+      sdwan.py policy-definition
 
-      ./sdwan.py policy-definition --config <definitionId>
+      sdwan.py policy-definition --config <definitionId>
 
-      ./sdwan.py policy-definition --download <definitionId> | all
+      sdwan.py policy-definition --download <definitionId> | all
 
-      ./sdwan.py policy-definition --upload <file>
+      sdwan.py policy-definition --upload <file>
 
 Options:
   --config TEXT    Print Definition Contents

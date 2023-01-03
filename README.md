@@ -101,6 +101,7 @@ Script Usage
  * [policy-security](policy-security)
  * [rest](rest)
  * [saas](saas)
+ * [sdavc](sdavc)
  * [tasks](tasks)
  * [template-device](template-device)
  * [template-feature](template-feature)
@@ -187,66 +188,66 @@ CiscoDevNet/[SASTRE](https://github.com/CiscoDevNet/sastre) is a much better scr
 
 ## EXAMPLES
 
-    ./sdwan.py certificate
-    ./sdwan.py configuration-db --backup customer_backup_file_1
-    ./sdwan.py device
-    ./sdwan.py device --bfd 100.65.30.11
-    ./sdwan.py device --control 100.65.30.11
-    ./sdwan.py device --variable 100.65.30.11
-    ./sdwan.py device --config 100.65.30.11
-    ./sdwan.py device --valid 100.65.30.11
-    ./sdwan.py device --staging 100.65.30.11
-    ./sdwan.py device --attach 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9 router_var.csv
-    ./sdwan.py device --template 100.65.30.11
-    ./sdwan.py device --set_var 100.65.30.11 '//system/gps-location/latitude' 44.9764 
-    ./sdwan.py device --detail 100.65.30.11
-    ./sdwan.py device --detach 100.65.30.11
-    ./sdwan.py device --csv 100.65.30.11
-    ./sdwan.py device --download 100.65.30.11
-    ./sdwan.py device --download all
-    ./sdwan.py device --sla 100.65.30.11
-    ./sdwan.py device --wan 100.65.30.11
-    ./sdwan.py device --int 100.65.30.11
-    ./sdwan.py device --arp 100.65.30.11
-    ./sdwan.py device --ospf 100.65.30.11
-    ./sdwan.py device --bgp 100.65.30.11
-    ./sdwan.py device --count_dp 100.65.30.11
-    ./sdwan.py device --count_aar 100.65.30.11
-    ./sdwan.py device --events_hr 100.65.30.11
-    ./sdwan.py device --vsmart 100.65.30.11
-    ./sdwan.py device --models
-    ./sdwan.py device --ping 100.65.30.11 0 24.48.58.1 8.8.8.8
-    ./sdwan.py device --trace 100.65.30.11 0 24.48.58.1 8.8.8.8
-    ./sdwan.py env
-    ./sdwan.py tasks
-    ./sdwan.py policy-definition
-    ./sdwan.py policy-list
-    ./sdwan.py policy-list --config 511ea203-30c5-4c79-9050-76bc896525a2
-    ./sdwan.py policy-list --delete 511ea203-30c5-4c79-9050-76bc896525a2
-    ./sdwan.py policy-list --download 511ea203-30c5-4c79-9050-76bc896525a2
-    ./sdwan.py policy-list --upload list_json_config.txt
-    ./sdwan.py policy-list --download all
-    ./sdwan.py policy-central
-    ./sdwan.py policy-central --definition bf0e9b04-616d-44d5-8c8e-633420a233f3
-    ./sdwan.py policy-central --tree bf0e9b04-616d-44d5-8c8e-633420a233f3
-    ./sdwan.py policy-local
-    ./sdwan.py policy-local --tree 729641be-a54a-43b0-bc86-9c5822aba0f8
-    ./sdwan.py policy-local --config 729641be-a54a-43b0-bc86-9c5822aba0f8
-    ./sdwan.py policy-security
-    ./sdwan.py rest --get <api_object>
-    ./sdwan.py saas
-    ./sdwan.py sdavc
-    ./sdwan.py template-device --clone 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9 vedge-1000
-    ./sdwan.py template-device --tree 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
-    ./sdwan.py template-device --variable 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
-    ./sdwan.py template-device --config 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
-    ./sdwan.py template-device --attached 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
-    ./sdwan.py template-feature --attached dc079e4e-7631-4246-923a-71943427a4fd
-    ./sdwan.py template-feature --config dc079e4e-7631-4246-923a-71943427a4fd
-    ./sdwan.py template-feature --download dc079e4e-7631-4246-923a-71943427a4fd
-    ./sdwan.py template-feature --download all
-    ./sdwan.py template-feature --models dc079e4e-7631-4246-923a-71943427a4fd
-    ./sdwan.py template-feature --model_update dc079e4e-7631-4246-923a-71943427a4fd vedge-1000,vedge-100,vedge-2000
+    sdwan.py certificate
+    sdwan.py configuration-db --backup customer_backup_file_1
+    sdwan.py device
+    sdwan.py device --bfd 100.65.30.11
+    sdwan.py device --control 100.65.30.11
+    sdwan.py device --variable 100.65.30.11
+    sdwan.py device --config 100.65.30.11
+    sdwan.py device --valid 100.65.30.11
+    sdwan.py device --staging 100.65.30.11
+    sdwan.py device --attach 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9 router_var.csv
+    sdwan.py device --template 100.65.30.11
+    sdwan.py device --set_var 100.65.30.11 '//system/gps-location/latitude' 44.9764 
+    sdwan.py device --detail 100.65.30.11
+    sdwan.py device --detach 100.65.30.11
+    sdwan.py device --csv 100.65.30.11
+    sdwan.py device --download 100.65.30.11
+    sdwan.py device --download all
+    sdwan.py device --sla 100.65.30.11
+    sdwan.py device --wan 100.65.30.11
+    sdwan.py device --int 100.65.30.11
+    sdwan.py device --arp 100.65.30.11
+    sdwan.py device --ospf 100.65.30.11
+    sdwan.py device --bgp 100.65.30.11
+    sdwan.py device --count_dp 100.65.30.11
+    sdwan.py device --count_aar 100.65.30.11
+    sdwan.py device --events_hr 100.65.30.11
+    sdwan.py device --vsmart 100.65.30.11
+    sdwan.py device --models
+    sdwan.py device --ping 100.65.30.11 0 24.48.58.1 8.8.8.8
+    sdwan.py device --trace 100.65.30.11 0 24.48.58.1 8.8.8.8
+    sdwan.py env
+    sdwan.py tasks
+    sdwan.py policy-definition
+    sdwan.py policy-list
+    sdwan.py policy-list --config 511ea203-30c5-4c79-9050-76bc896525a2
+    sdwan.py policy-list --delete 511ea203-30c5-4c79-9050-76bc896525a2
+    sdwan.py policy-list --download 511ea203-30c5-4c79-9050-76bc896525a2
+    sdwan.py policy-list --upload list_json_config.txt
+    sdwan.py policy-list --download all
+    sdwan.py policy-central
+    sdwan.py policy-central --definition bf0e9b04-616d-44d5-8c8e-633420a233f3
+    sdwan.py policy-central --tree bf0e9b04-616d-44d5-8c8e-633420a233f3
+    sdwan.py policy-local
+    sdwan.py policy-local --tree 729641be-a54a-43b0-bc86-9c5822aba0f8
+    sdwan.py policy-local --config 729641be-a54a-43b0-bc86-9c5822aba0f8
+    sdwan.py policy-security
+    sdwan.py rest --get <api_object>
+    sdwan.py saas
+    sdwan.py sdavc
+    sdwan.py template-device --clone 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9 vedge-1000
+    sdwan.py template-device --tree 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
+    sdwan.py template-device --variable 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
+    sdwan.py template-device --config 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
+    sdwan.py template-device --attached 38d7931c-3aeb-42e8-bcd2-08b5fc1367e9
+    sdwan.py template-feature --attached dc079e4e-7631-4246-923a-71943427a4fd
+    sdwan.py template-feature --config dc079e4e-7631-4246-923a-71943427a4fd
+    sdwan.py template-feature --download dc079e4e-7631-4246-923a-71943427a4fd
+    sdwan.py template-feature --download all
+    sdwan.py template-feature --models dc079e4e-7631-4246-923a-71943427a4fd
+    sdwan.py template-feature --model_update dc079e4e-7631-4246-923a-71943427a4fd vedge-1000,vedge-100,vedge-2000
 
 ## EDGE VALIDATION TESTING
 Use pytest along with sdwan to automate validation.  See linked file for an example.

@@ -2,13 +2,11 @@ Usage: sdwan.py saas [OPTIONS]
 
   Display SaaS OnRamp Status.
 
-    List Policy to derive PolicyID for additional actions
-
   Example Command:
 
-      ./sdwan.py saas
+      sdwan.py saas
 
-      ./sdwan.py saas --status <app_name>
+      sdwan.py saas --status <app_name>
 
 Options:
   --status TEXT  SaaS Application

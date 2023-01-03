@@ -6,23 +6,23 @@ Usage: sdwan.py template-device [OPTIONS]
 
   Example Command:
 
-      ./sdwan.py template_device
+      sdwan.py template-device
 
-      ./sdwan.py template_device --attached <templateId>
+      sdwan.py template-device --attached <templateId>
 
-      ./sdwan.py template_device --clone <templateId> <model>
+      sdwan.py template-device --clone <templateId> <model>
 
-      ./sdwan.py template_device --config <templateId>
+      sdwan.py template-device --config <templateId>
 
-      ./sdwan.py template_device --csv <templateId>
+      sdwan.py template-device --csv <templateId>
 
-      ./sdwan.py template_device --download <templateId> | all
+      sdwan.py template-device --download <templateId> | all
 
-      ./sdwan.py template_device --upload <file>
+      sdwan.py template-device --upload <file>
 
-      ./sdwan.py template_device --tree <templateId>
+      sdwan.py template-device --tree <templateId>
 
-      ./sdwan.py template_device --variable <templateId>
+      sdwan.py template-device --variable <templateId>
 
 Options:
   --attached TEXT  Template to display attached devices

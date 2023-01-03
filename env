@@ -4,7 +4,7 @@ Usage: sdwan.py env [OPTIONS]
 
   Display the SDWAN Environment Values.
 
-  Example command:
+  Example Command:
 
       ./sdwan.py env
 
