@@ -9,7 +9,7 @@
 ###############################################################################
 
 """
-
+    *** STARTED - FRAMEWORK IN PLACE ***
 List, Display, Download, Upload - Custom Apps
     GET/POST -  /template/policy/customapp
     GET/PUT/DELETE - /template/policy/customapp/{id}
@@ -1496,8 +1496,10 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         _object = set_var[1]
         _value = set_var[2]
 
+        print(deviceIP)
+
         # find device template attached to
-        response = json.loads(sdwanp.get_request('system/device/vedges?deviceId=' + deviceIP))
+        response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + deviceIP))
         try:
             templateId = response['data'][0]['templateId']
             uuid = response['data'][0]['uuid']
@@ -3097,6 +3099,61 @@ def policy_central(config, download, upload, definition, tree):
 
 ###############################################################################
 
+# POLICY CUSTOM APP
+
+@click.command()
+@click.option("--config", help="Print Policy contents")
+@click.option("--download", help="Policy to download")
+@click.option("--upload", help="File to Upload Policy")
+def policy_custom_app(config, download, upload):
+    """Display, Download, and Upload Custom Application.
+
+          List Policy to derive PolicyID for additional action
+
+        Example Command:
+
+            sdwan.py policy-custom-app
+
+            sdwan.py policy-custom-app --config <appId>
+
+            sdwan.py policy-custom-app --download <appId> | all
+
+            sdwan.py policy-custom-app --upload <file>
+
+
+    """
+
+    if config:
+        response = sdwanp.get_request('template/policy/customapp/' +
+                                       config)
+        print()
+        print(re.sub("'|b'", '', str(response)))
+        print()
+        return
+
+    if download:
+        print()
+        response = sdwanp.get_request('template/policy/customapp/' +
+                                       download)
+        print(re.sub("'|b'", '', str(response)))
+        print()
+        return
+
+    if upload:
+        print()
+        print('Working on Upload')
+	    # POST /template/policy/customapp
+        print()
+        return
+    # no parameters
+    response = sdwanp.get_request('template/policy/customapp/')
+    print()
+    print(re.sub("'|b'", '', str(response)))
+    print()
+    return
+
+###############################################################################
+
 # POLICY LOCAL
 
 @click.command()
@@ -3330,6 +3387,8 @@ def policy_local(config, download, upload, definition, tree):
                                      tablefmt="grid"))
     return
 
+###############################################################################
+
 # POLICY SECURITY
 
 @click.command()
@@ -3539,12 +3598,6 @@ def policy_security(config, download, upload, definition, tree):
         click.echo(tabulate.tabulate(table, headers,
                                      tablefmt="grid"))
     return
-
-    
-
-
-
-
 
 ###############################################################################
 
@@ -3867,6 +3920,7 @@ cli.add_command(env)
 cli.add_command(rest)
 cli.add_command(policy_list)
 cli.add_command(policy_central)
+cli.add_command(policy_custom_app)
 cli.add_command(policy_local)
 cli.add_command(policy_definition)
 cli.add_command(policy_security)
