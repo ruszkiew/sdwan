@@ -6,4 +6,4 @@ cfg/
 export/
 log/
 test/
-
+.DS_Store
