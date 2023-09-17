@@ -19,6 +19,8 @@ App Data
   last hour top 20 apps by router
   last hour traffic by app by router
 
+Move to PyCharm IDE
+
 """
 
 ###############################################################################
