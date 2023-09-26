@@ -19,8 +19,6 @@ App Data
   last hour top 20 apps by router
   last hour traffic by app by router
 
-Move to PyCharm IDE
-
 """
 
 ###############################################################################
@@ -30,19 +28,20 @@ Move to PyCharm IDE
 import requests
 import os
 import sys
+# noinspection PyUnresolvedReferences
 import socket
 import json
 import click
 import tabulate
 import re
 import time
+# noinspection PyUnresolvedReferences
 import csv
 from datetime import datetime
-from requests.packages.urllib3.exceptions import InsecureRequestWarning  # pylint: disable=import-error
-from requests.auth import HTTPBasicAuth
+# noinspection PyUnresolvedReferences
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from pprint import pprint
 from netmiko import ConnectHandler, SCPConn
-
 
 ###############################################################################
 
@@ -71,7 +70,7 @@ if SDWAN_PROXY is not None:
     tmp = 'socks5://' + SDWAN_PROXY
     proxy = {
         'https': tmp
-        }
+    }
 else:
     proxy = {}
     SDWAN_PROXY = 'None'
@@ -84,15 +83,15 @@ SSH_DEVICE = {
     'username': SDWAN_USERNAME,
     'password': SDWAN_PASSWORD,
     'ssh_config_file': SDWAN_SSH_CONFIG,
-} 
+}
 
 
 ###############################################################################
 
 # REST API CLASS
 
+# noinspection PyPep8Naming
 class rest_api_lib:
-
     DEBUG = False
 
     def __init__(self, vmanage_ip, vmanage_port, username, password):
@@ -103,8 +102,8 @@ class rest_api_lib:
 
     def login(self, vmanage_ip, vmanage_port, username, password):
 
-        requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # pylint: disable=no-member
-        requests.packages.urllib3.disable_warnings()                        # pylint: disable=no-member
+        requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+        requests.packages.urllib3.disable_warnings()
 
         base_url = 'https://%s:%s/dataservice/' % (vmanage_ip, vmanage_port)
 
@@ -131,7 +130,6 @@ class rest_api_lib:
                                    proxies=proxy,
                                    verify=False)
 
-
         if self.DEBUG: print()
         if self.DEBUG: print("**************** RESPONSE **********************")
         if self.DEBUG: print()
@@ -147,7 +145,7 @@ class rest_api_lib:
                                verify=False)
 
         if b'<html>' in login_token.content:
-            print ("Login Token Failed")
+            print("Login Token Failed")
             sys.exit(0)
 
         sess.headers['X-XSRF-TOKEN'] = login_token.content
@@ -189,13 +187,11 @@ class rest_api_lib:
             pprint(json.loads(response.content))
             print()
             quit()
-        
-        return
 
     def post_request(self, mount_point, payload,
-                     headers={'Content-Type': 'application/json'}):
-
-
+                     headers=None):
+        if headers is None:
+            headers = {'Content-Type': 'application/json'}
         url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.vmanage_port, mount_point)
 
         payload = json.dumps(payload)
@@ -230,8 +226,10 @@ class rest_api_lib:
         return data
 
     def put_request(self, mount_point, payload,
-                     headers={'Content-Type': 'application/json'}):
+                    headers=None):
 
+        if headers is None:
+            headers = {'Content-Type': 'application/json'}
         url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.vmanage_port, mount_point)
         # payload = json.dumps(payload, indent=1)
         payload = json.dumps(payload)
@@ -245,10 +243,10 @@ class rest_api_lib:
         if self.DEBUG: print()
 
         response = self.session[self.vmanage_ip].put(url=url,
-                                                      data=payload,
-                                                      headers=headers,
-                                                      proxies=proxy,
-                                                      verify=False)
+                                                     data=payload,
+                                                     headers=headers,
+                                                     proxies=proxy,
+                                                     verify=False)
 
         if self.DEBUG: print()
         if self.DEBUG: print("**************** RESPONSE **********************")
@@ -266,8 +264,10 @@ class rest_api_lib:
         return data
 
     def delete_request(self, mount_point,
-                     headers={'Content-Type': 'application/json'}):
+                       headers=None):
 
+        if headers is None:
+            headers = {'Content-Type': 'application/json'}
         url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.vmanage_port, mount_point)
 
         if self.DEBUG: print()
@@ -277,9 +277,9 @@ class rest_api_lib:
         if self.DEBUG: print()
 
         response = self.session[self.vmanage_ip].delete(url=url,
-                                                      headers=headers,
-                                                      proxies=proxy,
-                                                      verify=False)
+                                                        headers=headers,
+                                                        proxies=proxy,
+                                                        verify=False)
 
         if self.DEBUG: print()
         if self.DEBUG: print("************ RESPONSE **********************")
@@ -296,21 +296,23 @@ class rest_api_lib:
 
         return data
 
+
 ###############################################################################
 
 # CREATE OBJECT
 
 sdwanp = rest_api_lib(SDWAN_IP, SDWAN_PORT, SDWAN_USERNAME, SDWAN_PASSWORD)
 
+
 ###############################################################################
 
 # DICTIONARY VARIABLE FIND / PRINT - USED IN TREE FUNCTIONS
 
 def var_find(dkey, dval, dret, d):
-    for k, v in d.items():                            # pylint: disable=unused-variable
+    for k, v in d.items():  # pylint: disable=unused-variable
         if isinstance(v, dict):
             if dkey in v.keys():
-                if(v[dkey] == dval):
+                if v[dkey] == dval:
                     print('       var: ' + v[dret])
             var_find(dkey, dval, dret, v)
         elif isinstance(v, list):
@@ -319,21 +321,23 @@ def var_find(dkey, dval, dret, d):
                     var_find(dkey, dval, dret, i)
     return
 
+
 # DICTIONARY LIST FIND / PRINT - USED IN TREE FUNCTIONS
 
-def list_find(d,l):
-    for k1, v1 in d.items():                         # pylint: disable=unused-variable
-        if isinstance(v1,dict):
-            list_find(v1,l)
-        elif isinstance(v1,list):
+
+def list_find(d, l):
+    for k1, v1 in d.items():
+        if isinstance(v1, dict):
+            list_find(v1, l)
+        elif isinstance(v1, list):
             for i in v1:
-                if isinstance(i,dict):
-                    list_find(i,l)
+                if isinstance(i, dict):
+                    list_find(i, l)
         else:
             for k2, v2 in l.items():
                 if k2 == v1:
                     print('         list: ' + v1 + ' : ' + v2['type'] +
-                      " "*(10 - len(v2['type'])) + ': ' + v2['name'])
+                          " " * (10 - len(v2['type'])) + ': ' + v2['name'])
     return
 
 
@@ -351,10 +355,11 @@ def id_fix(oldid, newid, drc):
                     f = open(path, 'w')
                     f.write(strg)
                     print('  Updated ID in file' + path)
-                f.close()
+                    f.close()
             except:
                 pass
     return
+
 
 ###############################################################################
 
@@ -388,6 +393,7 @@ def env():
     print()
 
     return
+
 
 ###############################################################################
 
@@ -442,11 +448,10 @@ def configuration_db(backup):
         print(os.system('ls -la ' + dst_file))
     else:
         print('** ', dst_file, 'ERROR - Downloaded Failed')
-    
+
     print()
 
     return
-
 
 
 ###############################################################################
@@ -475,13 +480,14 @@ def certificate():
 
     for i in range(34, 1, -1):
         time.sleep(3)
-        print("*"*i)
+        print("*" * i)
 
     print()
     print(response)
     print()
 
     return
+
 
 ###############################################################################
 
@@ -504,6 +510,7 @@ def rest(get):
     response = json.loads(sdwanp.get_request(get))
     pprint(response)
     return
+
 
 ###############################################################################
 
@@ -552,6 +559,7 @@ def tasks(clear):
     print()
     return
 
+
 ###############################################################################
 
 # DEVICE
@@ -574,9 +582,9 @@ def tasks(clear):
 @click.option("--invalid", help="Make Device Certificate Invalid")
 @click.option("--intf", help="Display Interface Statistics and State")
 @click.option("--models", is_flag=True, help="Display Valid Device Models")
-@click.option("--ntp", help="Display Device NTP State") 
-@click.option("--omp", nargs=2, help="Display Device OMP Routes") 
-@click.option("--ospf", help="Display Device OSPF Information") 
+@click.option("--ntp", help="Display Device NTP State")
+@click.option("--omp", nargs=2, help="Display Device OMP Routes")
+@click.option("--ospf", help="Display Device OSPF Information")
 @click.option("--ping", nargs=4, help="Ping by VPN, SRC_IP, DST_IP")
 @click.option("--saas", help="Display SaaS OnRamp State")
 @click.option("--sdavc", help="Display SD-AVC Status")
@@ -590,8 +598,9 @@ def tasks(clear):
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--vsmart", help="Display Policy learned from vSmart")
 @click.option("--wan", help="Display Device WAN Interface")
-def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, detail, download, events_hr, groups, intf,
-             models, ntp, omp, ospf, ping, set_var, csv, saas, sdavc,sla, staging, trace, tracker, invalid, valid, variable, vrrp, vsmart, wan):
+def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, detail, download, events_hr, groups,
+           intf, models, ntp, omp, ospf, ping, set_var, csv, saas, sdavc, sla, staging, trace, tracker, invalid, valid,
+           variable, vrrp, vsmart, wan):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -716,39 +725,41 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
         # grab variables from csv - put into a dictionary for lookup
         csv_file = open(csv, "rb")
-        csv_var = str(csv_file.readline(),'utf-8').split('","')
-        csv_val = str(csv_file.readline(),'utf-8').split('","')
+        csv_var = str(csv_file.readline(), 'utf-8').split('","')
+        csv_val = str(csv_file.readline(), 'utf-8').split('","')
         csv_file.close()
 
         csv_dict = {}
         i = 0
         for key in csv_var:
-            #print(key)
+            # print(key)
             if i >= len(csv_val):
+                # noinspection PyTypeChecker
                 csv_val.extend([None])
-            csv_dict[key.replace('",','').replace('\n','').replace(',','').replace('"','')] = csv_val[i].replace('",','').replace('"','').replace('\n','')
+            csv_dict[key.replace('",', '').replace('\n', '').replace(',', '').replace('"', '')] = csv_val[i].replace(
+                '",', '').replace('"', '').replace('\n', '')
             i = i + 1
 
         # base payload
         payload = {
-            "deviceTemplateList":[
-            {
-                "templateId":str(attach),
-                "device":[
+            "deviceTemplateList": [
                 {
-                    "csv-status":"complete",
-                    "csv-deviceId":str(csv_dict['csv-deviceId']),
-                    "csv-deviceIP":str(csv_dict['csv-deviceIP']),
-                    "csv-host-name":str(csv_dict['csv-host-name']),
-                    "//system/host-name":str(csv_dict['//system/host-name']),
-                    "//system/system-ip":str(csv_dict['//system/system-ip']),
-                    "csv-templateId":str(attach),
-                    "selected":"true"
+                    "templateId": str(attach),
+                    "device": [
+                        {
+                            "csv-status": "complete",
+                            "csv-deviceId": str(csv_dict['csv-deviceId']),
+                            "csv-deviceIP": str(csv_dict['csv-deviceIP']),
+                            "csv-host-name": str(csv_dict['csv-host-name']),
+                            "//system/host-name": str(csv_dict['//system/host-name']),
+                            "//system/system-ip": str(csv_dict['//system/system-ip']),
+                            "csv-templateId": str(attach),
+                            "selected": "true"
+                        }
+                    ],
+                    "isEdited": "false",
+                    "isMasterEdited": "false"
                 }
-                ],
-                "isEdited":"false",
-                "isMasterEdited":"false"
-            }
             ]
         }
 
@@ -774,7 +785,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         response = sdwanp.post_request('template/device/config/attachfeature', payload)
         print("Attachment Results...")
         print()
-        print (response)
+        print(response)
         print()
 
         return
@@ -900,7 +911,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         # get templateId of attached template to device
         response = json.loads(sdwanp.get_request('system/device/vedges'))
         items = response['data']
-        if(csv != 'all'):
+        if csv != 'all':
             for item in items:
                 try:
                     deviceId = item['system-ip']
@@ -925,7 +936,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             date_string = f'{datetime.now():%Y-%m-%d__%H:%M:%S%z}'
             csv_file = open(SDWAN_CFGDIR + "csv-variable_______" +
                             csv +
-                            "_"*(32 - len(csv)) +
+                            "_" * (32 - len(csv)) +
                             date_string + '.csv', "w")
             for var in properties:
                 if var['property'] != 'csv-status':
@@ -969,7 +980,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
                     date_string = f'{datetime.now():%Y-%m-%d__%H:%M:%S%z}'
                     csv_file = open(SDWAN_CFGDIR + "csv-variable_______" +
                                     dev['deviceIP'] +
-                                    "_"*(32 - len(dev['deviceIP'])) +
+                                    "_" * (32 - len(dev['deviceIP'])) +
                                     date_string + '.csv', "w")
                     for var in properties:
                         if var['property'] != 'csv-status':
@@ -1051,13 +1062,13 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         print(" ** template-id - ", templateId)
         print()
         print()
-        
+
         payload = {
             "deviceType": "vedge",
             "devices": [
                 {
                     "deviceId": uuid,
-                    "deviceIP": deviceIP 
+                    "deviceIP": deviceIP
                 }
             ]
         }
@@ -1070,7 +1081,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         return
 
     if download:
-        if(download == 'all'):
+        if download == 'all':
             response = json.loads(sdwanp.get_request('device'))
             items = response['data']
             print()
@@ -1083,7 +1094,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
                                               item['deviceId'])
                 json_file = open(SDWAN_CFGDIR + "cli-configuration__" +
                                  item['deviceId'] +
-                                 "_"*(32 - len(item['deviceId'])) +
+                                 "_" * (32 - len(item['deviceId'])) +
                                  date_string, "w")
                 json_file.write(re.sub("'|b'", '', str(response)).replace('\\n', '\n'))
                 json_file.close()
@@ -1097,7 +1108,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             print()
             json_file = open(SDWAN_CFGDIR + "cli_configuration__" +
                              download +
-                             "_"*(32 - len(download)) +
+                             "_" * (32 - len(download)) +
                              date_string, "w")
             json_file.write(re.sub("'|b'", '', str(response)).replace('\\n', '\n'))
             json_file.close()
@@ -1112,18 +1123,18 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             "query": {
                 "condition": "AND",
                 "rules": [
-                {
-                    "field": "entry_time",
-                    "operator": "last_n_hours",
-                    "type": "date",
-                    "value": ["1"]
-                },
-                {
-                    "field": "system_ip",
-                    "operator": "in",
-                    "type": "string",
-                    "value": [events_hr]
-                }
+                    {
+                        "field": "entry_time",
+                        "operator": "last_n_hours",
+                        "type": "date",
+                        "value": ["1"]
+                    },
+                    {
+                        "field": "system_ip",
+                        "operator": "in",
+                        "type": "string",
+                        "value": [events_hr]
+                    }
                 ]
             }
         }
@@ -1133,15 +1144,15 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         for item in items:
             print(item['event'])
         print()
-        return 
+        return
 
     if groups:
         print()
         response = json.loads(sdwanp.get_request('group'))
         items = response['data']
 
-        print ('Device Groups')
-        print ('-------------')
+        print('Device Groups')
+        print('-------------')
         for item in items:
             print(item['groupName'])
         print()
@@ -1184,10 +1195,10 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         print(" ** template sync  ", sync_state)
         print()
         print()
-        
+
         return
 
-    if valid:    
+    if valid:
         response = json.loads(sdwanp.get_request('system/device/vedges?deviceIP=' + valid))
         items = response['data']
 
@@ -1208,7 +1219,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
                 print()
                 return
 
-        payload = [{"chasisNumber" : uuid, "serialNumber" : serialNumber, "validity" : "valid"}]
+        payload = [{"chasisNumber": uuid, "serialNumber": serialNumber, "validity": "valid"}]
         response = sdwanp.post_request('certificate/save/vedge/list', payload)
 
         print()
@@ -1222,7 +1233,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         print(" ** template       ", template)
         print(" ** template-id    ", templateId)
         print()
-        print (response)
+        print(response)
         print()
 
         return
@@ -1250,10 +1261,10 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
                     table.append(tr)
             else:
                 tr = [item['vpn-id'], item['ifname'], item['hwaddr'],
-                     item['ip-address'], item['if-admin-status'], item['if-oper-status'],
-                     item['rx-kbps'], item['tx-kbps'], item['rx-errors'],
-                     item['tx-errors'], item['rx-drops'], item['tx-drops'], item['rx-pps'],
-                     item['tx-pps']]
+                      item['ip-address'], item['if-admin-status'], item['if-oper-status'],
+                      item['rx-kbps'], item['tx-kbps'], item['rx-errors'],
+                      item['tx-errors'], item['rx-drops'], item['tx-drops'], item['rx-pps'],
+                      item['tx-pps']]
                 table.append(tr)
 
         click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
@@ -1283,7 +1294,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
                 print()
                 return
 
-        payload = [{"chasisNumber" : uuid, "serialNumber" : serialNumber, "validity" : "invalid"}]
+        payload = [{"chasisNumber": uuid, "serialNumber": serialNumber, "validity": "invalid"}]
         response = sdwanp.post_request('certificate/save/vedge/list', payload)
 
         print()
@@ -1297,7 +1308,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         print(" ** template       ", template)
         print(" ** template-id    ", templateId)
         print()
-        print (response)
+        print(response)
         print()
 
         return
@@ -1331,7 +1342,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             print()
             print()
 
-            headers = ["VPN", "PREFIX", "FROM PEER", "PATH ID","LABEL",
+            headers = ["VPN", "PREFIX", "FROM PEER", "PATH ID", "LABEL",
                        "STATUS", "ATTRIBUTE TYPE", "TLOC IP", "SITE ID", "COLOR",
                        "ENCAP", "PROTOCOL"]
             table = list()
@@ -1386,7 +1397,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         print()
         response = json.loads(sdwanp.get_request('device/ntp/status?deviceId=' + ntp))
         item = response['data'][0]
-        print(item['vdevice-host-name'] + ' - ' + item['vdevice-name']) 
+        print(item['vdevice-host-name'] + ' - ' + item['vdevice-name'])
         print()
 
         response = json.loads(sdwanp.get_request('device/ntp/associations?deviceId=' + ntp))
@@ -1403,7 +1414,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             else:
                 state = 'NO_SYNC'
             tr = [item['ip-addr'], item['vrf-name'], item['peer-stratum'],
-                  item['reftime'], item['poll'],item['peer-reach'], item['offset'],
+                  item['reftime'], item['poll'], item['peer-reach'], item['offset'],
                   item['delay'], item['jitter'], state]
             table.append(tr)
 
@@ -1482,9 +1493,9 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         _dst_ip = ping[3]
 
         payload = {"host": _dst_ip, "vpn": _vpn,
-                       "source": _src_ip, "probeType": "icmp"}
+                   "source": _src_ip, "probeType": "icmp"}
 
-        response = sdwanp.post_request('device/tools/nping/' + deviceIP ,
+        response = sdwanp.post_request('device/tools/nping/' + deviceIP,
                                        payload)
 
         print()
@@ -1509,11 +1520,11 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             print()
             print("** Device not Attached to a Template **")
             print()
-            return 
+            return
 
-        # grab variables from device based on device template
+            # grab variables from device based on device template
         payload = {"templateId": templateId, "deviceIds": [uuid],
-                       "isEdited": "false", "isMasterEdited": "false"}
+                   "isEdited": "false", "isMasterEdited": "false"}
 
         response = sdwanp.post_request('template/device/config/input/',
                                        payload)
@@ -1521,8 +1532,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         objects = response['data'][0]
 
         print()
-        print("Replacing Object : " + _object) 
-        print("   Current Value : " + objects[_object]) 
+        print("Replacing Object : " + _object)
+        print("   Current Value : " + objects[_object])
         print("   New Value     : " + _value)
         print()
         print("On Device: " + objects['//system/host-name'] + " -- System IP: " + deviceIP)
@@ -1534,17 +1545,17 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         # attach device with new values
 
         payload = {
-            "deviceTemplateList":[
-            {
-                "templateId":str(templateId),
-                "device":[
+            "deviceTemplateList": [
                 {
-                # to be poplulated by objects dict
+                    "templateId": str(templateId),
+                    "device": [
+                        {
+                            # to be poplulated by objects dict
+                        }
+                    ],
+                    "isEdited": "false",
+                    "isMasterEdited": "false"
                 }
-                ],
-                "isEdited":"false",
-                "isMasterEdited":"false"
-            }
             ]
         }
         payload['deviceTemplateList'][0]['device'][0] = objects
@@ -1555,9 +1566,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         response = sdwanp.post_request('template/device/config/attachfeature', payload)
         print("Attachment Results...")
         print()
-        print (response)
+        print(response)
         print()
-
         return
 
     if saas:
@@ -1565,7 +1575,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         response = json.loads(sdwanp.get_request('device/cloudx/applications?deviceId=' + saas))
         pprint(response)
         items = response['data']
-        headers = ["Site ID", "Hostname", "System IP","Application", "Interface","VPN", "Color","Loss", "Latency","VQE Score", "VQE Status","Exit", "Gateway"]
+        headers = ["Site ID", "Hostname", "System IP", "Application", "Interface", "VPN", "Color", "Loss", "Latency",
+                   "VQE Score", "VQE Status", "Exit", "Gateway"]
         table = list()
         for item in items:
             tr = [item['site-id'], item['vdevice-host-name'], item['vdevice-name'], item['application'],
@@ -1574,10 +1585,10 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             table.append(tr)
         try:
             click.echo(tabulate.tabulate(table, headers,
-                                     tablefmt="fancy_grid"))
+                                         tablefmt="fancy_grid"))
         except UnicodeEncodeError:
             click.echo(tabulate.tabulate(table, headers,
-                                     tablefmt="grid"))
+                                         tablefmt="grid"))
         print()
         return
 
@@ -1624,7 +1635,6 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
 
         print()
-
         return
 
     if staging:
@@ -1648,7 +1658,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
                 print()
                 return
 
-        payload = [{"chasisNumber" : uuid, "serialNumber" : serialNumber, "validity" : "staging"}]
+        payload = [{"chasisNumber": uuid, "serialNumber": serialNumber, "validity": "staging"}]
         response = sdwanp.post_request('certificate/save/vedge/list', payload)
 
         print()
@@ -1662,9 +1672,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         print(" ** template       ", template)
         print(" ** template-id    ", templateId)
         print()
-        print (response)
+        print(response)
         print()
-
         return
 
     if trace:
@@ -1675,9 +1684,9 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         _dst_ip = trace[3]
 
         payload = {"host": _dst_ip, "vpn": _vpn,
-                       "interface": _src_ip, "deviceIp": deviceIP}
+                   "interface": _src_ip, "deviceIp": deviceIP}
 
-        response = sdwanp.post_request('device/tools/traceroute/' + deviceIP ,
+        response = sdwanp.post_request('device/tools/traceroute/' + deviceIP,
                                        payload)
 
         print()
@@ -1690,7 +1699,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         response = json.loads(sdwanp.get_request('device/endpointTracker?deviceId=' + tracker))
         items = response['data']
 
-        headers = ["NAME", "INTERFACE", "STATE", "DELAY","DATA_KEY"]
+        headers = ["NAME", "INTERFACE", "STATE", "DELAY", "DATA_KEY"]
         table = list()
 
         for item in items:
@@ -1699,7 +1708,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             table.append(tr)
 
         click.echo(tabulate.tabulate(table, headers,
-                                             tablefmt="simple"))
+                                     tablefmt="simple"))
         print()
         return
 
@@ -1708,7 +1717,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         response = json.loads(sdwanp.get_request('device/vrrp?deviceId=' + vrrp))
         items = response['data']
 
-        headers = ["IF NAME", "GROUP ID", "VIRTUAL IP", "VIRTUAL MAC","PRIORITY",
+        headers = ["IF NAME", "GROUP ID", "VIRTUAL IP", "VIRTUAL MAC", "PRIORITY",
                    "VRRP STATE", "OMP STATE", "LAST STATE CHANGE TIME"]
         table = list()
         for item in items:
@@ -1718,7 +1727,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             table.append(tr)
 
         click.echo(tabulate.tabulate(table, headers,
-                                             tablefmt="simple"))
+                                     tablefmt="simple"))
 
         print()
         return
@@ -1731,7 +1740,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         site_id = int(item['site-id'])
         print(item['host-name'] + ' -- ' + item['deviceId'])
         print()
-        print('  site-id: ' + str(site_id)) 
+        print('  site-id: ' + str(site_id))
         print()
 
         # get active centralized policy
@@ -1746,7 +1755,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
                 break
             else:
                 policy_active = False
-        if policy_active == False:
+        if not policy_active:
             print('No Centralized Policy Active')
             print()
             return
@@ -1772,10 +1781,11 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
                 for entry in def_['entries']:
                     try:
                         def_name = json.loads(sdwanp.get_request('template/policy/definition/' +
-                                            def_['type'].lower() + '/' + def_['definitionId']))['name']
+                                                                 def_['type'].lower() + '/' + def_['definitionId']))[
+                            'name']
                     except:
                         def_name = json.loads(sdwanp.get_request('template/policy/definition/' +
-                                            def_['type'] + '/' + def_['definitionId']))['name']
+                                                                 def_['type'] + '/' + def_['definitionId']))['name']
                     if 'siteLists' in entry.keys():
                         for site in entry['siteLists']:
                             for lsite_id in list_dict[site]['entries']:
@@ -1783,25 +1793,27 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
                                 if len(site_range) == 1:
                                     if site_id == int(site_range[0]):
                                         print('  def: ' + def_['definitionId'] + ' ---------- '
-                                               + def_['type'] + ' ' + "-"*(25 - len(def_['type'])) + ' ' + def_name )
+                                              + def_['type'] + ' ' + "-" * (25 - len(def_['type'])) + ' ' + def_name)
                                         print('         site-list: ' + list_dict[site]['name'] + ' (' + site + ')')
                                         print('         site-list-value: ' + lsite_id['siteId'])
                                         if 'direction' in entry.keys():
                                             print('         direction: ' + entry['direction'])
                                         if 'vpnLists' in entry.keys():
                                             for vpn in entry['vpnLists']:
-                                                print('         vpn-list:  ' + list_dict[vpn]['name'] + ' (' + vpn + ')')
+                                                print(
+                                                    '         vpn-list:  ' + list_dict[vpn]['name'] + ' (' + vpn + ')')
                                 if len(site_range) == 2:
                                     if int(site_range[0]) <= site_id <= int(site_range[1]):
                                         print('  def: ' + def_['definitionId'] + ' ---------- '
-                                               + def_['type'] + ' ' + "-"*(25 - len(def_['type'])) + ' ' + def_name )
+                                              + def_['type'] + ' ' + "-" * (25 - len(def_['type'])) + ' ' + def_name)
                                         print('         site-list: ' + list_dict[site]['name'] + ' (' + site + ')')
                                         print('         site-list-value: ' + lsite_id['siteId'])
                                         if 'direction' in entry.keys():
                                             print('         direction: ' + entry['direction'])
                                         if 'vpnLists' in entry.keys():
                                             for vpn in entry['vpnLists']:
-                                                print('         vpn-list:  ' + list_dict[vpn]['name'] + ' (' + vpn + ')')
+                                                print(
+                                                    '         vpn-list:  ' + list_dict[vpn]['name'] + ' (' + vpn + ')')
             except:
                 print()
 
@@ -1810,11 +1822,10 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         item = response['data'][0]
         print()
         if 'name' in item:
-            print('AAR learned from-vsmart: YES  -- ' + item['name']) 
+            print('AAR learned from-vsmart: YES  -- ' + item['name'])
         else:
-            print('AAR learned from-vsmart: NO') 
+            print('AAR learned from-vsmart: NO')
         print()
-
         return
 
     if wan:
@@ -1824,7 +1835,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         items = response['data']
 
         wan_ints = []
-        headers = ["SYSTEM IP", "HOSTNAME", "INTERFACE", "COLOR","RESTRICT",
+        headers = ["SYSTEM IP", "HOSTNAME", "INTERFACE", "COLOR", "RESTRICT",
                    "PRIVATE IP", "PRIVATE PORT", "PUBLIC IP", "PUBLIC PORT",
                    "STATE", "VSMARTS", "VMANAGE", "TUNNEL PREF"]
         table = list()
@@ -1845,59 +1856,59 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             "query": {
                 "condition": "AND",
                 "rules": [
-                {
-                    "value": [
-                        "720"
-                    ],
-                    "field": "entry_time",
-                    "type": "date",
-                    "operator": "last_n_hours"
-                },
-                {
-                    "value": [
-                        str(wan)
-                    ],
-                    "field": "vdevice_name",
-                    "type": "string",
-                    "operator": "in"
-                },
-                {
-                    "value": wan_ints,
-                    "field": "interface",
-                    "type": "string",
-                    "operator": "in"
-                }
+                    {
+                        "value": [
+                            "720"
+                        ],
+                        "field": "entry_time",
+                        "type": "date",
+                        "operator": "last_n_hours"
+                    },
+                    {
+                        "value": [
+                            str(wan)
+                        ],
+                        "field": "vdevice_name",
+                        "type": "string",
+                        "operator": "in"
+                    },
+                    {
+                        "value": wan_ints,
+                        "field": "interface",
+                        "type": "string",
+                        "operator": "in"
+                    }
                 ]
             },
             "sort": [
-            {
-               "field": "entry_time",
-               "type": "date",
-               "order": "asc"
-            }
+                {
+                    "field": "entry_time",
+                    "type": "date",
+                    "order": "asc"
+                }
             ],
             "aggregation": {
                 "field": [
-                {
-                    "property": "interface",
-                    "sequence": 1
-                }
+                    {
+                        "property": "interface",
+                        "sequence": 1
+                    }
                 ],
-               "histogram": {
+                "histogram": {
                     "property": "entry_time",
                     "type": "minute",
                     "interval": 30,
                     "order": "asc"
                 },
                 "metrics": [
-                {
-                    "property": "rx_kbps",
-                    "type": "avg"
-                },
-                {
-                    "property": "tx_kbps",
-                    "type": "avg"
-                }
+                    {
+                        "property": "rx_kbps",
+                        "type": "avg"
+                    },
+                    {
+                        "property": "tx_kbps",
+                        "type": "avg"
+                    }
                 ]
             }
         }
@@ -1936,7 +1947,6 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         print(' Aggregation of all WAN Interfaces')
         print(' Higher of RX or TX used per WAN Interface per time slice')
         print()
-
         return
 
     # no parameter passed in - list all
@@ -1953,12 +1963,12 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         if 'site-id' in item:
             tr = [item['host-name'], item['device-type'], item['uuid'],
                   item['local-system-ip'], item['deviceId'], item['site-id'],
-                  item['version'], item['device-model'], item['validity'], str(item['device-groups']).replace("'",'')]
+                  item['version'], item['device-model'], item['validity'], str(item['device-groups']).replace("'", '')]
             table.append(tr)
         else:
             tr = [item['host-name'], item['device-type'], item['uuid'],
                   item['local-system-ip'], item['deviceId'], '',
-                  item['version'], item['device-model'], item['validity'], str(item['device-groups']).replace("'",'')]
+                  item['version'], item['device-model'], item['validity'], str(item['device-groups']).replace("'", '')]
             table.append(tr)
     try:
         click.echo(tabulate.tabulate(table, headers,
@@ -1983,8 +1993,9 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
                                      tablefmt="fancy_grid"))
     except UnicodeEncodeError:
         click.echo(tabulate.tabulate(table, headers,
-                                         tablefmt="grid"))
+                                     tablefmt="grid"))
     return
+
 
 ###############################################################################
 
@@ -2052,10 +2063,10 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
         dst_model = clone[1]
 
         print()
-        
+
         # grab source template model and class
         response = json.loads(sdwanp.get_request('template/device/object/' +
-                                      templateId))
+                                                 templateId))
         src_class = response['templateClass']
         src_model = response['deviceType']
 
@@ -2066,13 +2077,13 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
         for item in items:
             if dst_model == item['name']:
                 if item['templateClass'] == src_class:
-                   print('** Device Model is Validated')
-                   print()
-                   i = 1
+                    print('** Device Model is Validated')
+                    print()
+                    i = 1
                 else:
-                   print('** Device Model is wrong Temmplate Class')
-                   print()
-                   return
+                    print('** Device Model is wrong Temmplate Class')
+                    print()
+                    return
         if i == 0:
             print('** Device Model not Valid')
             print()
@@ -2082,32 +2093,36 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
         print('Validating Feature Templates support the new Model...')
         print()
         response = json.loads(sdwanp.get_request('template/device/object/' +
-                                      templateId))
+                                                 templateId))
         if 'generalTemplates' in response:
             gen_temp = response['generalTemplates']
             # identify first level templates
-            flag=0
+            flag = 0
             for tmp in gen_temp:
                 response = json.loads(sdwanp.get_request('template/feature/object/' +
-                                      tmp['templateId']))
-                device_models=response['deviceType']
+                                                         tmp['templateId']))
+                device_models = response['deviceType']
                 if dst_model in response['deviceType']:
-                    print(' Feature Tempalte: ' + response['templateName'] + ' -- ' +  response['templateId'] + ' -- SUCCESS')
+                    print(' Feature Tempalte: ' + response['templateName'] + ' -- ' + response[
+                        'templateId'] + ' -- SUCCESS')
                 else:
-                    print(' Feature Tempalte: ' + response['templateName'] + ' -- ' +  response['templateId'] + ' -- FAILED')
-                    flag=1
+                    print(' Feature Tempalte: ' + response['templateName'] + ' -- ' + response[
+                        'templateId'] + ' -- FAILED')
+                    flag = 1
                 # identify second level templates
                 if 'subTemplates' in tmp.keys():
                     sub_temp = tmp['subTemplates']
                     for sub in sub_temp:
                         response = json.loads(sdwanp.get_request('template/feature/object/' +
-                                              sub['templateId']))
-                        device_models=response['deviceType']
+                                                                 sub['templateId']))
+                        device_models = response['deviceType']
                         if dst_model in response['deviceType']:
-                            print(' Feature Tempalte: ' + response['templateName'] + ' -- ' +  response['templateId'] + ' -- SUCCESS')
+                            print(' Feature Tempalte: ' + response['templateName'] + ' -- ' + response[
+                                'templateId'] + ' -- SUCCESS')
                         else:
-                            print(' Feature Tempalte: ' + response['templateName'] + ' -- ' +  response['templateId'] + ' -- FAILED')
-                            flag=1
+                            print(' Feature Tempalte: ' + response['templateName'] + ' -- ' + response[
+                                'templateId'] + ' -- FAILED')
+                            flag = 1
             print()
             if flag == 1:
                 print('** Feature Templates do NOT support the Model of the Clone Device Template')
@@ -2124,7 +2139,7 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
 
         # download source template
         response = json.loads(sdwanp.get_request('template/device/object/' +
-                                      templateId))
+                                                 templateId))
 
         # update names, id, type
         new_template = response
@@ -2136,7 +2151,7 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
         print('Attempting to upload new Template: ' + new_template['templateName'])
         print()
         response = sdwanp.post_request('template/device/feature',
-                                    new_template)
+                                       new_template)
         pprint(response)
         print()
         print('Please update Template Name and Description in vManage')
@@ -2145,11 +2160,11 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
         new_template['templateId'] = response['templateId']
         new_template['templateDescription'] = ('CLONE - ' + new_template['templateDescription'])
         response = sdwanp.put_request('template/device/' + new_template['templateId'],
-                            new_template)
+                                      new_template)
 
         # download new template
         response = json.loads(sdwanp.get_request('template/device/object/' +
-                                      new_template['templateId']))
+                                                 new_template['templateId']))
         print('Template Name: ' + response['templateName'])
         print('Template Description: ' + response['templateDescription'])
         print('Template ID: ' + response['templateId'])
@@ -2172,7 +2187,7 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
 
     # download specific template or all templates
     if download:
-        if(download == 'all'):
+        if download == 'all':
             response = json.loads(sdwanp.get_request('template/device'))
             items = response['data']
             print()
@@ -2184,7 +2199,7 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
                                               item['templateId'])
                 json_file = open(SDWAN_CFGDIR + "template-device____" +
                                  item['deviceType'] +
-                                 "_"*(32 - len(item['deviceType'])) +
+                                 "_" * (32 - len(item['deviceType'])) +
                                  item['templateId'] + '___' +
                                  item['templateName'].replace('/', '-'), "w")
                 json_file.write(re.sub("'|b'", '', str(response)))
@@ -2203,7 +2218,7 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
             print()
             json_file = open(SDWAN_CFGDIR + "template-device____" +
                              item['deviceType'] +
-                             "_"*(32 - len(item['deviceType'])) +
+                             "_" * (32 - len(item['deviceType'])) +
                              download + '___' +
                              item['templateName'].replace('/', '-'), "w")
             json_file.write(re.sub("'|b'", '', str(response)))
@@ -2269,25 +2284,29 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
                 response = json.loads(sdwanp.get_request('template/feature/object/' +
                                                          tmp['templateId']))
                 print('  tmpl: ' + response['templateId'] + ' ---------- ' + response['templateType'] + ' ' +
-                      "-"*(25 - len(response['templateType'])) + ' ' + response['templateName'])
-                # search for k,v pair of vipType,variableName and return value of vipVariableName
+                      "-" * (25 - len(response['templateType'])) + ' ' + response['templateName'])
+
                 var_find("vipType", "variableName", "vipVariableName", response['templateDefinition'])
                 # identify second level templates
                 if 'subTemplates' in tmp.keys():
                     sub_temp = tmp['subTemplates']
                     for sub in sub_temp:
                         response = json.loads(sdwanp.get_request('template/feature/object/' +
-                                              sub['templateId']))
+                                                                 sub['templateId']))
                         print('    tmpl: ' + response['templateId'] + ' -------- ' + response['templateType'] + ' ' +
-                              "-"*(25 - len(response['templateType'])) + ' ' + response['templateName'])
-                        # search for k,v pair of vipType,variableName and return value of vipVariableName
+                              "-" * (25 - len(response['templateType'])) + ' ' + response['templateName'])
+
                         var_find("vipType", "variableName", "vipVariableName", response['templateDefinition'])
             print()
             if local_policy:
+                # noinspection PyTypeChecker
                 response = json.loads(sdwanp.get_request('template/policy/vedge/definition/' + local_policy))
+                # noinspection PyTypeChecker
                 print(' local policy: ' + local_policy + ' ------------------------------ ' + response['policyName'])
             if security_policy:
+                # noinspection PyTypeChecker
                 response = json.loads(sdwanp.get_request('template/policy/security/definition/' + security_policy))
+                # noinspection PyTypeChecker
                 print(' security policy: ' + security_policy + ' --------------------------- ' + response['policyName'])
             print()
         else:
@@ -2424,14 +2443,13 @@ def template_feature(attached, clone, config, download, models, model_update, up
                                          tablefmt="grid"))
         return
 
-
     if clone:
         deviceId = clone[0]
         models = list(clone[1].split(","))
 
         # download feature template to get template class
         response = json.loads(sdwanp.get_request('template/feature/object/' +
-                                      deviceId))
+                                                 deviceId))
 
         template_class = response['gTemplateClass']
 
@@ -2453,12 +2471,12 @@ def template_feature(attached, clone, config, download, models, model_update, up
 
         # check to ensure all input models are in the supported model list
         iflag = 0
-        if (set(models).issubset(set(valid_models))):
+        if set(models).issubset(set(valid_models)):
             flag = 1
         if flag:
             print('** Input model list is Validated')
             print()
-        else :
+        else:
             print('ERROR - Input model list is not Supported')
             print()
             return
@@ -2488,9 +2506,7 @@ def template_feature(attached, clone, config, download, models, model_update, up
         print()
         print('** Clone Completed')
         print()
-
         return
-
 
     # print specific template to stdout
     if config:
@@ -2505,7 +2521,7 @@ def template_feature(attached, clone, config, download, models, model_update, up
 
     # download specific template or all templates
     if download:
-        if(download == 'all'):
+        if download == 'all':
             response = json.loads(sdwanp.get_request('template/feature'))
             items = response['data']
             print()
@@ -2519,7 +2535,7 @@ def template_feature(attached, clone, config, download, models, model_update, up
                                                   item['templateId'])
                     json_file = open(SDWAN_CFGDIR + "template-feature___" +
                                      item['templateType'] +
-                                     "_"*(32 - len(item['templateType'])) +
+                                     "_" * (32 - len(item['templateType'])) +
                                      item['templateId'] + '___' +
                                      item['templateName'].replace('/', '-'), "w")
                     json_file.write(re.sub("'|b'", '', str(response)))
@@ -2538,7 +2554,7 @@ def template_feature(attached, clone, config, download, models, model_update, up
             print()
             json_file = open(SDWAN_CFGDIR + "template-feature___" +
                              item['templateType'] +
-                             "_"*(32 - len(item['templateType'])) +
+                             "_" * (32 - len(item['templateType'])) +
                              item['templateId'] + '___' +
                              item['templateName'].replace('/', '-'), "w")
             json_file.write(re.sub("'|b'", '', str(response)))
@@ -2550,7 +2566,7 @@ def template_feature(attached, clone, config, download, models, model_update, up
         response = sdwanp.get_request('template/feature/object/' +
                                       models)
         items = json.loads(response)
-        device_models=items['deviceType']
+        device_models = items['deviceType']
         print()
         print(items['templateName'], ' --- ', items['templateId'])
         print()
@@ -2574,8 +2590,8 @@ def template_feature(attached, clone, config, download, models, model_update, up
             if 'templateId' in item:
                 # pull device model for device template
                 device_type = json.loads(sdwanp.get_request('template/device/object/' +
-                                     item['templateId']))['deviceType']
-                print('  ', device_type, ' --- ', item['templateName'],' --- ',item['templateId'])
+                                                            item['templateId']))['deviceType']
+                print('  ', device_type, ' --- ', item['templateName'], ' --- ', item['templateId'])
         print()
         return
 
@@ -2591,7 +2607,7 @@ def template_feature(attached, clone, config, download, models, model_update, up
 
         # download feature template to get template class
         response = json.loads(sdwanp.get_request('template/feature/object/' +
-                                      deviceId))
+                                                 deviceId))
 
         template_class = response['gTemplateClass']
 
@@ -2602,15 +2618,15 @@ def template_feature(attached, clone, config, download, models, model_update, up
         for item in items:
             if item['templateClass'] == template_class:
                 valid_models.append(item['name'])
-        
+
         # check to ensure all input models are in the supported model list
         flag = 0
-        if (set(models).issubset(set(valid_models))):
+        if set(models).issubset(set(valid_models)):
             flag = 1
         if flag:
             print('** Input model list is Validated')
             print()
-        else :
+        else:
             print('ERROR - Input model list is not Supported')
             print()
             return
@@ -2624,13 +2640,13 @@ def template_feature(attached, clone, config, download, models, model_update, up
         for item in items:
             if 'templateId' in item:
                 device_type = json.loads(sdwanp.get_request('template/device/object/' +
-                                     item['templateId']))['deviceType']
+                                                            item['templateId']))['deviceType']
                 if device_type in models:
                     flag = 0
                 else:
                     flag = 1
                     print(item['templateName'] + " -- " + item['templateId'] + " -- " + device_type +
-                        " is MISSING")
+                          " is MISSING")
                     print()
                     print("Changes will NOT be Submitted")
                     print()
@@ -2654,12 +2670,10 @@ def template_feature(attached, clone, config, download, models, model_update, up
 
         # put updated template
         response = sdwanp.put_request('template/feature/' + deviceId,
-                                       payload)
+                                      payload)
         print(response)
         print()
-
         return
-
 
     # upload a template from a file
     if upload:
@@ -2674,7 +2688,7 @@ def template_feature(attached, clone, config, download, models, model_update, up
         print(response)
         print()
         if 'templateId' in response:
-            if(payload['templateId'] != response['templateId']):
+            if payload['templateId'] != response['templateId']:
                 print('  ** The Template ID Changed **')
                 print('      This may effect other Definitions, Policies, and Templates referencing it')
                 print('      Object files in the ' + SDWAN_CFGDIR + " directory will be updated")
@@ -2703,6 +2717,7 @@ def template_feature(attached, clone, config, download, models, model_update, up
         click.echo(tabulate.tabulate(table, headers,
                                      tablefmt="grid"))
     return
+
 
 ###############################################################################
 
@@ -2743,7 +2758,7 @@ def policy_list(ltype, config, delete, download, update, upload):
         response = json.loads(sdwanp.get_request('template/policy/list'))
         items = response['data']
         for item in items:
-            if(item['listId'] == config):
+            if item['listId'] == config:
                 ltype = item['type'].lower()
         response = sdwanp.get_request('template/policy/list/' +
                                       ltype + '/' + config)
@@ -2781,13 +2796,13 @@ def policy_list(ltype, config, delete, download, update, upload):
         items = response['data']
         i = 0
         for item in items:
-            if(item['listId'] == delete):
+            if item['listId'] == delete:
                 ltype = item['type'].lower()
-                print("  listtype:"+ ltype + " -- name:" + item['name'])
+                print("  listtype:" + ltype + " -- name:" + item['name'])
                 print()
                 i = 1
                 response = sdwanp.delete_request('template/policy/list/' +
-                                                  ltype + '/' + delete)
+                                                 ltype + '/' + delete)
                 print(response)
         if i == 0:
             print("  List Object not Found")
@@ -2796,7 +2811,7 @@ def policy_list(ltype, config, delete, download, update, upload):
 
     # download specific lists or all lists
     if download:
-        if(download == 'all'):
+        if download == 'all':
             response = json.loads(sdwanp.get_request('template/policy/list'))
             items = response['data']
             print()
@@ -2808,7 +2823,7 @@ def policy_list(ltype, config, delete, download, update, upload):
                                               item['type'].lower() + '/' +
                                               item['listId'])
                 json_file = open(SDWAN_CFGDIR + "policy-list________" +
-                                 item['type'].lower() + "_"*(32 - len(item['type'])) +
+                                 item['type'].lower() + "_" * (32 - len(item['type'])) +
                                  item['listId'] + '___' +
                                  item['name'].replace('/', '-'), "w")
                 json_file.write(re.sub("'|b'", '', str(response)))
@@ -2818,7 +2833,7 @@ def policy_list(ltype, config, delete, download, update, upload):
             response = json.loads(sdwanp.get_request('template/policy/list'))
             items = response['data']
             for item in items:
-                if(item['listId'] == download):
+                if item['listId'] == download:
                     ltype = item['type'].lower()
             response = sdwanp.get_request('template/policy/list/' +
                                           ltype + '/' + download)
@@ -2831,7 +2846,7 @@ def policy_list(ltype, config, delete, download, update, upload):
             print("Policy List ID:", download, "downloaded...")
             print()
             json_file = open(SDWAN_CFGDIR + "policy-list________" +
-                             item['type'] + "_"*(32 - len(item['type'])) +
+                             item['type'] + "_" * (32 - len(item['type'])) +
                              item['listId'] + '___' +
                              item['name'].replace('/', '-'), "w")
             json_file.write(re.sub("'|b'", '', str(response)))
@@ -2843,7 +2858,7 @@ def policy_list(ltype, config, delete, download, update, upload):
         print()
         print("Policy List Update.  Need to Program")
         print()
-        
+
         # get the existing list - identify references
         # how do we want to import new list content ?
         # create new payload with new content
@@ -2867,7 +2882,7 @@ def policy_list(ltype, config, delete, download, update, upload):
         print(response)
         print()
         if 'listId' in response:
-            if(payload['listId'] != response['listId']):
+            if payload['listId'] != response['listId']:
                 print('  ** The List ID Changed **')
                 print('      This may effect other Definitions, Policies, and Templates referencing it')
                 print('      Object files in the ' + SDWAN_CFGDIR + " directory will be updated")
@@ -2895,6 +2910,7 @@ def policy_list(ltype, config, delete, download, update, upload):
         click.echo(tabulate.tabulate(table, headers,
                                      tablefmt="grid"))
     return
+
 
 ###############################################################################
 
@@ -2940,7 +2956,7 @@ def policy_central(config, download, upload, definition, tree):
 
     # download specific policy or all policies
     if download:
-        if(download == 'all'):
+        if download == 'all':
             response = json.loads(sdwanp.get_request('template/policy/vsmart'))
             items = response['data']
             print()
@@ -2952,7 +2968,7 @@ def policy_central(config, download, upload, definition, tree):
                                               item['policyId'])
                 json_file = open(SDWAN_CFGDIR + "policy-central_____" +
                                  item['policyType'] +
-                                 "_"*(32 - len(item['policyType'])) +
+                                 "_" * (32 - len(item['policyType'])) +
                                  item['policyId'] + '___' +
                                  item['policyName'].replace('/', '-'), "w")
                 json_file.write(re.sub("'|b'", '', str(response)))
@@ -2971,7 +2987,7 @@ def policy_central(config, download, upload, definition, tree):
             print()
             json_file = open(SDWAN_CFGDIR + "policy-central_____" +
                              item['policyType'] +
-                             "_"*(32 - len(item['policyType'])) +
+                             "_" * (32 - len(item['policyType'])) +
                              download + '___' +
                              item['policyName'].replace('/', '-'), "w")
             json_file.write(re.sub("'|b'", '', str(response)))
@@ -3053,15 +3069,15 @@ def policy_central(config, download, upload, definition, tree):
             defs[def1['definitionId']] = def1['type']
             try:
                 response = json.loads(sdwanp.get_request('template/policy/definition/' +
-                                      def1['type'].lower() + '/' + def1['definitionId']))
+                                                         def1['type'].lower() + '/' + def1['definitionId']))
             except:
                 response = json.loads(sdwanp.get_request('template/policy/definition/' +
-                                      def1['type'] + '/' + def1['definitionId']))
+                                                         def1['type'] + '/' + def1['definitionId']))
             print()
             print('  def: ' + response['definitionId'] + ' ---------- ' + response['type'] + ' ' +
-                  "-"*(25 - len(response['type'])) + ' ' + response['name'])
+                  "-" * (25 - len(response['type'])) + ' ' + response['name'])
 
-            print('    applied: ' )
+            print('    applied: ')
             for def2 in apply_list:
                 if def2['definitionId'] == def1['definitionId']:
                     try:
@@ -3077,7 +3093,7 @@ def policy_central(config, download, upload, definition, tree):
                                     print('         vpn-list:  ' + list_dict[vpn]['name'] + ' (' + vpn + ')')
                     except:
                         print()
-            print('    contains: ' )
+            print('    contains: ')
             list_find(response, list_dict)
         print()
         print()
@@ -3098,6 +3114,7 @@ def policy_central(config, download, upload, definition, tree):
         click.echo(tabulate.tabulate(table, headers,
                                      tablefmt="grid"))
     return
+
 
 ###############################################################################
 
@@ -3127,7 +3144,7 @@ def policy_custom_app(config, download, upload):
 
     if config:
         response = sdwanp.get_request('template/policy/customapp/' +
-                                       config)
+                                      config)
         print()
         print(re.sub("'|b'", '', str(response)))
         print()
@@ -3136,7 +3153,7 @@ def policy_custom_app(config, download, upload):
     if download:
         print()
         response = sdwanp.get_request('template/policy/customapp/' +
-                                       download)
+                                      download)
         print(re.sub("'|b'", '', str(response)))
         print()
         return
@@ -3144,7 +3161,6 @@ def policy_custom_app(config, download, upload):
     if upload:
         print()
         print('Working on Upload')
-	    # POST /template/policy/customapp
         print()
         return
     # no parameters
@@ -3153,6 +3169,7 @@ def policy_custom_app(config, download, upload):
     print(re.sub("'|b'", '', str(response)))
     print()
     return
+
 
 ###############################################################################
 
@@ -3199,7 +3216,7 @@ def policy_local(config, download, upload, definition, tree):
 
     # download specific policy or all policies
     if download:
-        if(download == 'all'):
+        if download == 'all':
             response = json.loads(sdwanp.get_request('template/policy/vedge'))
             items = response['data']
             print()
@@ -3213,12 +3230,12 @@ def policy_local(config, download, upload, definition, tree):
                 if 'policyName' in item2:
                     json_file = open(SDWAN_CFGDIR + "policy-local_______" +
                                      item['policyType'] +
-                                     "_"*(32 - len(item['policyType'])) +
+                                     "_" * (32 - len(item['policyType'])) +
                                      item['policyId'] + '___' +
                                      item['policyName'].replace('/', '-'), "w")
                 else:
                     json_file = open(SDWAN_CFGDIR + "policy-local_______" +
-                                     'cli-policy' + "_"*(22) + item['policyId'] + '___No_Name', "w")
+                                     'cli-policy' + "_" * 22 + item['policyId'] + '___No_Name', "w")
                 json_file.write(re.sub("'|b'", '', str(response)))
                 json_file.close()
             print()
@@ -3233,14 +3250,14 @@ def policy_local(config, download, upload, definition, tree):
                 print(download)
                 json_file = open(SDWAN_CFGDIR + "policy-local_______" +
                                  item['policyType'] +
-                                 "_"*(32 - len(item['policyType'])) +
+                                 "_" * (32 - len(item['policyType'])) +
                                  download + '___' +
                                  item['policyName'].replace('/', '-'), "w")
             else:
                 print('CLI Policy')
                 print(download)
                 json_file = open(SDWAN_CFGDIR + "policy-local_______" +
-                                 'cli-policy' + "_"*(22) + download + '___No_Name', "w")
+                                 'cli-policy' + "_" * 22 + download + '___No_Name', "w")
 
             json_file.write(re.sub("'|b'", '', str(response)))
             json_file.close()
@@ -3248,7 +3265,6 @@ def policy_local(config, download, upload, definition, tree):
             print()
             print("Policy ID:", download, "downloaded...")
             print()
-
         return
 
     # upload a policy from a file
@@ -3265,18 +3281,19 @@ def policy_local(config, download, upload, definition, tree):
         print()
 
         # glean original policyId from file name
-        m = re.search("^.*_(\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12})_*(\w.*$)", upload) # pylint: disable=anomalous-backslash-in-string
+        m = re.search("^.*_(\w{8}-\w{4}-\w{4}-\w{4}-\w{12})_*(\w.*$)",
+                      upload)  # pylint: disable=anomalous-backslash-in-string
         if m:
             lpid = m.group(1)
             lpname = m.group(2)
-        # search for current Policy Id from local policy listing
+        # search for current Policy_Id from local policy listing
         response = json.loads(sdwanp.get_request('template/policy/vedge'))
         items = response['data']
         # compare active ID and the one in the file
         for item in items:
             if item['policyName'] == lpname:
                 print(item['policyName'])
-                if(item['policyId'] != lpid):
+                if item['policyId'] != lpid:
                     print(item['policyId'])
                     print('  ** The Policy ID Changed **')
                     print('      This may effect other Definitions, Policies, and Templates referencing it')
@@ -3301,15 +3318,15 @@ def policy_local(config, download, upload, definition, tree):
             print("--- Attached Definitions ---")
             print()
             defs = item['policyDefinition']['assembly']
-            headers = ["Definition ID", "Definition Type","Definition Name"]
+            headers = ["Definition ID", "Definition Type", "Definition Name"]
             table = list()
             for d in defs:
                 try:
                     response = json.loads(sdwanp.get_request('template/policy/definition/' +
-                              d['type'].lower() + '/' + d['definitionId']))
+                                                             d['type'].lower() + '/' + d['definitionId']))
                 except:
                     response = json.loads(sdwanp.get_request('template/policy/definition/' +
-                              d['type'] + '/' + d['definitionId']))
+                                                             d['type'] + '/' + d['definitionId']))
                 tr = [d['definitionId'], d['type'], response['name']]
                 table.append(tr)
             try:
@@ -3356,12 +3373,12 @@ def policy_local(config, download, upload, definition, tree):
                 defs[def1['definitionId']] = def1['type']
                 try:
                     response = json.loads(sdwanp.get_request('template/policy/definition/' +
-                                          def1['type'] + '/' + def1['definitionId']))
+                                                             def1['type'] + '/' + def1['definitionId']))
                 except:
                     response = json.loads(sdwanp.get_request('template/policy/definition/' +
-                                          def1['type'].lower() + '/' + def1['definitionId']))
+                                                             def1['type'].lower() + '/' + def1['definitionId']))
                 print('  def: ' + response['definitionId'] + ' ---------- ' + response['type'] + ' ' +
-                      "-"*(25 - len(response['type'])) + ' ' + response['name'])
+                      "-" * (25 - len(response['type'])) + ' ' + response['name'])
                 list_find(response, list_dict)
             print()
             print()
@@ -3388,6 +3405,7 @@ def policy_local(config, download, upload, definition, tree):
         click.echo(tabulate.tabulate(table, headers,
                                      tablefmt="grid"))
     return
+
 
 ###############################################################################
 
@@ -3434,7 +3452,7 @@ def policy_security(config, download, upload, definition, tree):
 
     # download specific policy or all policies
     if download:
-        if(download == 'all'):
+        if download == 'all':
             response = json.loads(sdwanp.get_request('template/policy/security'))
             items = response['data']
             print()
@@ -3446,7 +3464,7 @@ def policy_security(config, download, upload, definition, tree):
                                               item['policyId'])
                 json_file = open(SDWAN_CFGDIR + "policy-security____" +
                                  item['policyType'] +
-                                 "_"*(32 - len(item['policyType'])) +
+                                 "_" * (32 - len(item['policyType'])) +
                                  item['policyId'] + '___' +
                                  item['policyName'].replace('/', '-'), "w")
                 json_file.write(re.sub("'|b'", '', str(response)))
@@ -3462,7 +3480,7 @@ def policy_security(config, download, upload, definition, tree):
             print(download)
             json_file = open(SDWAN_CFGDIR + "policy-security____" +
                              item['policyType'] +
-                             "_"*(32 - len(item['policyType'])) +
+                             "_" * (32 - len(item['policyType'])) +
                              download + '___' +
                              item['policyName'].replace('/', '-'), "w")
             json_file.write(re.sub("'|b'", '', str(response)))
@@ -3487,18 +3505,19 @@ def policy_security(config, download, upload, definition, tree):
         print()
 
         # glean original policyId from file name
-        m = re.search("^.*_(\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12})_*(\w.*$)", upload) # pylint: disable=anomalous-backslash-in-string
+        m = re.search("^.*_(\w{8}-\w{4}-\w{4}-\w{4}-\w{12})_*(\w.*$)",
+                      upload)  # pylint: disable=anomalous-backslash-in-string
         if m:
             lpid = m.group(1)
             lpname = m.group(2)
-        # search for current Policy Id from local policy listing
+        # search for current Policy_Id from local policy listing
         response = json.loads(sdwanp.get_request('template/policy/security'))
         items = response['data']
         # compare active ID and the one in the file
         for item in items:
             if item['policyName'] == lpname:
                 print(item['policyName'])
-                if(item['policyId'] != lpid):
+                if item['policyId'] != lpid:
                     print(item['policyId'])
                     print('  ** The Policy ID Changed **')
                     print('      This may effect other Definitions, Policies, and Templates referencing it')
@@ -3522,15 +3541,15 @@ def policy_security(config, download, upload, definition, tree):
         print("--- Attached Definitions ---")
         print()
         defs = item['policyDefinition']['assembly']
-        headers = ["Definition ID", "Definition Type","Definition Name"]
+        headers = ["Definition ID", "Definition Type", "Definition Name"]
         table = list()
         for d in defs:
             try:
                 response = json.loads(sdwanp.get_request('template/policy/definition/' +
-                          d['type'].lower() + '/' + d['definitionId']))
+                                                         d['type'].lower() + '/' + d['definitionId']))
             except:
                 response = json.loads(sdwanp.get_request('template/policy/definition/' +
-                          d['type'] + '/' + d['definitionId']))
+                                                         d['type'] + '/' + d['definitionId']))
             tr = [d['definitionId'], d['type'], response['name']]
             table.append(tr)
         try:
@@ -3572,17 +3591,17 @@ def policy_security(config, download, upload, definition, tree):
             defs[def1['definitionId']] = def1['type']
             try:
                 response = json.loads(sdwanp.get_request('template/policy/definition/' +
-                                      def1['type'] + '/' + def1['definitionId']))
+                                                         def1['type'] + '/' + def1['definitionId']))
             except:
                 response = json.loads(sdwanp.get_request('template/policy/definition/' +
-                                      def1['type'].lower() + '/' + def1['definitionId']))
+                                                         def1['type'].lower() + '/' + def1['definitionId']))
             print('  def: ' + response['definitionId'] + ' ---------- ' + response['type'] + ' ' +
-                  "-"*(25 - len(response['type'])) + ' ' + response['name'])
-            list_find(response,list_dict)
+                  "-" * (25 - len(response['type'])) + ' ' + response['name'])
+            list_find(response, list_dict)
         print()
         print()
         return
-    
+
     # no parameter passed in - list all policies
     response = json.loads(sdwanp.get_request('template/policy/security'))
     items = response['data']
@@ -3600,6 +3619,7 @@ def policy_security(config, download, upload, definition, tree):
         click.echo(tabulate.tabulate(table, headers,
                                      tablefmt="grid"))
     return
+
 
 ###############################################################################
 
@@ -3646,7 +3666,7 @@ def policy_definition(config, download, upload):
             assembly = json.loads(item['policyDefinition'])
             for def1 in assembly['assembly']:
                 defs[def1['definitionId']] = def1['type']
-    
+
     response = json.loads(sdwanp.get_request('template/policy/security'))
     items = response['data']
     for item in items:
@@ -3670,7 +3690,7 @@ def policy_definition(config, download, upload):
 
     # download specific definition or all definitions
     if download:
-        if(download == 'all'):
+        if download == 'all':
             print()
             print("Downloading all Policy Definitionss...")
             print()
@@ -3680,7 +3700,7 @@ def policy_definition(config, download, upload):
                                               def_type.lower() + '/' + def_id)
                 item = json.loads(response)
                 json_file = open(SDWAN_CFGDIR + "policy-definition__" +
-                                 item['type'] + "_"*(32 - len(item['type'])) +
+                                 item['type'] + "_" * (32 - len(item['type'])) +
                                  item['definitionId'] + '___' +
                                  item['name'].replace('/', '-'), "w")
                 json_file.write(re.sub("'|b'", '', str(response)))
@@ -3698,7 +3718,7 @@ def policy_definition(config, download, upload):
             print("Policy Definition ID:", download, "downloaded...")
             print()
             json_file = open(SDWAN_CFGDIR + "policy-definition__" +
-                             item['type'] + "_"*(32 - len(item['type'])) +
+                             item['type'] + "_" * (32 - len(item['type'])) +
                              item['definitionId'] + '___' +
                              item['name'].replace('/', '-'), "w")
             json_file.write(re.sub("'|b'", '', str(response)))
@@ -3719,11 +3739,12 @@ def policy_definition(config, download, upload):
         print(response)
         print()
         if 'definitionId' in response:
-            if(payload['definitionId'] != response['definitionId']):
+            if payload['definitionId'] != response['definitionId']:
                 print('  ** The Definition ID Changed **')
                 print('      This may effect other Definitions, Policies, and Templates referencing it')
                 print('      Object files in the ' + SDWAN_CFGDIR + " directory will be updated")
-                print('      Definition ID ' + payload['definitionId'] + ' will be replaced with ' + response['definitionId'])
+                print('      Definition ID ' + payload['definitionId'] + ' will be replaced with ' + response[
+                    'definitionId'])
                 print()
                 id_fix(payload['definitionId'], response['definitionId'], SDWAN_CFGDIR)
         json_file.close()
@@ -3737,10 +3758,10 @@ def policy_definition(config, download, upload):
     for def_id, def_type in defs.items():
         try:
             response = json.loads(sdwanp.get_request('template/policy/definition/' +
-                              defs[def_id].lower() + '/' + def_id))
+                                                     defs[def_id].lower() + '/' + def_id))
         except:
             response = json.loads(sdwanp.get_request('template/policy/definition/' +
-                              defs[def_id] + '/' + def_id))
+                                                     defs[def_id] + '/' + def_id))
 
         tr = [response['name'], response['type'], response['definitionId']]
         table.append(tr)
@@ -3752,6 +3773,7 @@ def policy_definition(config, download, upload):
                                      tablefmt="grid"))
     print()
     return
+
 
 ###############################################################################
 
@@ -3773,7 +3795,8 @@ def saas(status):
         print()
         response = json.loads(sdwanp.get_request('template/cloudx/status/?appName=' + status))
         items = response['data']
-        headers = ["Site ID", "Hotname", "System IP","Interface","Color", "Latency","VQE Score", "VQE Status", "Gateway"]
+        headers = ["Site ID", "Hotname", "System IP", "Interface", "Color", "Latency", "VQE Score", "VQE Status",
+                   "Gateway"]
         table = list()
         for item in items:
             tr = [item['site-id'], item['host-name'], item['system-ip'],
@@ -3782,10 +3805,10 @@ def saas(status):
             table.append(tr)
         try:
             click.echo(tabulate.tabulate(table, headers,
-                                     tablefmt="fancy_grid"))
+                                         tablefmt="fancy_grid"))
         except UnicodeEncodeError:
             click.echo(tabulate.tabulate(table, headers,
-                                     tablefmt="grid"))
+                                         tablefmt="grid"))
         print()
         return
 
@@ -3812,25 +3835,25 @@ def saas(status):
     items = response['data']
     for item in items:
         for i in range(len(item['vedgeList'])):
-            tr = ['Gateway', item['site-id'], item['vedgeList'][i]['host-name'],item['vedgeList'][i]['system-ip'],
-                 item['vedgeList'][i]['colorList'],
-                 item['vedgeList'][i]['configStatusMessage']]
+            tr = ['Gateway', item['site-id'], item['vedgeList'][i]['host-name'], item['vedgeList'][i]['system-ip'],
+                  item['vedgeList'][i]['colorList'],
+                  item['vedgeList'][i]['configStatusMessage']]
             table.append(tr)
     response = json.loads(sdwanp.get_request('template/cloudx/attachedclient'))
     items = response['data']
     for item in items:
         for i in range(len(item['vedgeList'])):
-            tr = ['Client', item['site-id'], item['vedgeList'][i]['host-name'],item['vedgeList'][i]['system-ip'],
-                 item['vedgeList'][i]['colorList'],
-                 item['vedgeList'][i]['configStatusMessage']]
+            tr = ['Client', item['site-id'], item['vedgeList'][i]['host-name'], item['vedgeList'][i]['system-ip'],
+                  item['vedgeList'][i]['colorList'],
+                  item['vedgeList'][i]['configStatusMessage']]
             table.append(tr)
     response = json.loads(sdwanp.get_request('template/cloudx/attacheddia'))
     items = response['data']
     for item in items:
         for i in range(len(item['vedgeList'])):
-            tr = ['DIA', item['site-id'], item['vedgeList'][i]['host-name'],item['vedgeList'][i]['system-ip'],
-                 item['vedgeList'][i]['colorList'],
-             item['vedgeList'][i]['configStatusMessage']]
+            tr = ['DIA', item['site-id'], item['vedgeList'][i]['host-name'], item['vedgeList'][i]['system-ip'],
+                  item['vedgeList'][i]['colorList'],
+                  item['vedgeList'][i]['configStatusMessage']]
             table.append(tr)
     try:
         click.echo(tabulate.tabulate(table, headers,
@@ -3842,6 +3865,7 @@ def saas(status):
 
     return
 
+
 ##############################################################################
 
 # SDAVC
@@ -3849,7 +3873,7 @@ def saas(status):
 @click.command()
 @click.option("--domain", is_flag=True, help="SDAVC Applications by Domain")
 @click.option("--ip", is_flag=True, help="SDAVC Applications by IP")
-def sdavc(domain,ip):
+def sdavc(domain, ip):
     """Display SDAVC Cloud Connector
 
         Example Command:
@@ -3873,10 +3897,10 @@ def sdavc(domain,ip):
             table.append(tr)
         try:
             click.echo(tabulate.tabulate(table, headers,
-                                     tablefmt="fancy_grid"))
+                                         tablefmt="fancy_grid"))
         except UnicodeEncodeError:
             click.echo(tabulate.tabulate(table, headers,
-                                    tablefmt="grid"))
+                                         tablefmt="grid"))
         print()
         return
 
@@ -3887,15 +3911,15 @@ def sdavc(domain,ip):
         headers = ["Application", "IP", "Protocol", "Port", "Optimize", "Allow", "Service"]
         table = list()
         for item in items:
-            tr = [item['appName'], item['ipAddress'].replace('"',''), item['l4Protocol'], item['port'],
+            tr = [item['appName'], item['ipAddress'].replace('"', ''), item['l4Protocol'], item['port'],
                   item['optimize'], item['allow'], item['serviceArea']]
             table.append(tr)
         try:
             click.echo(tabulate.tabulate(table, headers,
-                                     tablefmt="fancy_grid"))
+                                         tablefmt="fancy_grid"))
         except UnicodeEncodeError:
             click.echo(tabulate.tabulate(table, headers,
-                                    tablefmt="grid"))
+                                         tablefmt="grid"))
         print()
         return
 
@@ -3909,6 +3933,7 @@ def sdavc(domain,ip):
     print()
     return
 
+
 ###############################################################################
 
 @click.group()
@@ -3916,6 +3941,7 @@ def cli():
     """CLI for managing policies and templates in Cisco SDWAN.
     """
     pass
+
 
 cli.add_command(configuration_db)
 cli.add_command(env)
@@ -3941,6 +3967,7 @@ cli.add_command(template_feature)
 
 def main():
     cli()
+
 
 if __name__ == '__main__':
     main()
