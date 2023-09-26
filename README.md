@@ -34,7 +34,8 @@ These are the functional items the script provides that cannot be done in vManag
 ## INSTALLATION
 
     Install python modules
-       * requests[socks]
+       * requests
+       * pysocks
        * click
        * tabulate
        * netmiko
