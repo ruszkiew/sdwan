@@ -10,7 +10,7 @@
 
 Automated Remote Site Test Script
 
-USAGE: pytest test_site.py --deviceId A.A.A.A
+USAGE: est_site.py --deviceId A.A.A.A
 
 """
 
@@ -19,14 +19,16 @@ USAGE: pytest test_site.py --deviceId A.A.A.A
 # IMPORTS
 
 import pytest
+import json
 import re
+import sys
+import pathlib
 from click.testing import CliRunner
 from sdwan import device
 
 ###################################################################################
 
 @pytest.fixture(scope="session")
-
 def deviceId(pytestconfig):
     return pytestconfig.getoption("deviceId")
 
@@ -54,14 +56,14 @@ def test_vsmart_control(deviceId):
 def test_bfd(deviceId):
     response = runner.invoke(device, ['--bfd', deviceId])
     assert response.exit_code == 0
-    assert (re.search('up\s+private', response.output)),'No BFD Sessions on MPLS'
+    assert (re.search('up\s+metro-ethernet', response.output)),'No BFD Sessions on METRO-E'
 
 ###################################################################################
 
 def test_version(deviceId):
     response = runner.invoke(device, ['--detail', deviceId])
     assert response.exit_code == 0
-    assert '17.03.02' in response.output, 'Not the desired Software Version'
+    assert '17.09.04a' in response.output, 'Not the desired Software Version'
 
 ###################################################################################
 
@@ -107,26 +109,15 @@ def test_from_vsmart(deviceId):
 def test_ospf_lan(deviceId):
     response = runner.invoke(device, ['--ospf', deviceId])
     assert response.exit_code == 0
-    assert (re.search('GigabitEthernet0\/0\/0.*full', response.output)),'No OSPF Neighbor LAN'
+    assert (re.search('GigabitEthernet0\/0\/1.*full', response.output)),'No OSPF Neighbor LAN'
 
 ##################################################################################
 
+"""
 def test_tracker(deviceId):
     response = runner.invoke(device, ['--tracker', deviceId])
     assert response.exit_code == 0
     assert 'tracker-if-state-up' in response.output, 'No Tracker or Tracker Down'
-
-##################################################################################
-
-
-'''
-
-IDEAS
-
-SaaS onRamp
-Definition Hits
-
-OTHER EXAMPLES
 
 def test_intf_wan(deviceId):
     response = runner.invoke(device, ['--intf', deviceId])
@@ -154,6 +145,22 @@ def test_vrrp_lan(deviceId):
         assert (re.search('GigabitEthernet0\/0\/0\.900.*100\s+.*backup.*\s+.*up', response.output)),'VLAN 900 VRRP Issue'
     else:
         assert False
+"""
+
+##################################################################################
+
+# Support running from CLI without calling pytest (to allow standalone packaging)
+if __name__ == "__main__":
+    # Handle different working dir path for running from python or from pyinstaller
+    workingDir=pathlib.Path(__file__).parent
+
+    # Pass through the arguments passed to this script
+    pytest_params = sys.argv[1:]
+    # Make sure to pass an explicit directory to handle
+    pytest_params.insert(0,workingDir)
+
+    sys.exit(pytest.main(pytest_params))
 
 
-'''
+##################################################################################
+

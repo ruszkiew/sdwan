@@ -9,6 +9,10 @@
 ###############################################################################
 
 """
+
+Allow a UUID to be passed in as a file of list for batch output
+    First Case --- Device Template - Variable
+
     *** STARTED - FRAMEWORK IN PLACE ***
 List, Display, Download, Upload - Custom Apps
     GET/POST -  /template/policy/customapp
@@ -2033,7 +2037,7 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
 
             sdwan.py template-device --tree <templateId>
 
-            sdwan.py template-device --variable <templateId>
+            sdwan.py template-device --variable <templateId> | file_of_uuid
 
     """
 
@@ -2316,29 +2320,41 @@ def template_device(attached, clone, config, csv, download, upload, tree, variab
         return
 
     if variable:
-        payload = {
-            "templateId": str(variable),
-            "deviceIds":
-                [
-                    "1.1.1.1"
-                ],
-            "isEdited": "false",
-            "isMasterEdited": "false"
-        }
-        response = sdwanp.post_request('template/device/config/input',
-                                       payload)
-        items = response['header']['columns']
-        headers = ["Title(variable)", "Object Path"]
-        table = list()
-        for item in items:
-            tr = [item['title'], item['property']]
-            table.append(tr)
-        try:
-            click.echo(tabulate.tabulate(table, headers,
-                                         tablefmt="fancy_grid"))
-        except UnicodeEncodeError:
-            click.echo(tabulate.tabulate(table, headers,
-                                         tablefmt="grid"))
+
+        # determine if parameter is single uuid or a file with a list to interate
+        if os.path.exists(variable):
+            _uuid_list = [line.strip() for line in open(variable, 'r')]
+        else:
+            _uuid_list = [variable]
+
+        for uuid in _uuid_list:
+            uuid_name = json.loads(sdwanp.get_request('template/device/object/' +
+                                          uuid))['templateName']
+            payload = {
+                "templateId": str(uuid),
+                "deviceIds":
+                    [
+                        "1.1.1.1"
+                    ],
+                "isEdited": "false",
+                "isMasterEdited": "false"
+            }
+            response = sdwanp.post_request('template/device/config/input',
+                                           payload)
+            print()
+            print('Device Template: ' + uuid_name + ' -- ' + uuid)
+            items = response['header']['columns']
+            headers = ["Title(variable)", "Object Path"]
+            table = list()
+            for item in items:
+                tr = [item['title'], item['property']]
+                table.append(tr)
+            try:
+                click.echo(tabulate.tabulate(table, headers,
+                                             tablefmt="fancy_grid"))
+            except UnicodeEncodeError:
+                click.echo(tabulate.tabulate(table, headers,
+                                             tablefmt="grid"))
         return
 
     if csv:
