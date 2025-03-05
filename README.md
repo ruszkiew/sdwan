@@ -1,9 +1,9 @@
 # SDWAN
 
-Cisco SDWAN (Viptela) CLI Tool
+Cisco SDWAN Catalyst CLI Tool
 
 This project has several objectives:
- * Learn Cisco SDWAN API
+ * Learn Cisco Catalyst SDWAN API
  * Learn Python
  * Provide a method to gather data via CLI
  * Bridge functional gaps in the vManage UI
@@ -11,25 +11,28 @@ This project has several objectives:
  * Provide somewhat intuitive sample configuration chunks
  * Have some fun
 
- This code has grown and is pretty long.  It could and should be modularized.  For now it is intentionaly kept in a single script to provide a single place to explore.
+ This code has grown and is pretty long.  It could and should be modularized.  It is intentionaly kept in a single script to provide a single place to explore.
 
- The script grew from the Cisco DevNet SDWAN Learning Labs.  It is recommend
- to run through the series.
+ The script grew from the Cisco DevNet SDWAN Learning Labs.
 
- https://developer.cisco.com/sdwan/learn/
+Cisco UX2.0 has NOT yet been integrated.  It will as the configuration develops.
+ * Configuration Group
+ * Policy Group
+ * Topology
+ * Hiearchy
 
 ## BRIDGING THE GAP
 
-These are the functional items the script provides that cannot be done in vManage.
+These are the functional items the script provides that cannot be done in Manager(vManage).
 
  * Import/Export Template and Policy Objects.
  * Clear Tasks.
  * Database Backup.
  * Change Device Models in Feature Template.
  * Clone Feature/Device Template to different Model.
- * Audit Bandwidth consumption to Licensing.
- * Identify Central Policy Applied to a Device
+ * Identify Central Policy Applied to a Device.
  * Automate Validation.
+ * Review FEC Operation.
 
 ## INSTALLATION
 
@@ -66,7 +69,7 @@ Script Usage
 
     Usage: sdwan.py [OPTIONS] COMMAND [ARGS]...
 
-        CLI for managing policies and templates in Cisco SDWAN.
+        CLI for managing policies and templates in Cisco Catalyst SDWAN.
 
     Options:
       --help  Show this message and exit.
@@ -77,6 +80,7 @@ Script Usage
       device             Display, Download, and View CLI Config for Devices.
       env                Print SDWAN Environment Values.
       policy-central     Display, Download, and Upload Centralized Policy.
+      policy-custom-app  Display, Download, and Upload Custom Application.
       policy-definition  Display, Download, and Upload Policy Definitions.
       policy-list        Display, Download, and Upload Policy Lists.
       policy-local       Display, Download, and Upload Local Policy.
@@ -112,7 +116,7 @@ The presense of this file is simply for 'tab' autocomplete during use.
 
 ## ENVIRONMENT VARIABLES
 
-The script will use environmental values to target the SD-WAN environment.
+The script will use environmental values to target the SDWAN environment.
 
  * SDWAN_IP=<vmanage_ip>
 
@@ -134,7 +138,7 @@ This is the DevNet environment file.
     cat export/devnet 
 
     export SDWAN_IP=64.103.37.21
-    export SDWAN_PORT=8443
+    export SDWAN_PORT=443
     export SDWAN_USERNAME=devnetuser
     export SDWAN_PASSWORD=Cisco123!
     export SDWAN_CFGDIR=./cfg/devnet/
@@ -143,7 +147,7 @@ The current environment can be viewed with the 'env' command in the script.
 
     ./sdwan.py env
 
-If using SOCKS Proxy to Port forward SSH/HTTPS through a Bastion Host, add vManage entry to the .ssh_config file.
+If using SOCKS Proxy to Port forward SSH/HTTPS through a Bastion Host, add Manager entry to the .ssh_config file.
 
 It would look like:
 
@@ -151,7 +155,7 @@ It would look like:
      ProxyCommand=nc -X 5 -x localhost:12345 %h %p
 
 
-## VMANAGE OBJECTS/COMPONENTS
+## MANAGER OBJECTS/COMPONENTS
 
 Lists, Definitions, Policies, and Templates are the core Components to vManage.
 
@@ -203,6 +207,7 @@ CiscoDevNet/[SASTRE](https://github.com/CiscoDevNet/sastre) is a much better scr
     sdwan.py device --set_var 100.65.30.11 '//system/gps-location/latitude' 44.9764 
     sdwan.py device --detail 100.65.30.11
     sdwan.py device --detach 100.65.30.11
+    sdwan.py device --fec 100.65.30.11
     sdwan.py device --csv 100.65.30.11
     sdwan.py device --download 100.65.30.11
     sdwan.py device --download all
@@ -256,13 +261,7 @@ Use pytest along with sdwan to automate validation.  See linked file for an exam
 
 This test script can be run in the following form.
 
-    pytest test_site.py --deviceId 100.65.30.11
-
-You can run all test scripts (python script with prefixed with 'test' in the directory
-
-    pytest --deviceId 100.65.30.11
-
-One could put many tests in a single script or have a script per test case.
+    test_site.py --deviceId 100.65.30.11
 
 The 'pytest.ini' file was included to ignore Warning Messages and output Verbose.
 
