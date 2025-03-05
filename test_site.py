@@ -10,7 +10,7 @@
 
 Automated Remote Site Test Script
 
-USAGE: est_site.py --deviceId A.A.A.A
+USAGE: test_site.py --deviceId A.A.A.A
 
 """
 
@@ -56,7 +56,7 @@ def test_vsmart_control(deviceId):
 def test_bfd(deviceId):
     response = runner.invoke(device, ['--bfd', deviceId])
     assert response.exit_code == 0
-    assert (re.search('up\s+metro-ethernet', response.output)),'No BFD Sessions on METRO-E'
+    assert (re.search('up\s+private1', response.output)),'No BFD Sessions on MPLS'
 
 ###################################################################################
 

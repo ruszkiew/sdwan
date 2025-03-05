@@ -582,6 +582,7 @@ def tasks(clear):
 @click.option("--detail", help="Display Device Details")
 @click.option("--download", help="Download Device CLI Configuration")
 @click.option("--events_hr", help="Display 1 Hour All Events")
+@click.option("--fec", help="Display FEC Statistics")
 @click.option("--groups", is_flag=True, help="Display Device Groups")
 @click.option("--invalid", help="Make Device Certificate Invalid")
 @click.option("--intf", help="Display Interface Statistics and State")
@@ -602,7 +603,7 @@ def tasks(clear):
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--vsmart", help="Display Policy learned from vSmart")
 @click.option("--wan", help="Display Device WAN Interface")
-def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, detail, download, events_hr, groups,
+def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, detail, download, events_hr, fec, groups,
            intf, models, ntp, omp, ospf, ping, set_var, csv, saas, sdavc, sla, staging, trace, tracker, invalid, valid,
            variable, vrrp, vsmart, wan):
     """Display, Download, and View CLI Config for Devices.
@@ -638,6 +639,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             sdwan.py device --download <deviceId> | all
 
             sdwan.py device --events_hr <deviceId>
+
+            sdwan.py device --fec <deviceId>
 
             sdwan.py device --models
 
@@ -1148,6 +1151,29 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         for item in items:
             print(item['event'])
         print()
+        return
+
+    if fec:
+        response = json.loads(sdwanp.get_request('device/tunnel/fec_statistics?deviceId=' + fec))
+        items = response['data']
+
+        print()
+        headers = ["SRC IP", "SRC PORT", "DST IP", "DST_PORT", "FEC RECON PKTS",
+                   "FEC RX DATA PKTS", "FEC RX PARITY PKTS", "FEC TX DATA PKTS",
+                   "FEX TX PARITY PKTS", "FEC CABABLE", "FEC DYNAMIC"]
+        table = list()
+        for item in items:
+            hostname = item['vdevice-host-name']
+            tr = [item['source-ip'], item['source-port'], item['dest-ip'], item['dest-port'],
+                  item['fec-reconstruct-pkts'], item['fec-rx-data-pkts'], item['fec-rx-parity-pkts'],
+                  item['fec-tx-data-pkts'], item['fec-tx-parity-pkts'], item['fec-capable'],
+                  item['fec-dynamic']]
+            table.append(tr)
+        print(hostname,' -- ', fec)
+        print()
+        click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
+        print()
+
         return
 
     if groups:
@@ -3158,31 +3184,22 @@ def policy_custom_app(config, download, upload):
 
     """
 
+    response = json.loads(sdwanp.get_request('template/policy/customapp/'))
+    apps = response['data']
+
     if config:
-        response = sdwanp.get_request('template/policy/customapp/' +
-                                      config)
-        print()
-        print(re.sub("'|b'", '', str(response)))
-        print()
         return
+        print('Working on config')
 
     if download:
-        print()
-        response = sdwanp.get_request('template/policy/customapp/' +
-                                      download)
-        print(re.sub("'|b'", '', str(response)))
-        print()
-        return
+        print('Working on Download')
 
     if upload:
-        print()
         print('Working on Upload')
-        print()
         return
     # no parameters
-    response = sdwanp.get_request('template/policy/customapp/')
     print()
-    print(re.sub("'|b'", '', str(response)))
+    pprint(apps)
     print()
     return
 
