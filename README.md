@@ -57,7 +57,7 @@ These are the functional items the script provides that cannot be done in Manage
 Before running the script, the environment variables need to be set.
 
     Display the environment file.
-       cat ./export/myenv
+       cat export/myenv
 
     Copy and Paste the contents into the terminal
 
@@ -65,7 +65,7 @@ Before running the script, the environment variables need to be set.
 Script Usage
 
     
-    ./sdwan.py --help
+    sdwan.py --help
 
     Usage: sdwan.py [OPTIONS] COMMAND [ARGS]...
 
