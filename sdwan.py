@@ -23,6 +23,8 @@ App Data
   last hour top 20 apps by router
   last hour traffic by app by router
 
+Flow Data
+
 """
 
 ###############################################################################
@@ -602,10 +604,9 @@ def tasks(clear):
 @click.option("--variable", help="Display Device Variable and Values")
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--vsmart", help="Display Policy learned from vSmart")
-@click.option("--wan", help="Display Device WAN Interface")
 def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, detail, download, events_hr, fec, groups,
            intf, models, ntp, omp, ospf, ping, set_var, csv, saas, sdavc, sla, staging, trace, tracker, invalid, valid,
-           variable, vrrp, vsmart, wan):
+           variable, vrrp, vsmart):
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -679,8 +680,6 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             sdwan.py device --vrrp <deviceId>
 
             sdwan.py device --vsmart <deviceId>
-
-            sdwan.py device --wan <deviceId>
 
     """
 
@@ -1855,127 +1854,6 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             print('AAR learned from-vsmart: YES  -- ' + item['name'])
         else:
             print('AAR learned from-vsmart: NO')
-        print()
-        return
-
-    if wan:
-        print()
-
-        response = json.loads(sdwanp.get_request('device/control/synced/waninterface?deviceId=' + wan))
-        items = response['data']
-
-        wan_ints = []
-        headers = ["SYSTEM IP", "HOSTNAME", "INTERFACE", "COLOR", "RESTRICT",
-                   "PRIVATE IP", "PRIVATE PORT", "PUBLIC IP", "PUBLIC PORT",
-                   "STATE", "VSMARTS", "VMANAGE", "TUNNEL PREF"]
-        table = list()
-        for item in items:
-            tr = [item['vmanage-system-ip'], item['vdevice-host-name'], item['interface'],
-                  item['color'], item['restrict-str'], item['private-ip'], item['private-port'],
-                  item['public-ip'], item['public-port'], item['operation-state'], item['num-vsmarts'],
-                  item['num-vmanages'], item['preference']]
-            table.append(tr)
-            wan_ints.append(item['interface'])
-
-        click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
-
-        # determine license watermark - 95 percentile
-        # will be moved to an 'audit' function once cisco confirms measurements
-        # collect wan interface statistics - 720 hours - 30 minute averages
-        payload = {
-            "query": {
-                "condition": "AND",
-                "rules": [
-                    {
-                        "value": [
-                            "720"
-                        ],
-                        "field": "entry_time",
-                        "type": "date",
-                        "operator": "last_n_hours"
-                    },
-                    {
-                        "value": [
-                            str(wan)
-                        ],
-                        "field": "vdevice_name",
-                        "type": "string",
-                        "operator": "in"
-                    },
-                    {
-                        "value": wan_ints,
-                        "field": "interface",
-                        "type": "string",
-                        "operator": "in"
-                    }
-                ]
-            },
-            "sort": [
-                {
-                    "field": "entry_time",
-                    "type": "date",
-                    "order": "asc"
-                }
-            ],
-            "aggregation": {
-                "field": [
-                    {
-                        "property": "interface",
-                        "sequence": 1
-                    }
-                ],
-                "histogram": {
-                    "property": "entry_time",
-                    "type": "minute",
-                    "interval": 30,
-                    "order": "asc"
-                },
-                "metrics": [
-                    {
-                        "property": "rx_kbps",
-                        "type": "avg"
-                    },
-                    {
-                        "property": "tx_kbps",
-                        "type": "avg"
-                    }
-                ]
-            }
-        }
-
-        # retrieve wan interface rx and tx statistics
-        response = sdwanp.post_request('statistics/interface/aggregation', payload)
-        items = response['data']
-
-        # aggregate rx and tx of all wan interfaces to single hash
-        agg_data = {}
-        for item in items:
-            if item['entry_time'] not in agg_data:
-                agg_data[item['entry_time']] = {}
-                agg_data[item['entry_time']]['rx_kbps'] = 0
-                agg_data[item['entry_time']]['tx_kbps'] = 0
-            agg_data[item['entry_time']]['rx_kbps'] = agg_data[item['entry_time']]['rx_kbps'] + round(item['rx_kbps'])
-            agg_data[item['entry_time']]['tx_kbps'] = agg_data[item['entry_time']]['tx_kbps'] + round(item['tx_kbps'])
-
-        # identify for each time slice which rx or tx is higher - put higher in a dict
-        # cisco measures on larger of ingress/egress
-        bw_list = []
-        for k in agg_data.keys():
-            if agg_data[k]['rx_kbps'] > agg_data[k]['tx_kbps']:
-                bw_list.append(agg_data[k]['rx_kbps'])
-            else:
-                bw_list.append(agg_data[k]['tx_kbps'])
-        # sort list - lowest to highest
-        bw_list.sort()
-        # choose the time slice below the 95% of highest - return as bandwidth aggregate for device licensing
-        bw_index = round(.95 * len(bw_list))
-
-        print()
-        print('Bandwidth License Watermark: ' + str(bw_list[bw_index]) + 'kbps')
-        print(' License level is based on 95 percentile with 30 minute time slice averages')
-        print(' Duration of measurement is 30 days')
-        print(' Aggregation of all WAN Interfaces')
-        print(' Higher of RX or TX used per WAN Interface per time slice')
         print()
         return
 

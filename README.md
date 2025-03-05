@@ -207,7 +207,6 @@ CiscoDevNet/[SASTRE](https://github.com/CiscoDevNet/sastre) is a much better scr
     sdwan.py device --download 100.65.30.11
     sdwan.py device --download all
     sdwan.py device --sla 100.65.30.11
-    sdwan.py device --wan 100.65.30.11
     sdwan.py device --int 100.65.30.11
     sdwan.py device --arp 100.65.30.11
     sdwan.py device --ospf 100.65.30.11
