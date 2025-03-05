@@ -34,6 +34,8 @@ Usage: sdwan.py device [OPTIONS]
 
       sdwan.py device --events_hr <deviceId>
 
+      sdwan.py device --fec <deviceId>
+
       sdwan.py device --models
 
       sdwan.py device --intf <deviceId>
@@ -72,8 +74,6 @@ Usage: sdwan.py device [OPTIONS]
 
       sdwan.py device --vsmart <deviceId>
 
-      sdwan.py device --wan <deviceId>
-
 Options:
   --arp TEXT         Display Device ARP Cache
   --attach TEXT      Attach Device Template
@@ -88,6 +88,7 @@ Options:
   --detail TEXT      Display Device Details
   --download TEXT    Download Device CLI Configuration
   --events_hr TEXT   Display 1 Hour All Events
+  --fec TEXT         Display FEC Statistics
   --groups           Display Device Groups
   --invalid TEXT     Make Device Certificate Invalid
   --intf TEXT        Display Interface Statistics and State
@@ -107,5 +108,4 @@ Options:
   --variable TEXT    Display Device Variable and Values
   --vrrp TEXT        Display Device VRRP Status
   --vsmart TEXT      Display Policy learned from vSmart
-  --wan TEXT         Display Device WAN Interface
   --help             Show this message and exit.
