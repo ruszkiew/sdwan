@@ -159,7 +159,8 @@ It would look like:
 
 Lists, Definitions, Policies, and Templates are the core Components to vManage.
 
-[VMANAGE COMPONENTS](https://github.com/ruszkiew/sdwan/blob/master/vmanage_components.pdf)
+[VMANAGE COMPONENTS UX1.0](https://github.com/ruszkiew/sdwan/blob/master/vmanage_ux1.pdf)
+[VMANAGE COMPONENTS UX2.0](https://github.com/ruszkiew/sdwan/blob/master/vmanage_ux2.pdf)
 
 
 ## BACKUP (BATCH DOWNLOAD)

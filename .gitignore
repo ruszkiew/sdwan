@@ -1,9 +1,7 @@
 *.pyc
 *.swp
 .ssh_config
-.vscode/
 cfg/
 export/
 log/
-test/
 .DS_Store

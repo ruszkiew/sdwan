@@ -4,16 +4,20 @@
 
 #  SDWAN CLI Tool
 
-#  Version 7.5 - Last Updated: Ed Ruszkiewicz
+#  Version 7.6 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
 """
 
+Add Queue Monitoring
+Add Duplicate Packet Monitoring
+Add Flow Data
 Allow a UUID to be passed in as a file of list for batch output
     First Case --- Device Template - Variable
 
     *** STARTED - FRAMEWORK IN PLACE ***
+
 List, Display, Download, Upload - Custom Apps
     GET/POST -  /template/policy/customapp
     GET/PUT/DELETE - /template/policy/customapp/{id}
@@ -23,7 +27,6 @@ App Data
   last hour top 20 apps by router
   last hour traffic by app by router
 
-Flow Data
 
 """
 
@@ -112,15 +115,10 @@ class rest_api_lib:
         requests.packages.urllib3.disable_warnings()
 
         base_url = 'https://%s:%s/dataservice/' % (vmanage_ip, vmanage_port)
-
         login_action = 'j_security_check'
-
         login_data = {'j_username': username, 'j_password': password}
-
         login_url = base_url + login_action
-
         token_url = base_url + 'client/token'
-
         sess = requests.session()
 
         if self.DEBUG: print()
