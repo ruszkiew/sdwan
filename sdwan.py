@@ -11,8 +11,10 @@
 """
 
 Add Queue Monitoring
-Add Duplicate Packet Monitoring
+
 Add Flow Data
+
+
 Allow a UUID to be passed in as a file of list for batch output
     First Case --- Device Template - Variable
 
@@ -592,6 +594,7 @@ def tasks(clear):
 @click.option("--omp", nargs=2, help="Display Device OMP Routes")
 @click.option("--ospf", help="Display Device OSPF Information")
 @click.option("--ping", nargs=4, help="Ping by VPN, SRC_IP, DST_IP")
+@click.option("--qos", help="Display Queuing Statistics")
 @click.option("--saas", help="Display SaaS OnRamp State")
 @click.option("--sdavc", help="Display SD-AVC Status")
 @click.option("--set_var", nargs=3, help="Set Variable/Value for Device")
@@ -604,8 +607,9 @@ def tasks(clear):
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--vsmart", help="Display Policy learned from vSmart")
 def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, detail, download, dup, events_hr, fec,
-           groups, intf, models, ntp, omp, ospf, ping, set_var, csv, saas, sdavc, sla, staging, trace, tracker, invalid,
-           valid, variable, vrrp, vsmart):
+           groups, intf, models, ntp, omp, ospf, ping, qos, set_var, csv, saas, sdavc, sla, staging, trace, tracker,
+           invalid, valid, variable, vrrp, vsmart):
+
 
     """Display, Download, and View CLI Config for Devices.
 
@@ -660,6 +664,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             sdwan.py device --ospf <deviceId>
 
             sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
+
+            sdwan.py device --qos <deviceId>
 
             sdwan.py device --saas <deviceId>
 
@@ -1137,7 +1143,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
                   item['pktdup-rx'], item['pktdup-rx-other'], item['pktdup-rx-this'],
                   item['pktdup-tx'], item['pktdup-tx-other'], item['pktdup-capable']]
             table.append(tr)
-        print(hostname,' -- ', fec)
+        print(hostname,' -- ', dup)
         print()
         click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
         print()
@@ -1554,6 +1560,33 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         print()
         pprint(response['rawOutput'])
         print()
+        return
+
+    if qos:
+        response = json.loads(sdwanp.get_request('device/interface/qosStats?deviceId=' + qos))
+        items = response['data']
+
+        offset_seconds = datetime.now().astimezone().utcoffset().total_seconds()
+
+        headers = ["PARENT", "TIMESTAMP", "INTF", "QUEUE", "TX PKTS", "TX BYTES",
+                   "DROP PKTS", "DROP BYTES", "RED DROP PKTS", "RED DROP BYTES",
+                   "QUEUE PKTS", "QUEUE BYTES"]
+        table = list()
+        for item in items:
+            hostname = item['vdevice-host-name']
+            tr = [item['has-child'], datetime.utcfromtimestamp(item['lastupdated'] / 1000 + offset_seconds).strftime('%Y-%m-%d %H:%M:%S'),
+                  item['name'], item['classifier-entry-name'], item['output-pkts'], item['output-bytes'],
+                  item['drop-pkts'], item['drop-bytes'], item['early-drop-pkts'], item['early-drop-bytes'],
+                  item['classified-pkts'], item['classified-bytes']]
+            if item['classifier-entry-name'] != 'SDWAN_underlay':
+                table.append(tr)
+
+        print()
+        print(hostname,' -- ', qos)
+        print()
+        click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
+        print()
+
         return
 
     if set_var:
