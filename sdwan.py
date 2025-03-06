@@ -581,6 +581,7 @@ def tasks(clear):
 @click.option("--detach", help="Detach Device from Device Template")
 @click.option("--detail", help="Display Device Details")
 @click.option("--download", help="Download Device CLI Configuration")
+@click.option("--dup", help="Display Packet Duplication Statistics")
 @click.option("--events_hr", help="Display 1 Hour All Events")
 @click.option("--fec", help="Display FEC Statistics")
 @click.option("--groups", is_flag=True, help="Display Device Groups")
@@ -602,9 +603,10 @@ def tasks(clear):
 @click.option("--variable", help="Display Device Variable and Values")
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--vsmart", help="Display Policy learned from vSmart")
-def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, detail, download, events_hr, fec, groups,
-           intf, models, ntp, omp, ospf, ping, set_var, csv, saas, sdavc, sla, staging, trace, tracker, invalid, valid,
-           variable, vrrp, vsmart):
+def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, detail, download, dup, events_hr, fec,
+           groups, intf, models, ntp, omp, ospf, ping, set_var, csv, saas, sdavc, sla, staging, trace, tracker, invalid,
+           valid, variable, vrrp, vsmart):
+
     """Display, Download, and View CLI Config for Devices.
 
         Returns information about each device that is part of the fabric.
@@ -636,6 +638,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             sdwan.py device --detail <deviceId>
 
             sdwan.py device --download <deviceId> | all
+
+            sdwan.py device --dup <deviceId>
 
             sdwan.py device --events_hr <deviceId>
 
@@ -1116,6 +1120,28 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
                              date_string, "w")
             json_file.write(re.sub("'|b'", '', str(response)).replace('\\n', '\n'))
             json_file.close()
+        return
+
+    if dup:
+        response = json.loads(sdwanp.get_request('device/tunnel/packet-duplicate?deviceId=' + dup))
+        items = response['data']
+
+        print()
+        headers = ["SRC IP", "SRC PORT", "DST IP", "DST_PORT", "PKTDUP RX",
+                   "PKTDUP RX OTHER", "PKTDUP RX THIS", "PKTDUP TX",
+                   "PKTDUP TX OTHER", "PKTDUP CABABLE"]
+        table = list()
+        for item in items:
+            hostname = item['vdevice-host-name']
+            tr = [item['source-ip'], item['source-port'], item['dest-ip'], item['dest-port'],
+                  item['pktdup-rx'], item['pktdup-rx-other'], item['pktdup-rx-this'],
+                  item['pktdup-tx'], item['pktdup-tx-other'], item['pktdup-capable']]
+            table.append(tr)
+        print(hostname,' -- ', fec)
+        print()
+        click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
+        print()
+
         return
 
     if events_hr:

@@ -145,7 +145,7 @@ This is the DevNet environment file.
 
 The current environment can be viewed with the 'env' command in the script.
 
-    ./sdwan.py env
+    sdwan.py env
 
 If using SOCKS Proxy to Port forward SSH/HTTPS through a Bastion Host, add Manager entry to the .ssh_config file.
 
