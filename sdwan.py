@@ -10,10 +10,8 @@
 
 """
 
-Add Queue Monitoring
-
-Add Flow Data
-
+UMTS - left off started troubleshooting
+    Seem to have a hard time to start/stop/disable - something about a different user session
 
 Allow a UUID to be passed in as a file of list for batch output
     First Case --- Device Template - Variable
@@ -29,6 +27,7 @@ App Data
   last hour top 20 apps by router
   last hour traffic by app by router
 
+  dataservice/statistics/tunnelhealth/history?last_n_hours=12&site=8&limit=30
 
 """
 
@@ -586,6 +585,7 @@ def tasks(clear):
 @click.option("--dup", help="Display Packet Duplication Statistics")
 @click.option("--events_hr", help="Display 1 Hour All Events")
 @click.option("--fec", help="Display FEC Statistics")
+@click.option("--flow", help="Display Flows")
 @click.option("--groups", is_flag=True, help="Display Device Groups")
 @click.option("--invalid", help="Make Device Certificate Invalid")
 @click.option("--intf", help="Display Interface Statistics and State")
@@ -601,14 +601,16 @@ def tasks(clear):
 @click.option("--staging", help="Make Device Certificate Staging")
 @click.option("--sla", help="Display Tunnel BFD SLA Statistics")
 @click.option("--trace", nargs=4, help="Traceroute by VPN, SRC_IP, DST_IP")
+@click.option("--umts", nargs=4, help="Underlay Trace by LOCAL_COLOR, REMOTE_COLOR, REMOTE_SYSTEM_IP")
 @click.option("--tracker", help="Display Endpoint Tracker")
+@click.option("--umts", nargs=4, help="Underlay Measurement and Tracing Service")
 @click.option("--valid", help="Make Device Certificate Valid")
 @click.option("--variable", help="Display Device Variable and Values")
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--vsmart", help="Display Policy learned from vSmart")
 def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, detail, download, dup, events_hr, fec,
-           groups, intf, models, ntp, omp, ospf, ping, qos, set_var, csv, saas, sdavc, sla, staging, trace, tracker,
-           invalid, valid, variable, vrrp, vsmart):
+           flow, groups, intf, models, ntp, omp, ospf, ping, qos, set_var, csv, saas, sdavc, sla, staging, trace, tracker,
+           umts, invalid, valid, variable, vrrp, vsmart):
 
 
     """Display, Download, and View CLI Config for Devices.
@@ -649,6 +651,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
             sdwan.py device --fec <deviceId>
 
+            sdwan.py device --flow <deviceId>
+
             sdwan.py device --models
 
             sdwan.py device --intf <deviceId>
@@ -679,7 +683,9 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
             sdwan.py device --tracker <deviceId>
 
-            sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
+            sdwan.py device --trace <deviceId> <vpn> <src_ip> <dst_ip>
+
+            sdwan.py device --umts <deviceId> <local_color> <remote_color> <remote_devviceId>
 
             sdwan.py device --valid <deviceId>
 
@@ -1199,6 +1205,31 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
                   item['fec-dynamic']]
             table.append(tr)
         print(hostname,' -- ', fec)
+        print()
+        click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
+        print()
+
+        return
+
+    if flow:
+        """
+        response = sdwanp.get_request('device/cedgecflowd/app-fwd-cflowd-flows?deviceId=' + flow)
+        pprint(response)
+        """
+        response = json.loads(sdwanp.get_request('device/cedgecflowd/app-fwd-cflowd-flows?deviceId=' + flow))
+        items = response['data']
+
+        print()
+        headers = ["VPN", "RX INTF", "PROTO", "SRC IP", "SRC PORT", "DST IP", "DST_PORT", "TX INTF", "DSCP",
+                   "APP", "PACKETS", "BYTES", "START TIME"]
+        table = list()
+        for item in items:
+            hostname = item['vdevice-host-name']
+            tr = [item['vpn-id'], item['input-intf'], item['proto'], item['src-addr'],
+                  item['src-port'], item['dst-addr'], item['dst-port'], item['output-intf'],
+                  item['dscp'], item['app'], item['total-pkts'], item['total-bytes'], item['start-time']]
+            table.append(tr)
+        print(hostname,' -- ', flow)
         print()
         click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
         print()
@@ -1796,6 +1827,54 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         click.echo(tabulate.tabulate(table, headers,
                                      tablefmt="simple"))
         print()
+        return
+
+    if umts:
+        # get arguements
+        _deviceId = umts[0]
+        _local_color = umts[1]
+        _remote_color = umts[2]
+        _remote_system_ip = umts[3]
+
+        # get the uuid from the deviceId
+        response = json.loads(sdwanp.get_request('device?deviceId=' + _deviceId))
+        uuid = response['data'][0]['uuid']
+
+        # generate a umts instance - grab the sessionId
+        payload = {"deviceUUID": uuid, "localColor": _local_color, "remoteColor": _remote_color, "remoteSystem": _remote_system_ip}
+        response = sdwanp.post_request('stream/device/umts',payload)
+
+        print()
+
+        try:
+            sessionId = response['sessionId']
+            print('starting trace - ', response['startTime'], ' - ', sessionId)
+            print()
+        except:
+            #sessionId = '630866aa-e397-47ff-8aca-ce479bc3aea3'
+            print('trace could not start')
+            print()
+
+        #start
+        #response = json.loads(sdwanp.get_request('stream/device/umts/start/' + sessionId))
+        #pprint(response)
+        #print()
+
+        #status
+        #response = json.loads(sdwanp.get_request('stream/device/umts/status/' + sessionId))
+        #pprint(response)
+        #print()
+
+        #download
+        #response = json.loads(sdwanp.get_request('stream/device/umts/download/' + sessionId))
+        #pprint(response)
+        #print()
+
+        #disable
+        #response = json.loads(sdwanp.get_request('stream/device/umts/disable/' + sessionId))
+        #pprint(response)
+        #print()
+
         return
 
     if vrrp:
