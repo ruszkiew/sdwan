@@ -1226,12 +1226,10 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
                    "APP", "PACKETS", "BYTES", "START TIME"]
         table = list()
         for item in items:
-            hostname = item['vdevice-host-name']
             tr = [item['vpn-id'], item['input-intf'], item['proto'], item['src-addr'],
                   item['src-port'], item['dst-addr'], item['dst-port'], item['output-intf'],
                   item['dscp'], item['app'], item['total-pkts'], item['total-bytes'], item['start-time']]
             table.append(tr)
-        print(hostname,' -- ', flow)
         print()
         click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
         print()

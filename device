@@ -32,9 +32,13 @@ Usage: sdwan.py device [OPTIONS]
 
       sdwan.py device --download <deviceId> | all
 
+      sdwan.py device --dup <deviceId>
+
       sdwan.py device --events_hr <deviceId>
 
       sdwan.py device --fec <deviceId>
+
+      sdwan.py device --flow <deviceId>
 
       sdwan.py device --models
 
@@ -52,6 +56,8 @@ Usage: sdwan.py device [OPTIONS]
 
       sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
 
+      sdwan.py device --qos <deviceId>
+
       sdwan.py device --saas <deviceId>
 
       sdwan.py device --sdavc <deviceId>
@@ -62,9 +68,13 @@ Usage: sdwan.py device [OPTIONS]
 
       sdwan.py device --sla <deviceId>
 
-      sdwan.py device --tracker <deviceId>
+      sdwan.py device --tloc <deviceId>          sdwan.py device --tracker
+      <deviceId>
 
-      sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
+      sdwan.py device --trace <deviceId> <vpn> <src_ip> <dst_ip>
+
+      sdwan.py device --umts <deviceId> <local_color> <remote_color>
+      <remote_devviceId>
 
       sdwan.py device --valid <deviceId>
 
@@ -87,8 +97,10 @@ Options:
   --detach TEXT      Detach Device from Device Template
   --detail TEXT      Display Device Details
   --download TEXT    Download Device CLI Configuration
+  --dup TEXT         Display Packet Duplication Statistics
   --events_hr TEXT   Display 1 Hour All Events
   --fec TEXT         Display FEC Statistics
+  --flow TEXT        Display Flows
   --groups           Display Device Groups
   --invalid TEXT     Make Device Certificate Invalid
   --intf TEXT        Display Interface Statistics and State
@@ -97,13 +109,16 @@ Options:
   --omp TEXT...      Display Device OMP Routes
   --ospf TEXT        Display Device OSPF Information
   --ping TEXT...     Ping by VPN, SRC_IP, DST_IP
+  --qos TEXT         Display Queuing Statistics
   --saas TEXT        Display SaaS OnRamp State
   --sdavc TEXT       Display SD-AVC Status
   --set_var TEXT...  Set Variable/Value for Device
   --staging TEXT     Make Device Certificate Staging
   --sla TEXT         Display Tunnel BFD SLA Statistics
+  --tloc TEXT        Display Local TLOCS
   --trace TEXT...    Traceroute by VPN, SRC_IP, DST_IP
   --tracker TEXT     Display Endpoint Tracker
+  --umts TEXT...     Underlay Measurement and Tracing Service
   --valid TEXT       Make Device Certificate Valid
   --variable TEXT    Display Device Variable and Values
   --vrrp TEXT        Display Device VRRP Status
