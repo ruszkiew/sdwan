@@ -600,8 +600,8 @@ def tasks(clear):
 @click.option("--set_var", nargs=3, help="Set Variable/Value for Device")
 @click.option("--staging", help="Make Device Certificate Staging")
 @click.option("--sla", help="Display Tunnel BFD SLA Statistics")
+@click.option("--tloc",  help="Display Local TLOCS")
 @click.option("--trace", nargs=4, help="Traceroute by VPN, SRC_IP, DST_IP")
-@click.option("--umts", nargs=4, help="Underlay Trace by LOCAL_COLOR, REMOTE_COLOR, REMOTE_SYSTEM_IP")
 @click.option("--tracker", help="Display Endpoint Tracker")
 @click.option("--umts", nargs=4, help="Underlay Measurement and Tracing Service")
 @click.option("--valid", help="Make Device Certificate Valid")
@@ -609,7 +609,7 @@ def tasks(clear):
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--vsmart", help="Display Policy learned from vSmart")
 def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, detail, download, dup, events_hr, fec,
-           flow, groups, intf, models, ntp, omp, ospf, ping, qos, set_var, csv, saas, sdavc, sla, staging, trace, tracker,
+           flow, groups, intf, models, ntp, omp, ospf, ping, qos, set_var, csv, saas, sdavc, sla, staging, tloc, trace, tracker,
            umts, invalid, valid, variable, vrrp, vsmart):
 
 
@@ -681,6 +681,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
             sdwan.py device --sla <deviceId>
 
+            sdwan.py device --tloc <deviceId>
+            
             sdwan.py device --tracker <deviceId>
 
             sdwan.py device --trace <deviceId> <vpn> <src_ip> <dst_ip>
@@ -1792,6 +1794,50 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         print(response)
         print()
         return
+
+
+    if tloc:
+
+        # set system ip if device Id is different
+        # post will require the system ip - the function parameter is passing in the deviceId
+
+        response = json.loads(sdwanp.get_request('device?deviceId=' + tloc))
+        system_ip = response['data'][0]['local-system-ip']
+
+
+        payload = {
+            "query": {"condition": "AND",
+                       "rules": [{"value": ["1"], "field": "entry_time", "type": "date", "operator": "last_n_hours"},
+                                 {"value": ["100"], "field": "loss_percentage", "type": "number", "operator": "less"},
+                                 {"value": [str(system_ip)], "field": "vdevice_name", "type": "string",
+                                  "operator": "in"}]},
+             "aggregation": {"field": [{"property": "local_color", "order": "asc", "sequence": 1}],
+                             "metrics": [{"property": "loss_percentage", "type": "avg"},
+                                         {"property": "latency", "type": "avg"},
+                                         {"property": "jitter", "type": "avg"}]}
+        }
+
+        response = sdwanp.post_request('statistics/approute/aggregation',
+                                       payload)
+
+        print()
+
+        items = response['data']
+
+        headers = ["COLOR", "INTERFACE", "DESCRIPTION",
+                   "OPER STATE", "LOSS %", "LATENCY", "JITTER"]
+        table = list()
+        for item in items:
+            tr = [item['local_color'], item['local_ifname'], item['local_if_desc'],
+                  item['tloc_state'], item['loss_percentage'], item['latency'], item['jitter']]
+            table.append(tr)
+
+        click.echo(tabulate.tabulate(table, headers, tablefmt="simple"))
+
+        print()
+
+        return
+
 
     if trace:
         # get arguements
