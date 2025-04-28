@@ -1,0 +1,16 @@
+Usage: sdwan.py show [OPTIONS]
+
+  Execute a CLI command on a Router
+
+  Returns stdout from specified command
+
+  The SAME login credendtials are used to the Router    that were used to
+  Manager
+
+  Example Command:
+
+      sdwan.py cli --device <device_id> <command>
+
+Options:
+  --device TEXT...  Execute a CLI command on a Router
+  --help            Show this message and exit.

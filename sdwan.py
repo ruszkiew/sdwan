@@ -13,8 +13,16 @@
 UMTS - left off started troubleshooting
     Seem to have a hard time to start/stop/disable - something about a different user session
 
-Allow a UUID to be passed in as a file of list for batch output
-    First Case --- Device Template - Variable
+Allow a ID to be passed in as a file of list for batch output
+    templates - UUID
+    device - DevidID
+
+     glob ally check if ARG[1] is  a file - if yes - set a flg to be used within relevant functions
+        else: continue as we do
+
+    future - if yes - 1
+
+
 
     *** STARTED - FRAMEWORK IN PLACE ***
 
@@ -458,6 +466,63 @@ def configuration_db(backup):
 
     return
 
+
+###############################################################################
+
+# SHOW COMMAND
+@click.command()
+@click.option("--device", nargs=2, help="Execute a CLI command on a Router")
+def show(device):
+    """Execute a CLI command on a Router
+
+        Returns stdout from specified command
+
+        The SAME login credendtials are used to the Router
+           that were used to Manager
+
+        Example Command:
+
+            sdwan.py cli --device <device_id> <command>
+
+    """
+
+    print()
+    ssh_device_cmd = ('ssh ' + device[0] + ' -p 830')
+    ssh_show_cmd = device[1]
+
+    # print(ssh_show_cmd)
+    # print(ssh_device_cmd)
+
+    net_connect = ConnectHandler(**SSH_DEVICE)
+    ssh_output = net_connect.send_command('vshell', expect_string=r".*:~\$")
+    # print(ssh_output)
+    ssh_output = net_connect.send_command_timing(ssh_device_cmd)
+    # print(ssh_output)
+    if "password" in ssh_output.lower():
+        ssh_output = net_connect.send_command_timing(SDWAN_PASSWORD, strip_prompt=False, strip_command=False)
+        # print(ssh_output)
+        if "password" in ssh_output.lower():
+            ssh_output = net_connect.send_command_timing(SDWAN_PASSWORD, strip_prompt=False, strip_command=False)
+            # print(ssh_output)
+        else:
+            print()
+            print('** authentication failed **')
+            print()
+            return
+    else:
+        print()
+        print('** authentication failed **')
+        print()
+        return
+
+    ssh_output = net_connect.send_command(ssh_show_cmd, expect_string=r".*#")
+    print()
+    print(ssh_output)
+    print()
+
+    net_connect.disconnect()
+
+    return
 
 ###############################################################################
 
@@ -4035,6 +4100,7 @@ def cli():
 
 
 cli.add_command(configuration_db)
+cli.add_command(show)
 cli.add_command(env)
 cli.add_command(rest)
 cli.add_command(policy_list)
