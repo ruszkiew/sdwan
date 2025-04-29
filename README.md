@@ -28,7 +28,7 @@ These are the functional items the script provides that cannot be done in Manage
  * Import/Export Template and Policy Objects.
  * Clear Tasks.
  * Database Backup.
- * Send CLI Commands to Router via vManage
+ * Send CLI Commands to Device via vManage
  * Change Device Models in Feature Template.
  * Clone Feature/Device Template to different Model.
  * Identify Central Policy Applied to a Device.
@@ -219,6 +219,8 @@ CiscoDevNet/[SASTRE](https://github.com/CiscoDevNet/sastre) is a much better scr
     sdwan.py device --detail 100.65.30.11
     sdwan.py device --detach 100.65.30.11
     sdwan.py device --fec 100.65.30.11
+    sdwan.py device --qos 100.65.30.11
+    sdwan.py device --flow 100.65.30.11
     sdwan.py device --csv 100.65.30.11
     sdwan.py device --download 100.65.30.11
     sdwan.py device --download all

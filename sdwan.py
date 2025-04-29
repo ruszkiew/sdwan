@@ -1817,9 +1817,9 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         print()
         print('Use the "device --send" switch')
         print()
-        print(' Login credentials to Device for SSH are required!'
+        print(' Login credentials to Device for SSH are required!')
         print()
-        print("   sdwan.py device --send ' + sdavc + 'show avc sd-service info summary'")
+        print("   sdwan.py device --send " + sdavc + " 'show avc sd-service info summary'")
         print()
         return
 
