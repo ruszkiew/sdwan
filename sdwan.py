@@ -696,7 +696,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
             sdwan.py device --sdavc <deviceId>
 
-            sdwan.py device --send <device_id> <command>
+            sdwan.py device --send <device_id> <command>|<file_of_commands>
 
             sdwan.py device --set_var <deviceId> <object> <value>
 
@@ -1645,6 +1645,9 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
     
     if send:
 
+        # send single or multiple commands to a router
+        # nested ssh - first ssh to vmanage - then to router over control connection
+
         net_connect = ConnectHandler(**SSH_DEVICE)
 
         # build ssh to router command line
@@ -1663,6 +1666,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
         print()
 
+        # navigate authentication to router
         if "password" in ssh_output.lower():
             ssh_output = net_connect.send_command_timing(ROUTER_PASSWORD, strip_prompt=False, strip_command=False)
             if "password" in ssh_output.lower():
@@ -1682,6 +1686,7 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             print(ssh_output)
         print()
 
+        # disconnect ssh session
         net_connect.disconnect()
 
         return

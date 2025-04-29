@@ -62,6 +62,8 @@ Usage: sdwan.py device [OPTIONS]
 
       sdwan.py device --sdavc <deviceId>
 
+      sdwan.py device --send <device_id> <command>|<file_of_commands>
+
       sdwan.py device --set_var <deviceId> <object> <value>
 
       sdwan.py device --staging <deviceId>
@@ -112,6 +114,7 @@ Options:
   --qos TEXT         Display Queuing Statistics
   --saas TEXT        Display SaaS OnRamp State
   --sdavc TEXT       Display SD-AVC Status
+  --send TEXT...     Execute a CLI command on a Router
   --set_var TEXT...  Set Variable/Value for Device
   --staging TEXT     Make Device Certificate Staging
   --sla TEXT         Display Tunnel BFD SLA Statistics
