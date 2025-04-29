@@ -37,7 +37,7 @@ These are the functional items the script provides that cannot be done in Manage
 
 ## INSTALLATION
 
-    Install python modules
+    Install python modules (pip)
        * requests
        * pysocks
        * click
@@ -47,7 +47,7 @@ These are the functional items the script provides that cannot be done in Manage
     Clone or download this repo
 
     Create an environmental variable file:
-	vi ./export/myenv
+	vi export/myenv
 
     Create environment backup directory
 	mkdir ./cfg/myenv
@@ -158,7 +158,7 @@ If using SOCKS Proxy to Port forward SSH/HTTPS through a Bastion Host, add Manag
 
 It would look like:
 
-    host 64.103.37.21
+    host <ip_proxy_host>
      ProxyCommand=nc -X 5 -x localhost:12345 %h %p
 
 

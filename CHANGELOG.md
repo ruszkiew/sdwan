@@ -130,4 +130,10 @@ v7.3 - Endpoint Tracker Display
 
 v7.4 - Application specifics to Central Policy Tree
 
-v7.5 - Display Central Policy Lists in play to a Device based on Site ID
+v7.5 - Display Central Policy Lists active to a Device based on Site ID
+
+v7.6 - Added statistics for QoS, FEC, and Packet Dup
+
+v7.7 - Added ability to send a CLI command(s) to a Device through vManage via SSH
+
+v7.8 - Added ability to SSH to a Device through vManage - limited interactivity ability

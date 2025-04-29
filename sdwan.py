@@ -4,36 +4,11 @@
 
 #  SDWAN CLI Tool
 
-#  Version 7.6 - Last Updated: Ed Ruszkiewicz
+#  Version 7.8 - Last Updated: Ed Ruszkiewicz
 
 ###############################################################################
 
 """
-
-UMTS - left off started troubleshooting
-    Seem to have a hard time to start/stop/disable - something about a different user session
-
-Allow a ID to be passed in as a file of list for batch output
-    templates - UUID
-    device - DevidID
-
-     glob ally check if ARG[1] is  a file - if yes - set a flg to be used within relevant functions
-        else: continue as we do
-
-    future - if yes - 1
-
-    *** STARTED - FRAMEWORK IN PLACE ***
-
-List, Display, Download, Upload - Custom Apps
-    GET/POST -  /template/policy/customapp
-    GET/PUT/DELETE - /template/policy/customapp/{id}
-
-App Data
-  last hour traffic by app across entire fabric
-  last hour top 20 apps by router
-  last hour traffic by app by router
-
-  dataservice/statistics/tunnelhealth/history?last_n_hours=12&site=8&limit=30
 
 """
 
@@ -87,6 +62,7 @@ if SDWAN_IP is None or SDWAN_USERNAME is None or SDWAN_PASSWORD is None:
     print("Optional Environmental Values to be used.")
     print("   export ROUTER_USERNAME=devnetuser")
     print("   export ROUTER_PASSWORD=Cisco123!")
+    print("   export SDWAN_PROXY=127.0.0.1")
     print("")
     exit("1")
 
@@ -675,8 +651,6 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             sdwan.py device --fec <deviceId>
 
             sdwan.py device --flow <deviceId>
-
-            sdwan.py device --models
 
             sdwan.py device --intf <deviceId>
 
@@ -1840,6 +1814,12 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
     if sdavc:
         print()
         print('Waiting on SD-AVC API Call...')
+        print()
+        print('Use the "device --send" switch')
+        print()
+        print(' Login credentials to Device for SSH are required!'
+        print()
+        print("   sdwan.py device --send ' + sdavc + 'show avc sd-service info summary'")
         print()
         return
 
