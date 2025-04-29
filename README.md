@@ -117,7 +117,7 @@ The presense of this file is simply for 'tab' autocomplete during use.
 
 ## ENVIRONMENT VARIABLES
 
-The script will use environmental values to target the SDWAN environment.
+The script will use Environmental Values to target the SDWAN environment.
 
  * SDWAN_IP=<vmanage_ip>
 
@@ -128,8 +128,14 @@ The script will use environmental values to target the SDWAN environment.
  * SDWAN_PASSWORD=<password>
 
  * SDWAN_CFGDIR=./cfg/<environment_name>/
+
+Optional Environmental Values
 	
  * SDWAN_PROXY=127.0.0.1:12345
+
+ * ROUTER_USERNAME=<username>
+
+ * ROUTER_PASSWORD=<password>
 
 
 It is good to organize different environments by creating a file in the export direcotry.

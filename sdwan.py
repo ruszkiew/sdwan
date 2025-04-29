@@ -59,6 +59,7 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from pprint import pprint
 from netmiko import ConnectHandler, SCPConn
 
+
 ###############################################################################
 
 # ENVIRONMENTAL VARIABLES
@@ -617,10 +618,11 @@ def tasks(clear):
 @click.option("--qos", help="Display Queuing Statistics")
 @click.option("--saas", help="Display SaaS OnRamp State")
 @click.option("--sdavc", help="Display SD-AVC Status")
-@click.option("--send", nargs=2, help="Execute a CLI command on a Router")
+@click.option("--send", nargs=2, help="Execute a CLI command on a Device")
 @click.option("--set_var", nargs=3, help="Set Variable/Value for Device")
 @click.option("--staging", help="Make Device Certificate Staging")
 @click.option("--sla", help="Display Tunnel BFD SLA Statistics")
+@click.option("--ssh", help="SSH to Device through Manager Control Connection")
 @click.option("--tloc",  help="Display Local TLOCS")
 @click.option("--trace", nargs=4, help="Traceroute by VPN, SRC_IP, DST_IP")
 @click.option("--tracker", help="Display Endpoint Tracker")
@@ -630,8 +632,8 @@ def tasks(clear):
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--vsmart", help="Display Policy learned from vSmart")
 def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, detail, download, dup, events_hr, fec,
-           flow, groups, intf, models, ntp, omp, ospf, ping, qos, set_var, csv, saas, sdavc, send, sla, staging, tloc, trace, tracker,
-           umts, invalid, valid, variable, vrrp, vsmart):
+           flow, groups, intf, models, ntp, omp, ospf, ping, qos, set_var, csv, saas, sdavc, send, sla, staging, ssh,
+           tloc, trace, tracker, umts, invalid, valid, variable, vrrp, vsmart):
 
 
     """Display, Download, and View CLI Config for Devices.
@@ -703,6 +705,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             sdwan.py device --staging <deviceId>
 
             sdwan.py device --sla <deviceId>
+
+            sdwan.py device --ssh <deviceId>
 
             sdwan.py device --tloc <deviceId>
             
@@ -1690,6 +1694,58 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         net_connect.disconnect()
 
         return
+
+    if ssh:
+
+        print()
+        print('SSH to the router over the control connection on vManage')
+        print()
+        print(' * Auto-complete will not work')
+        print(' * Cisco Hosted Multitentant vManage will not work')
+        print()
+
+        # nested ssh - first ssh to vmanage - then to router over control connection
+
+        net_connect = ConnectHandler(**SSH_DEVICE)
+
+        # build ssh to router command line
+        ssh_router_login_cmd = ('ssh -l ' + ROUTER_USERNAME + " " + ssh + ' -p 830')
+        ssh_output = net_connect.send_command('vshell', expect_string=r".*:~\$")
+        ssh_output = net_connect.send_command_timing(ssh_router_login_cmd)
+
+        # navigate authentication to router
+        if "password" in ssh_output.lower():
+            ssh_output = net_connect.send_command_timing(ROUTER_PASSWORD, strip_prompt=False, strip_command=False)
+            print(ssh_output)
+            if "password" in ssh_output.lower():
+                ssh_output = net_connect.send_command_timing(ROUTER_PASSWORD, strip_prompt=False, strip_command=False)
+                print(ssh_output, end="")
+            else:
+                print('** authentication failed **')
+                return
+        else:
+            print('** authentication failed **')
+            return
+
+        EXIT = False
+        while not EXIT:
+            try:
+                command = input()
+            except KeyboardInterrupt:
+                break
+            if command == 'exit':
+               EXIT = True
+               print()
+               print('[Session terminated]')
+            else:
+                ssh_output = net_connect.send_command(command, expect_string=r".*#")
+                print(ssh_output, end="")
+
+        # disconnect ssh session
+        net_connect.disconnect()
+
+        return
+
 
 
     if set_var:
