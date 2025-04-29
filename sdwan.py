@@ -22,8 +22,6 @@ Allow a ID to be passed in as a file of list for batch output
 
     future - if yes - 1
 
-
-
     *** STARTED - FRAMEWORK IN PLACE ***
 
 List, Display, Download, Upload - Custom Apps
@@ -410,6 +408,8 @@ def env():
     print('SDWAN_IP = ' + SDWAN_IP)
     print('SDWAN_USERNAME = ' + SDWAN_USERNAME)
     print('SDWAN_PASSWORD = ' + SDWAN_PASSWORD)
+    print('ROUTER_USERNAME = ' + ROUTER_USERNAME)
+    print('ROUTER_PASSWORD = ' + ROUTER_PASSWORD)
     print('SDWAN_CFGDIR = ' + SDWAN_CFGDIR)
     print('SDWAN_PROXY = ' + SDWAN_PROXY)
     print()
@@ -1647,8 +1647,16 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
         net_connect = ConnectHandler(**SSH_DEVICE)
 
+        # build ssh to router command line
         ssh_router_login_cmd = ('ssh -l ' + ROUTER_USERNAME + " " + send[0] + ' -p 830')
-        ssh_router_show_cmd = send[1]
+
+        # determine if parameter is single device|command or a file
+        # build a list of commands
+        if os.path.exists(send[1]):
+            ssh_router_show_cmd = [line.strip() for line in open(send[1], 'r')]
+        else:
+            ssh_router_show_cmd = [send[1]]
+        ssh_router_show_cmd.append("\n")
 
         ssh_output = net_connect.send_command('vshell', expect_string=r".*:~\$")
         ssh_output = net_connect.send_command_timing(ssh_router_login_cmd)
@@ -1666,9 +1674,12 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             print('** authentication failed **')
             return
 
-        ssh_output = net_connect.send_command(ssh_router_show_cmd, expect_string=r".*#")
-        print()
-        print(ssh_output)
+        # send commands
+        pprint(ssh_router_show_cmd)
+        for command in ssh_router_show_cmd:
+            ssh_output = net_connect.send_command(command, expect_string=r".*#")
+            print()
+            print(ssh_output)
         print()
 
         net_connect.disconnect()
