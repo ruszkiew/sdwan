@@ -69,6 +69,8 @@ SDWAN_IP = os.environ.get("SDWAN_IP")
 SDWAN_PORT = os.environ.get("SDWAN_PORT")
 SDWAN_USERNAME = os.environ.get("SDWAN_USERNAME")
 SDWAN_PASSWORD = os.environ.get("SDWAN_PASSWORD")
+ROUTER_USERNAME = os.environ.get("ROUTER_USERNAME")
+ROUTER_PASSWORD = os.environ.get("ROUTER_PASSWORD")
 SDWAN_CFGDIR = os.environ.get("SDWAN_CFGDIR")
 SDWAN_PROXY = os.environ.get("SDWAN_PROXY")
 SDWAN_SSH_CONFIG = './.ssh_config'
@@ -76,11 +78,16 @@ SDWAN_SSH_CONFIG = './.ssh_config'
 if SDWAN_IP is None or SDWAN_USERNAME is None or SDWAN_PASSWORD is None:
     print("CISCO SDWAN details must be set via environment ",
           "variables before running.")
+    print("")
     print("   export SDWAN_IP=64.103.37.21")
     print("   export SDWAN_PORT=443")
     print("   export SDWAN_USERNAME=devnetuser")
     print("   export SDWAN_PASSWORD=Cisco123!")
     print("   export SDWAN_CFGDIR=./cfg/")
+    print("")
+    print("Optional Environmental Values to be used.")
+    print("   export ROUTER_USERNAME=devnetuser")
+    print("   export ROUTER_PASSWORD=Cisco123!")
     print("")
     exit("1")
 
@@ -92,6 +99,10 @@ if SDWAN_PROXY is not None:
 else:
     proxy = {}
     SDWAN_PROXY = 'None'
+
+if ROUTER_USERNAME is None:
+    ROUTER_USERNAME = SDWAN_USERNAME
+    ROUTER_PASSWORD = SDWAN_PASSWORD
 
 # NETMIKO SSH DEVICE
 
@@ -467,62 +478,6 @@ def configuration_db(backup):
     return
 
 
-###############################################################################
-
-# SHOW COMMAND
-@click.command()
-@click.option("--device", nargs=2, help="Execute a CLI command on a Router")
-def show(device):
-    """Execute a CLI command on a Router
-
-        Returns stdout from specified command
-
-        The SAME login credendtials are used to the Router
-           that were used to Manager
-
-        Example Command:
-
-            sdwan.py cli --device <device_id> <command>
-
-    """
-
-    print()
-    ssh_device_cmd = ('ssh ' + device[0] + ' -p 830')
-    ssh_show_cmd = device[1]
-
-    # print(ssh_show_cmd)
-    # print(ssh_device_cmd)
-
-    net_connect = ConnectHandler(**SSH_DEVICE)
-    ssh_output = net_connect.send_command('vshell', expect_string=r".*:~\$")
-    # print(ssh_output)
-    ssh_output = net_connect.send_command_timing(ssh_device_cmd)
-    # print(ssh_output)
-    if "password" in ssh_output.lower():
-        ssh_output = net_connect.send_command_timing(SDWAN_PASSWORD, strip_prompt=False, strip_command=False)
-        # print(ssh_output)
-        if "password" in ssh_output.lower():
-            ssh_output = net_connect.send_command_timing(SDWAN_PASSWORD, strip_prompt=False, strip_command=False)
-            # print(ssh_output)
-        else:
-            print()
-            print('** authentication failed **')
-            print()
-            return
-    else:
-        print()
-        print('** authentication failed **')
-        print()
-        return
-
-    ssh_output = net_connect.send_command(ssh_show_cmd, expect_string=r".*#")
-    print()
-    print(ssh_output)
-    print()
-
-    net_connect.disconnect()
-
-    return
 
 ###############################################################################
 
@@ -662,6 +617,7 @@ def tasks(clear):
 @click.option("--qos", help="Display Queuing Statistics")
 @click.option("--saas", help="Display SaaS OnRamp State")
 @click.option("--sdavc", help="Display SD-AVC Status")
+@click.option("--send", nargs=2, help="Execute a CLI command on a Router")
 @click.option("--set_var", nargs=3, help="Set Variable/Value for Device")
 @click.option("--staging", help="Make Device Certificate Staging")
 @click.option("--sla", help="Display Tunnel BFD SLA Statistics")
@@ -674,7 +630,7 @@ def tasks(clear):
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--vsmart", help="Display Policy learned from vSmart")
 def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, detail, download, dup, events_hr, fec,
-           flow, groups, intf, models, ntp, omp, ospf, ping, qos, set_var, csv, saas, sdavc, sla, staging, tloc, trace, tracker,
+           flow, groups, intf, models, ntp, omp, ospf, ping, qos, set_var, csv, saas, sdavc, send, sla, staging, tloc, trace, tracker,
            umts, invalid, valid, variable, vrrp, vsmart):
 
 
@@ -739,6 +695,8 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             sdwan.py device --saas <deviceId>
 
             sdwan.py device --sdavc <deviceId>
+
+            sdwan.py device --send <device_id> <command>
 
             sdwan.py device --set_var <deviceId> <object> <value>
 
@@ -1684,6 +1642,39 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         print()
 
         return
+    
+    if send:
+
+        net_connect = ConnectHandler(**SSH_DEVICE)
+
+        ssh_router_login_cmd = ('ssh -l ' + ROUTER_USERNAME + " " + send[0] + ' -p 830')
+        ssh_router_show_cmd = send[1]
+
+        ssh_output = net_connect.send_command('vshell', expect_string=r".*:~\$")
+        ssh_output = net_connect.send_command_timing(ssh_router_login_cmd)
+
+        print()
+
+        if "password" in ssh_output.lower():
+            ssh_output = net_connect.send_command_timing(ROUTER_PASSWORD, strip_prompt=False, strip_command=False)
+            if "password" in ssh_output.lower():
+                ssh_output = net_connect.send_command_timing(ROUTER_PASSWORD, strip_prompt=False, strip_command=False)
+            else:
+                print('** authentication failed **')
+                return
+        else:
+            print('** authentication failed **')
+            return
+
+        ssh_output = net_connect.send_command(ssh_router_show_cmd, expect_string=r".*#")
+        print()
+        print(ssh_output)
+        print()
+
+        net_connect.disconnect()
+
+        return
+
 
     if set_var:
         # get arguements
@@ -4100,7 +4091,6 @@ def cli():
 
 
 cli.add_command(configuration_db)
-cli.add_command(show)
 cli.add_command(env)
 cli.add_command(rest)
 cli.add_command(policy_list)
