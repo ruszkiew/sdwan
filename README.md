@@ -62,10 +62,13 @@ Before running the script, the environment variables need to be set.
     cat export/myenv
 
     If the password is stored in 'myenv', it is recommended to encrypt the file.  OpenSSL works nicely.
+
         # encrypt myenv
         openssl aes-256-cbc -a -salt -in export/myenv -out export/myenv.enc
+
         # remove myenv with the cleartext password
         rm export/myenv
+
         # decrypt myenv to stdout to copy 
         openssl aes-256-cbc -d -a -salt -in export/myenv.enc
 
