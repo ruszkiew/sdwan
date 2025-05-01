@@ -66,31 +66,25 @@ Before running the script, the environment variables need to be set.
         openssl aes-256-cbc -a -salt -in export/myenv -out export/myenv.enc
         # remove myenv with the cleartext password
         rm export/myenv
-        # decrypt myenvn to stdout to copy 
+        # decrypt myenv to stdout to copy 
         openssl aes-256-cbc -d -a -salt -in export/myenv.enc
 
     Copy and Paste the contents into the terminal
 
-## ENVIRONMENT VARIABLES
+## ENVIRONMENT VALUES
 
 The script will use Environmental Values to target the SDWAN environment.
 
  * SDWAN_IP=<vmanage_ip>
-
  * SDWAN_PORT=<vmanage_port>
-	
  * SDWAN_USERNAME=<username>
-
  * SDWAN_PASSWORD=<password>
-
  * SDWAN_CFGDIR=./cfg/<environment_name>/
 
 Optional Environmental Values
 	
  * SDWAN_PROXY=127.0.0.1:12345
-
  * ROUTER_USERNAME=<username>
-
  * ROUTER_PASSWORD=<password>
 
 
