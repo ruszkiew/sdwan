@@ -46,7 +46,8 @@ These are the functional items the script provides that cannot be done in Manage
 
     Clone or download this repo
 
-    Create an environmental variable file:
+    Create an environmental variable file.  Example environment is 'myenv'.
+
 	vi export/myenv
 
     Create environment backup directory
@@ -59,6 +60,14 @@ Before running the script, the environment variables need to be set.
 
     Display the environment file.
        cat export/myenv
+
+    If the password is stored in 'myenv', it is recommended to encrypt the file.  OpenSSL works nicely.
+        # encrypt myenv
+        openssl aes-256-cbc -a -salt -in export/myenv -out export/myenv.enc
+        # remove myenv with the cleartext password
+        rm export/myenv
+        # decrypt myenvn to stdout to copy 
+        openssl aes-256-cbc -d -a -salt -in export/myenv.enc
 
     Copy and Paste the contents into the terminal
 
