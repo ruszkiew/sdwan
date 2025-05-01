@@ -46,20 +46,20 @@ These are the functional items the script provides that cannot be done in Manage
 
     Clone or download this repo
 
-    Create an environmental variable file.  Example environment is 'myenv'.
-
-	vi export/myenv
-
-    Create environment backup directory
-	mkdir ./cfg/myenv
     
      
 ## USAGE
 
 Before running the script, the environment variables need to be set.
 
+    Create an environmental variable file.  Example environment is 'myenv'.
+	vi export/myenv
+
+    Create environment backup directory
+	mkdir ./cfg/myenv
+
     Display the environment file.
-       cat export/myenv
+    cat export/myenv
 
     If the password is stored in 'myenv', it is recommended to encrypt the file.  OpenSSL works nicely.
         # encrypt myenv
@@ -70,6 +70,52 @@ Before running the script, the environment variables need to be set.
         openssl aes-256-cbc -d -a -salt -in export/myenv.enc
 
     Copy and Paste the contents into the terminal
+
+## ENVIRONMENT VARIABLES
+
+The script will use Environmental Values to target the SDWAN environment.
+
+ * SDWAN_IP=<vmanage_ip>
+
+ * SDWAN_PORT=<vmanage_port>
+	
+ * SDWAN_USERNAME=<username>
+
+ * SDWAN_PASSWORD=<password>
+
+ * SDWAN_CFGDIR=./cfg/<environment_name>/
+
+Optional Environmental Values
+	
+ * SDWAN_PROXY=127.0.0.1:12345
+
+ * ROUTER_USERNAME=<username>
+
+ * ROUTER_PASSWORD=<password>
+
+
+It is good to organize different environments by creating a file in the export direcotry.
+
+This is the DevNet environment file.
+
+    cat export/devnet 
+
+    export SDWAN_IP=64.103.37.21
+    export SDWAN_PORT=443
+    export SDWAN_USERNAME=devnetuser
+    export SDWAN_PASSWORD=Cisco123!
+    export SDWAN_CFGDIR=./cfg/devnet/
+
+The current environment can be viewed with the 'env' command in the script.
+
+    sdwan.py env
+
+If using SOCKS Proxy to Port forward SSH/HTTPS through a Bastion Host, add Manager entry to the .ssh_config file.
+
+It would look like:
+
+    host <ip_proxy_host>
+     ProxyCommand=nc -X 5 -x localhost:12345 %h %p
 
 
 Script Usage
@@ -124,51 +170,7 @@ Script Usage
 Each command has a corresponding file with the --help output.
 The presense of this file is simply for 'tab' autocomplete during use.
 
-## ENVIRONMENT VARIABLES
 
-The script will use Environmental Values to target the SDWAN environment.
-
- * SDWAN_IP=<vmanage_ip>
-
- * SDWAN_PORT=<vmanage_port>
-	
- * SDWAN_USERNAME=<username>
-
- * SDWAN_PASSWORD=<password>
-
- * SDWAN_CFGDIR=./cfg/<environment_name>/
-
-Optional Environmental Values
-	
- * SDWAN_PROXY=127.0.0.1:12345
-
- * ROUTER_USERNAME=<username>
-
- * ROUTER_PASSWORD=<password>
-
-
-It is good to organize different environments by creating a file in the export direcotry.
-
-This is the DevNet environment file.
-
-    cat export/devnet 
-
-    export SDWAN_IP=64.103.37.21
-    export SDWAN_PORT=443
-    export SDWAN_USERNAME=devnetuser
-    export SDWAN_PASSWORD=Cisco123!
-    export SDWAN_CFGDIR=./cfg/devnet/
-
-The current environment can be viewed with the 'env' command in the script.
-
-    sdwan.py env
-
-If using SOCKS Proxy to Port forward SSH/HTTPS through a Bastion Host, add Manager entry to the .ssh_config file.
-
-It would look like:
-
-    host <ip_proxy_host>
-     ProxyCommand=nc -X 5 -x localhost:12345 %h %p
 
 
 ## MANAGER OBJECTS/COMPONENTS
