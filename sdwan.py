@@ -588,10 +588,10 @@ def tasks(clear):
 @click.option("--intf", help="Display Interface Statistics and State")
 @click.option("--models", is_flag=True, help="Display Valid Device Models")
 @click.option("--ntp", help="Display Device NTP State")
-@click.option("--omp", nargs=2, help="Display Device OMP Routes")
 @click.option("--ospf", help="Display Device OSPF Information")
 @click.option("--ping", nargs=4, help="Ping by VPN, SRC_IP, DST_IP")
 @click.option("--qos", help="Display Queuing Statistics")
+@click.option("--route", nargs=2, help="Display Device Specific IP Route")
 @click.option("--saas", help="Display SaaS OnRamp State")
 @click.option("--sdavc", help="Display SD-AVC Status")
 @click.option("--send", nargs=2, help="Execute a CLI command on a Device")
@@ -608,7 +608,7 @@ def tasks(clear):
 @click.option("--vrrp", help="Display Device VRRP Status")
 @click.option("--vsmart", help="Display Policy learned from vSmart")
 def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, detail, download, dup, events_hr, fec,
-           flow, groups, intf, models, ntp, omp, ospf, ping, qos, set_var, csv, saas, sdavc, send, sla, staging, ssh,
+           flow, groups, intf, models, ntp, ospf, ping, qos, route, set_var, csv, saas, sdavc, send, sla, staging, ssh,
            tloc, trace, tracker, umts, invalid, valid, variable, vrrp, vsmart):
 
 
@@ -660,13 +660,13 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
             sdwan.py device --ntp <deviceId>
 
-            sdwan.py device --omp <deviceId> summary | <prefix>
-
             sdwan.py device --ospf <deviceId>
 
             sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
 
             sdwan.py device --qos <deviceId>
+
+            sdwan.py device --route <deviceId> <prefix>
 
             sdwan.py device --saas <deviceId>
 
@@ -1404,63 +1404,80 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
 
         return
 
-    if omp:
+    if route:
         # get arguements
-        deviceIP = omp[0]
-        _prefix = omp[1]
+        deviceIP = route[0]
+        _prefix = route[1]
 
-        response = json.loads(sdwanp.get_request('device/omp/routes/received?deviceId=' + deviceIP))
+        # get the omp rx route
+
+        response = json.loads(sdwanp.get_request('device/omp/routes/received?deviceId=' + deviceIP + '&prefix=' + _prefix))
         items = response['data']
 
+        prefixes = []
+        for item in items:
+            if item['prefix'] == _prefix:
+                prefixes.append(item)
+
+        print()
+        print('** OMP Table **')
+        print()
+        print('Code:')
+        print('C   -> chosen')
+        print('I   -> installed')
+        print('Red -> redistributed')
+        print('Rej -> rejected')
+        print('L   -> looped')
+        print('R   -> resolved')
+        print('S   -> stale')
+        print('Ext -> extranet')
+        print('Inv -> invalid')
+        print('Stg -> staged')
+        print('IA  -> On-demand inactive')
+        print('U   -> TLOC unresolved')
+        print()
         print()
 
-        if _prefix == 'summary':
+        headers = ["VPN", "PREFIX", "FROM PEER", "PATH ID", "LABEL", "TAG",
+                   "STATUS", "ATTRIBUTE TYPE", "TLOC IP", "SITE ID", "COLOR",
+                   "ENCAP", "PROTOCOL", "REGION ID", "AFFINITY GROUP"]
+        table = list()
+        for item in prefixes:
+            if 'tag' in item:
+                omp_tag = item['tag']
+            else:
+                omp_tag = '--'
+            tr = [item['vpn-id'], item['prefix'], item['from-peer'],
+                  item['path-id'], item['label'], omp_tag, item['status'], item['attribute-type'],
+                  item['originator'], item['site-id'], item['color'], item['encap'],
+                  item['protocol'], item['region-id'], item['affinity-group-number']]
+            table.append(tr)
 
-            print()
-            print('Code:')
-            print('C   -> chosen')
-            print('I   -> installed')
-            print('Red -> redistributed')
-            print('Rej -> rejected')
-            print('L   -> looped')
-            print('R   -> resolved')
-            print('S   -> stale')
-            print('Ext -> extranet')
-            print('Inv -> invalid')
-            print('Stg -> staged')
-            print('IA  -> On-demand inactive')
-            print('U   -> TLOC unresolved')
-            print()
-            print()
-
-            headers = ["VPN", "PREFIX", "FROM PEER", "PATH ID", "LABEL",
-                       "STATUS", "ATTRIBUTE TYPE", "TLOC IP", "SITE ID", "COLOR",
-                       "ENCAP", "PROTOCOL"]
-            table = list()
-            for item in items:
-                tr = [item['vpn-id'], item['prefix'], item['from-peer'],
-                      item['path-id'], item['label'], item['status'], item['attribute-type'],
-                      item['originator'], item['site-id'], item['color'], item['encap'],
-                      item['protocol']]
-                table.append(tr)
-
-            click.echo(tabulate.tabulate(table, headers,
+        click.echo(tabulate.tabulate(table, headers,
                                          tablefmt="simple"))
-        else:
-            vpn = 1000
-            for item in items:
-                if item['prefix'] == _prefix:
-                    if item['vpn-id'] != vpn:
-                        print('---------------------------------------------------')
-                        print('omp route entries for vpn ' + item['vpn-id'] + ' route ' + item['prefix'])
-                        print('---------------------------------------------------')
-                        print()
-                        vpn = item['vpn-id']
-                    pprint(item)
-                    print()
+        print()
+        print()
+        print('** IP Route Table **')
+
+        # get the IP route
+
+        response = json.loads(sdwanp.get_request('device/ip/ipRoutes?deviceId=' + deviceIP + '&route-destination-prefix='
+                                                 + _prefix))
+        prefixes = response['data']
+
+        headers = ["VPN", "PREFIX", "PROTOCOL", "AD", "METRIC", "NEXT IP",
+                   "NEXT HOP INTF"]
+        table = list()
+        for item in prefixes:
+            tr = [item['routing-instance-name'], item['route-destination-prefix'], item['route-source-protocol'],
+                  item['route-route-preference'], item['route-metric'], item['next-hop-next-hop-address'],
+                  item['next-hop-outgoing-interface']]
+            table.append(tr)
 
         print()
-
+        click.echo(tabulate.tabulate(table, headers,
+                                         tablefmt="simple"))
+        print()
         return
 
     if models:
@@ -1626,10 +1643,11 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
         # send single or multiple commands to a router
         # nested ssh - first ssh to vmanage - then to router over control connection
 
+        # don't forget to add manager ip to the .ssh_config file if using proxy
         net_connect = ConnectHandler(**SSH_DEVICE)
 
         # build ssh to router command line
-        ssh_router_login_cmd = ('ssh -l ' + ROUTER_USERNAME + " " + send[0] + ' -p 830')
+        ssh_router_login_cmd = ('ssh -o StrictHostKeyChecking=no -l ' + ROUTER_USERNAME + " " + send[0] + ' -p 830')
 
         # determine if parameter is single device|command or a file
         # build a list of commands
@@ -1650,10 +1668,10 @@ def device(arp, attach, bfd, bgp, config, control, count_aar, count_dp, detach, 
             if "password" in ssh_output.lower():
                 ssh_output = net_connect.send_command_timing(ROUTER_PASSWORD, strip_prompt=False, strip_command=False)
             else:
-                print('** authentication failed **')
+                print('** authentication failed 2 **')
                 return
         else:
-            print('** authentication failed **')
+            print('** authentication failed 1 **')
             return
 
         # send commands

@@ -40,8 +40,6 @@ Usage: sdwan.py device [OPTIONS]
 
       sdwan.py device --flow <deviceId>
 
-      sdwan.py device --models
-
       sdwan.py device --intf <deviceId>
 
       sdwan.py device --invalid <deviceId>
@@ -50,13 +48,13 @@ Usage: sdwan.py device [OPTIONS]
 
       sdwan.py device --ntp <deviceId>
 
-      sdwan.py device --omp <deviceId> summary | <prefix>
-
       sdwan.py device --ospf <deviceId>
 
       sdwan.py device --ping <deviceId> <vpn> <src_ip> <dst_ip>
 
       sdwan.py device --qos <deviceId>
+
+      sdwan.py device --route <deviceId> <prefix>
 
       sdwan.py device --saas <deviceId>
 
@@ -69,6 +67,8 @@ Usage: sdwan.py device [OPTIONS]
       sdwan.py device --staging <deviceId>
 
       sdwan.py device --sla <deviceId>
+
+      sdwan.py device --ssh <deviceId>
 
       sdwan.py device --tloc <deviceId>          sdwan.py device --tracker
       <deviceId>
@@ -108,16 +108,17 @@ Options:
   --intf TEXT        Display Interface Statistics and State
   --models           Display Valid Device Models
   --ntp TEXT         Display Device NTP State
-  --omp TEXT...      Display Device OMP Routes
   --ospf TEXT        Display Device OSPF Information
   --ping TEXT...     Ping by VPN, SRC_IP, DST_IP
   --qos TEXT         Display Queuing Statistics
+  --route TEXT...    Display Device Specific IP Route
   --saas TEXT        Display SaaS OnRamp State
   --sdavc TEXT       Display SD-AVC Status
-  --send TEXT...     Execute a CLI command on a Router
+  --send TEXT...     Execute a CLI command on a Device
   --set_var TEXT...  Set Variable/Value for Device
   --staging TEXT     Make Device Certificate Staging
   --sla TEXT         Display Tunnel BFD SLA Statistics
+  --ssh TEXT         SSH to Device through Manager Control Connection
   --tloc TEXT        Display Local TLOCS
   --trace TEXT...    Traceroute by VPN, SRC_IP, DST_IP
   --tracker TEXT     Display Endpoint Tracker

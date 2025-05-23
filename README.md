@@ -111,7 +111,7 @@ If using SOCKS Proxy to Port forward SSH/HTTPS through a Bastion Host, add Manag
 
 It would look like:
 
-    host <ip_proxy_host>
+    host <manager_ip>
      ProxyCommand=nc -X 5 -x localhost:12345 %h %p
 
 
@@ -233,9 +233,10 @@ CiscoDevNet/[SASTRE](https://github.com/CiscoDevNet/sastre) is a much better scr
     sdwan.py device --download 100.65.30.11
     sdwan.py device --download all
     sdwan.py device --sla 100.65.30.11
-    sdwan.py device --int 100.65.30.11
+    sdwan.py device --intf 100.65.30.11
     sdwan.py device --arp 100.65.30.11
     sdwan.py device --ospf 100.65.30.11
+    sdwan.py device --route 100.65.30.11 10.0.0.0/8
     sdwan.py device --bgp 100.65.30.11
     sdwan.py device --count_dp 100.65.30.11
     sdwan.py device --count_aar 100.65.30.11
@@ -274,6 +275,7 @@ CiscoDevNet/[SASTRE](https://github.com/CiscoDevNet/sastre) is a much better scr
     sdwan.py template-feature --download all
     sdwan.py template-feature --models dc079e4e-7631-4246-923a-71943427a4fd
     sdwan.py template-feature --model_update dc079e4e-7631-4246-923a-71943427a4fd vedge-1000,vedge-100,vedge-2000
+    watch -d -n 5 sdwan.py device --qos 100.65.30.11
 
 ## EDGE VALIDATION TESTING
 Use pytest along with sdwan to automate validation.  See linked file for an example.
@@ -285,6 +287,14 @@ This test script can be run in the following form.
     test_site.py --deviceId 100.65.30.11
 
 The 'pytest.ini' file was included to ignore Warning Messages and output Verbose.
+
+
+## MISC
+
+ * Use 'watch' to repeat commands and look for difference
+ * Redirect ouptut to 'uuid' sed script to output only returned uuid
+ * Each major function has file with help contents.  Use file for tab autocomplete when buidling out command. 
+
 
 ## TODO
 See the GitHub 'Issues' tracker for a list of planned features/fixes.
