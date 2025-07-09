@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
    name='sdwan',
     version='7.8.0',
-    py_modules=['sdwan.py'],
+    py_modules=['sdwan'],
     install_requires=['requests', 'pysocks', 'click', 'tabulate', 'netmiko'],
     author = 'Ed Ruszkiewicz',
     author_email = 'ed@ruszkiewicz.net',
