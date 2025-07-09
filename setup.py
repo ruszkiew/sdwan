@@ -4,7 +4,7 @@ setup(
    name='sdwan',
     version='7.8.0',
     py_modules=['sdwan.py'],
-    install_requires=['requests', 'pysocks', 'click', 'tabulate', 'netmiko']
+    install_requires=['requests', 'pysocks', 'click', 'tabulate', 'netmiko'],
     author = 'Ed Ruszkiewicz',
     author_email = 'ed@ruszkiewicz.net',
     description = 'Cisco SD-WAN CLI Tool',
