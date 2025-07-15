@@ -42,9 +42,13 @@ These are the functional items the script provides that cannot be done in Manage
        * pysocks
        * click
        * tabulate
-       * netmiko
+       * netmiko:w
 
     Clone or download this repo
+
+        OR
+
+    pip3 install git+https://github.com/ruszkiew/sdwan
 
     
      
